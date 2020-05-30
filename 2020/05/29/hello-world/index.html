@@ -17,18 +17,18 @@
 
 <script id="hexo-configurations">
     var NexT = window.NexT || {};
-    var CONFIG = {"hostname":"yoursite.com","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+    var CONFIG = {"hostname":"yoursite.com","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
   </script>
 
-  <meta name="description" content="Welcome to Hexo! This is your very first post. Check documentation for more info. If you get any problems when using Hexo, you can find the answer in troubleshooting or you can ask me on GitHub. Quick">
+  <meta name="description" content="2020.5.29 正式赛题解读赛题背景：船运到达时间预测通过船运的历史数据构建模型，对目的港到达时间进行预测，预测时间简称为ETA（estimated time of arrival），目的港到达时间预测为ARRIVAL_ETA。">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Hello World">
+<meta property="og:title" content="学习日志：2020华为云大数据挑战赛（正式赛）">
 <meta property="og:url" content="http://yoursite.com/2020/05/29/hello-world/index.html">
 <meta property="og:site_name" content="LiAnG&#39;s Blog">
-<meta property="og:description" content="Welcome to Hexo! This is your very first post. Check documentation for more info. If you get any problems when using Hexo, you can find the answer in troubleshooting or you can ask me on GitHub. Quick">
+<meta property="og:description" content="2020.5.29 正式赛题解读赛题背景：船运到达时间预测通过船运的历史数据构建模型，对目的港到达时间进行预测，预测时间简称为ETA（estimated time of arrival），目的港到达时间预测为ARRIVAL_ETA。">
 <meta property="og:locale" content="zh_CN">
-<meta property="article:published_time" content="2020-05-29T09:05:43.000Z">
-<meta property="article:modified_time" content="2020-05-29T09:05:43.001Z">
+<meta property="article:published_time" content="2020-05-29T13:15:34.000Z">
+<meta property="article:modified_time" content="2020-05-30T03:04:48.889Z">
 <meta property="article:author" content="LiAnG">
 <meta name="twitter:card" content="summary">
 
@@ -45,7 +45,7 @@
   };
 </script>
 
-  <title>Hello World | LiAnG's Blog</title>
+  <title>学习日志：2020华为云大数据挑战赛（正式赛） | LiAnG's Blog</title>
   
 
 
@@ -76,6 +76,7 @@
   </style>
 </noscript>
 
+<link rel="alternate" href="/atom.xml" title="LiAnG's Blog" type="application/atom+xml">
 </head>
 
 <body itemscope itemtype="http://schema.org/WebPage">
@@ -104,6 +105,7 @@
 
   <div class="site-nav-right">
     <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
     </div>
   </div>
 </div>
@@ -118,16 +120,58 @@
     <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
 
   </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
         <li class="menu-item menu-item-archives">
 
     <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
 
   </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
   </ul>
 </nav>
 
 
 
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
 
 </div>
     </header>
@@ -154,7 +198,7 @@
     <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/05/29/hello-world/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="image" content="/images/timg.jpg">
       <meta itemprop="name" content="LiAnG">
       <meta itemprop="description" content="Stay hungry, stay foolish">
     </span>
@@ -164,7 +208,7 @@
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
-          Hello World
+          学习日志：2020华为云大数据挑战赛（正式赛）
         </h1>
 
         <div class="post-meta">
@@ -174,8 +218,15 @@
               </span>
               <span class="post-meta-item-text">发表于</span>
 
-              <time title="创建时间：2020-05-29 17:05:43" itemprop="dateCreated datePublished" datetime="2020-05-29T17:05:43+08:00">2020-05-29</time>
+              <time title="创建时间：2020-05-29 21:15:34" itemprop="dateCreated datePublished" datetime="2020-05-29T21:15:34+08:00">2020-05-29</time>
             </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-05-30 11:04:48" itemprop="dateModified" datetime="2020-05-30T11:04:48+08:00">2020-05-30</time>
+              </span>
 
           
             <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
@@ -195,19 +246,296 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <p>Welcome to <a href="https://hexo.io/" target="_blank" rel="noopener">Hexo</a>! This is your very first post. Check <a href="https://hexo.io/docs/" target="_blank" rel="noopener">documentation</a> for more info. If you get any problems when using Hexo, you can find the answer in <a href="https://hexo.io/docs/troubleshooting.html" target="_blank" rel="noopener">troubleshooting</a> or you can ask me on <a href="https://github.com/hexojs/hexo/issues" target="_blank" rel="noopener">GitHub</a>.</p>
-<h2 id="Quick-Start"><a href="#Quick-Start" class="headerlink" title="Quick Start"></a>Quick Start</h2><h3 id="Create-a-new-post"><a href="#Create-a-new-post" class="headerlink" title="Create a new post"></a>Create a new post</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo new <span class="string">"My New Post"</span></span><br></pre></td></tr></table></figure>
-
-<p>More info: <a href="https://hexo.io/docs/writing.html" target="_blank" rel="noopener">Writing</a></p>
-<h3 id="Run-server"><a href="#Run-server" class="headerlink" title="Run server"></a>Run server</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo server</span><br></pre></td></tr></table></figure>
-
-<p>More info: <a href="https://hexo.io/docs/server.html" target="_blank" rel="noopener">Server</a></p>
-<h3 id="Generate-static-files"><a href="#Generate-static-files" class="headerlink" title="Generate static files"></a>Generate static files</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo generate</span><br></pre></td></tr></table></figure>
-
-<p>More info: <a href="https://hexo.io/docs/generating.html" target="_blank" rel="noopener">Generating</a></p>
-<h3 id="Deploy-to-remote-sites"><a href="#Deploy-to-remote-sites" class="headerlink" title="Deploy to remote sites"></a>Deploy to remote sites</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo deploy</span><br></pre></td></tr></table></figure>
-
-<p>More info: <a href="https://hexo.io/docs/one-command-deployment.html" target="_blank" rel="noopener">Deployment</a></p>
+        <h2 id="2020-5-29-正式赛题解读"><a href="#2020-5-29-正式赛题解读" class="headerlink" title="2020.5.29 正式赛题解读"></a>2020.5.29 正式赛题解读</h2><h3 id="赛题背景：船运到达时间预测"><a href="#赛题背景：船运到达时间预测" class="headerlink" title="赛题背景：船运到达时间预测"></a>赛题背景：船运到达时间预测</h3><p>通过船运的历史数据构建模型，对目的港到达时间进行预测，预测时间简称为ETA（estimated time of arrival），目的港到达时间预测为ARRIVAL_ETA。</p>
+<a id="more"></a>
+<p>本次大赛提供<strong>历史运单GPS数据、历史运单事件数据、港口坐标数据</strong>，预测货物运单的到达时间，对应“历史运单事件”数据中EVENT_CODE字段值为ARRIVAL AT PORT时EVENT_CONVOLUTION_DATE的时间值。</p>
+<h3 id="比赛数据"><a href="#比赛数据" class="headerlink" title="比赛数据"></a>比赛数据</h3><p><strong>1. GPS数据（建议重点参考）</strong></p>
+<table>
+<thead>
+<tr>
+<th align="left">列名</th>
+<th align="center">类型</th>
+<th align="right">说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">loadingOrder</td>
+<td align="center">VARCHAR2</td>
+<td align="right">脱敏后的主运单，货物的运单编号，类似快递单号</td>
+</tr>
+<tr>
+<td align="left">carrierName</td>
+<td align="center">VARCHAR2</td>
+<td align="right">脱敏后的承运商名称，类似快递公司名称</td>
+</tr>
+<tr>
+<td align="left">timestamp</td>
+<td align="center">DATE</td>
+<td align="right">时间，格式为：yyyy-MM-dd’T’HH:mm:ss.SSSZ，如2019-09-05T16:33:17.000Z</td>
+</tr>
+<tr>
+<td align="left">longitude</td>
+<td align="center">NUMBER</td>
+<td align="right">货物在运输过程中，当前船舶所处的经度坐标，如114.234567</td>
+</tr>
+<tr>
+<td align="left">latitude</td>
+<td align="center">NUMBER</td>
+<td align="right">货物在运输过程中，当前船舶所处的纬度坐标，如21.234567</td>
+</tr>
+<tr>
+<td align="left">vesselMMSI</td>
+<td align="center">VARCHAR2</td>
+<td align="right">脱敏后的船舶海上移动业务识别码MMSI， 唯一标识，对应到每一艘船</td>
+</tr>
+<tr>
+<td align="left">speed</td>
+<td align="center">NUMBER</td>
+<td align="right">单位km/h，货物在运输过程中，当前船舶的瞬时速度，部分数据未提供的可自行计算。</td>
+</tr>
+<tr>
+<td align="left">direction</td>
+<td align="center">NUMBER</td>
+<td align="right">当前船舶的行驶方向，正北是0度，31480代表西北方向314.80度，900代表正北偏东9度。</td>
+</tr>
+<tr>
+<td align="left">vesselNextport</td>
+<td align="center">VARCHAR2</td>
+<td align="right">船舶将要到达的下一港口，港口名称可能不规范，如CNQIN、CN QIN、CN QINGDAO都代表下一站为中国青岛港口。</td>
+</tr>
+<tr>
+<td align="left">vesselNextportETA</td>
+<td align="center">DATE</td>
+<td align="right">船运公司给出的到“下一个港口”预计到达时间，格式为：yyyy-MM-dd’T’HH:mm:ss.SSSZ，如2019-09-12T16:33:17.000Z</td>
+</tr>
+<tr>
+<td align="left">vesselStatus</td>
+<td align="center">VARCHAR2</td>
+<td align="right">当前船舶航行状态，主要包括：moored、under way using engine、not under command、at anchor、under way sailing、constrained by her draught</td>
+</tr>
+<tr>
+<td align="left">TRANSPORT_TRACE</td>
+<td align="center">VARCHAR2</td>
+<td align="right">船的路由，由“-”连接组成，例如CNSHK-MYPKG-MYTPP。由承运商预先录入，实际小概率存在不按此路由行驶（如遇塞港时），但最终会到达目的港口。</td>
+</tr>
+</tbody></table>
+<p><strong>数据说明：</strong></p>
+<p>每个运单表示一次运输的运输单号，不会重复使用，一次运输过程中的多条GPS数据拥有相同的运输单号。船号为运单货物所在的船编号，会重复出现在不同次运输的GPS数据中。需要注意的是GPS数据中可能会有异常的GPS，可能且不限于如下问题：</p>
+<p>（1） GPS坐标在陆地，或者有些港口是内陆的港口。</p>
+<p>（2） GPS漂移：两点距离过大，超过船的行驶能力。</p>
+<p>（3） GPS在部分地区的比较稀疏（比如南半球、敏感海域）。</p>
+<p>（4） 最后的GPS点可能和港口的距离较远（比如塞港时，或者临近目的港时已无GPS数据）。</p>
+<p>（5） speed字段之后数据可能会有少量缺失（如GPS设备短暂异常）。</p>
+<p><strong>注意 :</strong> 字段vesselNextport、vesselNextportETA、TRANSPORT_TRACE为手工输入，误填可能性较大。</p>
+<p><strong>2. 历史运单时间数据（手工录入，辅助参考）</strong></p>
+<p>历史运单事件数据描述每个运单在船运的过程中，与港口相关的关键信息，如离开起运港、到达目的港等。</p>
+<table>
+<thead>
+<tr>
+<th align="left">列名</th>
+<th align="center">类型</th>
+<th align="right">说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">loadingOrder</td>
+<td align="center">VARCHAR2</td>
+<td align="right">运单号，与历史运单GPS数据中的loadingOrder字段一致</td>
+</tr>
+<tr>
+<td align="left">EVENT_CODE</td>
+<td align="center">VARCHAR2</td>
+<td align="right">事件编码，主要事件包括：TRANSIT PORT ATD实际离开中转港、SHIPMENT ONBOARD DATE实际离开起运港、TRANSIT PORT ATA实际到达中转港、ARRIVAL AT PORT实际到达目的港、注：部分船可能没有中转港</td>
+</tr>
+<tr>
+<td align="left">EVENT_LOCATION_ID</td>
+<td align="center">VARCHAR2</td>
+<td align="right">港口名称，对应“港口坐标据”表中的字段TRANS_NODE_NAME</td>
+</tr>
+<tr>
+<td align="left">EVENT_CONVOLUTION_DATE</td>
+<td align="center">DATE</td>
+<td align="right">事件发生的时间，格式为：yyyy/MM/dd HH:mm:ss（dd与HH之间为两个空格）。例如Event_code为“SHIPMENT ONBOARD DATE”时，此字段表示船从起运港出发的时间。EVENT_CODE为“ARRIVAL AT PORT”时，此字段表示船到达目的港的时间。</td>
+</tr>
+</tbody></table>
+<p><strong>3. 港口坐标数据</strong><br>港口坐标数据描述每个运单在船运的过程中涉及的港口位置信息。</p>
+<table>
+<thead>
+<tr>
+<th align="left">列名</th>
+<th align="center">类型</th>
+<th align="right">说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">TRANS_NODE_NAME</td>
+<td align="center">VARCHAR2</td>
+<td align="right">港口名称，如：WAREHOUSE_TURKEYMOSCOW_RUSSIAN FEDERATION，CHIWAN(44)，SHEKOU，深圳蛇口港等</td>
+</tr>
+<tr>
+<td align="left">LONGITUDE</td>
+<td align="center">VARCHAR2</td>
+<td align="right">港口的经度坐标</td>
+</tr>
+<tr>
+<td align="left">LATITUDE</td>
+<td align="center">VARCHAR2</td>
+<td align="right">港口的纬度坐标</td>
+</tr>
+<tr>
+<td align="left">COUNTRY</td>
+<td align="center">VARCHAR2</td>
+<td align="right">国家</td>
+</tr>
+<tr>
+<td align="left">STATE</td>
+<td align="center">VARCHAR2</td>
+<td align="right">省、州</td>
+</tr>
+<tr>
+<td align="left">CITY</td>
+<td align="center">VARCHAR2</td>
+<td align="right">城市</td>
+</tr>
+<tr>
+<td align="left">REGION</td>
+<td align="center">VARCHAR2</td>
+<td align="right">县、区</td>
+</tr>
+<tr>
+<td align="left">ADDRESS</td>
+<td align="center">VARCHAR2</td>
+<td align="right">详细地址。</td>
+</tr>
+<tr>
+<td align="left">PORT_CODE</td>
+<td align="center">VARCHAR2</td>
+<td align="right">港口编码，即港口的字母简码，如CNSHK代表中国蛇口港</td>
+</tr>
+</tbody></table>
+<p><strong>数据说明：</strong><br>（1） 重点为NAME和经纬度数据</p>
+<p>（2） 一个港口可能会有多个NAME表示，且不按五位编码表示</p>
+<p>（3） 经纬度如果出现负数则为错误信息，可以删除或自行补充</p>
+<p><strong>4. 测试运单数据</strong></p>
+<p>测试运单数据为运单运输过程中的不同位置点所构成，供选手测试对应的ETA时间。测试运单数据如下表描述。</p>
+<table>
+<thead>
+<tr>
+<th align="left">列名</th>
+<th align="center">类型</th>
+<th align="right">说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">loadingOrder</td>
+<td align="center">VARCHAR2</td>
+<td align="right">脱敏后的主运单，货物的运单编号，类似快递单号</td>
+</tr>
+<tr>
+<td align="left">timestamp</td>
+<td align="center">DATE</td>
+<td align="right">时间，格式为：yyyy-MM-dd’T’HH:mm:ss.SSSZ，如2019-09-05T16:33:17.000Z</td>
+</tr>
+<tr>
+<td align="left">longitude</td>
+<td align="center">NUMBER</td>
+<td align="right">货物在运输过程中，当前船舶所处的经度坐标，如114.234567</td>
+</tr>
+<tr>
+<td align="left">latitude</td>
+<td align="center">NUMBER</td>
+<td align="right">货物在运输过程中，当前船舶所处的纬度坐标，如21.234567</td>
+</tr>
+<tr>
+<td align="left">speed</td>
+<td align="center">NUMBER</td>
+<td align="right">单位km/h，货物在运输过程中，当前船舶的瞬时速度，部分数据未提供的可自行计算。</td>
+</tr>
+<tr>
+<td align="left">direction</td>
+<td align="center">NUMBER</td>
+<td align="right">当前船舶的行驶方向，正北是0度，31480代表西北方向314.80度，900代表正北偏东9度。</td>
+</tr>
+<tr>
+<td align="left">carrierName</td>
+<td align="center">VARCHAR2</td>
+<td align="right">脱敏后的承运商名称，类似快递公司名称</td>
+</tr>
+<tr>
+<td align="left">vesselMMSI</td>
+<td align="center">VARCHAR2</td>
+<td align="right">脱敏后的船舶海上移动业务识别码MMSI， 唯一标识，对应到每一艘船</td>
+</tr>
+<tr>
+<td align="left">onboardDate</td>
+<td align="center">DATE</td>
+<td align="right">离开起运港时间，格式为：yyyy/MM/dd HH:mm:ss（dd与HH之间为两个空格），如2019/09/05 16:33:17</td>
+</tr>
+<tr>
+<td align="left">TRANSPORT_TRACE</td>
+<td align="center">VARCHAR2</td>
+<td align="right">船的路由，由“-”连接组成，例如CNSHK-MYPKG-MYTPP。由承运商预先录入，实际小概率存在不按此路由行驶（如遇塞港时），但最终会到达目的港口。</td>
+</tr>
+</tbody></table>
+<p><strong>数据说明：</strong><br>（1） 根据航程提供起始一段形成GPS数据，用于预测到达目的港时间（按不同航线，提供10%~50%左右的GPS数据）</p>
+<p><strong>5. 提交数据</strong></p>
+<p>所有参与竞赛的选手登录到大赛平台，提交结果数据，具体提交格式要求：</p>
+<table>
+<thead>
+<tr>
+<th align="left">列名</th>
+<th align="center">类型</th>
+<th align="right">说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">loadingOrder</td>
+<td align="center">VARCHAR2</td>
+<td align="right">脱敏后的主运单，货物的运单编号，类似快递单号</td>
+</tr>
+<tr>
+<td align="left">timestamp</td>
+<td align="center">DATE</td>
+<td align="right">时间，格式为：yyyy-MM-dd’T’HH:mm:ss.SSSZ，如2019-09-05T16:33:17.000Z</td>
+</tr>
+<tr>
+<td align="left">longitude</td>
+<td align="center">NUMBER</td>
+<td align="right">货物在运输过程中，当前船舶所处的经度坐标，如114.234567</td>
+</tr>
+<tr>
+<td align="left">latitude</td>
+<td align="center">NUMBER</td>
+<td align="right">货物在运输过程中，当前船舶所处的纬度坐标，如21.234567</td>
+</tr>
+<tr>
+<td align="left">carrierName</td>
+<td align="center">VARCHAR2</td>
+<td align="right">脱敏后的承运商名称，类似快递公司名称</td>
+</tr>
+<tr>
+<td align="left">vesselMMSI</td>
+<td align="center">VARCHAR2</td>
+<td align="right">脱敏后的船舶海上移动业务识别码MMSI， 唯一标识，对应到每一艘船</td>
+</tr>
+<tr>
+<td align="left">onboardDate</td>
+<td align="center">DATE</td>
+<td align="right">离开起运港时间，格式为：yyyy/MM/dd HH:mm:ss（dd与HH之间为两个空格），如2019/09/05 16:33:17</td>
+</tr>
+<tr>
+<td align="left">ETA</td>
+<td align="center">DATE</td>
+<td align="right">到达目的港口的ETA，格式为：yyyy/MM/dd HH:mm:ss（dd与HH之间为两个空格），如2019/09/18 22:28:46</td>
+</tr>
+<tr>
+<td align="left">creatDate</td>
+<td align="center">DATE</td>
+<td align="right">当前表创建时间，格式为：yyyy/MM/dd HH:mm:ss（dd与HH之间为两个空格），如2020/05/05 16:33:17</td>
+</tr>
+</tbody></table>
+<p><strong>数据说明：</strong><br>（1） 前7列基于测试数据，ETA列为预测时间</p>
+<p>（2） creatDate为文件生成时间，判分不关注。</p>
 
     </div>
 
@@ -221,6 +549,13 @@
 
 
         
+    <div class="post-nav">
+      <div class="post-nav-item"></div>
+      <div class="post-nav-item">
+    <a href="/2020/05/30/My-New-Post/" rel="next" title="学习日志：2020智慧海洋建设top5方案学习">
+      学习日志：2020智慧海洋建设top5方案学习 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
       </footer>
     
   </article>
@@ -278,12 +613,14 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Quick-Start"><span class="nav-number">1.</span> <span class="nav-text">Quick Start</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Create-a-new-post"><span class="nav-number">1.1.</span> <span class="nav-text">Create a new post</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Run-server"><span class="nav-number">1.2.</span> <span class="nav-text">Run server</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Generate-static-files"><span class="nav-number">1.3.</span> <span class="nav-text">Generate static files</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Deploy-to-remote-sites"><span class="nav-number">1.4.</span> <span class="nav-text">Deploy to remote sites</span></a></li></ol></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#2020-5-29-正式赛题解读"><span class="nav-text">2020.5.29 正式赛题解读</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#赛题背景：船运到达时间预测"><span class="nav-text">赛题背景：船运到达时间预测</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#比赛数据"><span class="nav-text">比赛数据</span></a></li></ol></li></ol></div>
       </div>
       <!--/noindex-->
 
       <div class="site-overview-wrap sidebar-panel">
         <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="LiAnG"
+      src="/images/timg.jpg">
   <p class="site-author-name" itemprop="name">LiAnG</p>
   <div class="site-description" itemprop="description">Stay hungry, stay foolish</div>
 </div>
@@ -292,7 +629,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">1</span>
+          <span class="site-state-item-count">2</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -394,6 +731,8 @@
 
 
 
+  
+<script src="/js/local-search.js"></script>
 
 
 
@@ -404,6 +743,10 @@
 
 
 
+
+
+
+  
 
   
 
