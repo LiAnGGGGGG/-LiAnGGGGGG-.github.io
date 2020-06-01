@@ -31,7 +31,7 @@
 <meta property="og:image" content="https://note.youdao.com/yws/api/personal/file/5045B84827DC4E5B87F4E56EE349769F?method=download&shareKey=7afd0c781b27434a8a4595a52bbd0861">
 <meta property="og:image" content="https://note.youdao.com/yws/api/personal/file/BAC79B4C1B3440D6BFF6A1D51AC8A0FF?method=download&shareKey=16b799d9748d761fab551bec75914030">
 <meta property="article:published_time" content="2020-05-30T01:15:34.000Z">
-<meta property="article:modified_time" content="2020-05-31T08:35:09.818Z">
+<meta property="article:modified_time" content="2020-06-01T09:07:10.198Z">
 <meta property="article:author" content="LiAnG">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="https://note.youdao.com/yws/api/personal/file/5045B84827DC4E5B87F4E56EE349769F?method=download&shareKey=7afd0c781b27434a8a4595a52bbd0861">
@@ -229,7 +229,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-05-31 16:35:09" itemprop="dateModified" datetime="2020-05-31T16:35:09+08:00">2020-05-31</time>
+                <time title="修改时间：2020-06-01 17:07:10" itemprop="dateModified" datetime="2020-06-01T17:07:10+08:00">2020-06-01</time>
               </span>
 
           
@@ -348,7 +348,26 @@
 <li>model.py 模型文件</li>
 </ul>
 <p><strong>1. feature_selector.py代码分析：</strong></p>
-<pre><code>class FeatureSelector():
+<pre><code># numpy and pandas for data manipulation
+import pandas as pd
+import numpy as np
+
+# model used for feature importances
+import lightgbm as lgb
+
+# utility for early stopping with a validation set
+from sklearn.model_selection import train_test_split
+
+# visualizations
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+# memory management
+import gc
+
+# utilities
+from itertools import chain
+class FeatureSelector():
 &quot;&quot;&quot;    
 这个类用于为机器学习或数据预处理执行特征选择
 实现五种不同的方法来识别要删除的特性
@@ -395,46 +414,609 @@ Notes
     -所有5个操作都可以用identify_all方法运行。
     -如果使用特性重要度，则对创建新列的分类变量使用one-hot编码
 &quot;&quot;&quot;
-def __init__(self, data, labels=None):            
-    # 数据集和标签
-    self.data = data
-    self.labels = labels
-    if labels is None:
-        print(&apos;No labels provided. Feature importance based methods are not available.&apos;)    
-    # 记录关于要删除的特性的信息    
-    self.record_missing = None
-    self.record_single_unique = None
-    self.record_collinear = None
-    self.record_zero_importance = None
-    self.record_low_importance = None
+    def __init__(self, data, labels=None):            
+        # 数据集和标签
+        self.data = data
+        self.labels = labels
+        if labels is None:
+            print(&apos;No labels provided. Feature importance based methods are not available.&apos;)    
+        # 记录关于要删除的特性的信息    
+        self.record_missing = None
+        self.record_single_unique = None
+        self.record_collinear = None
+        self.record_zero_importance = None
+        self.record_low_importance = None
 
-    self.missing_stats = None
-    self.unique_stats = None
-    self.corr_matrix = None
-    self.feature_importances = None
-    # 用于保存删除操作的字典
-    self.ops = {}
+        self.missing_stats = None
+        self.unique_stats = None
+        self.corr_matrix = None
+        self.feature_importances = None
+        # 用于保存删除操作的字典
+        self.ops = {}
 
-    self.one_hot_correlated = False
+        self.one_hot_correlated = False
 
-def identify_missing(self, missing_threshold):
+    def identify_missing(self, missing_threshold):
 
-    # 找到丢失值大于&apos; missing_threshold &apos;的部分特征
-    self.missing_threshold = missing_threshold
-    # 计算每一列特征的缺失率
-    missing_series = self.data.isnull().sum() / self.data.shape[0]
-    self.missing_stats = pd.DataFrame(missing_series).rename(columns = {&apos;index&apos;: &apos;feature&apos;, 0: &apos;missing_fraction&apos;})
-    # 将特征的缺失率排序
-    self.missing_stats = self.missing_stats.sort_values(&apos;missing_fraction&apos;, ascending = False)
-    #找到缺失百分比大于阈值的列
-    record_missing = pd.DataFrame(missing_series[missing_series &gt; missing_threshold]).reset_index().rename(columns = 
-                                                                                                               {&apos;index&apos;: &apos;feature&apos;, 
-                                                                                                                0: &apos;missing_fraction&apos;})
-    to_drop = list(record_missing[&apos;feature&apos;])
-    self.record_missing = record_missing
-    self.ops[&apos;missing&apos;] = to_drop
+        # 找到丢失值大于&apos; missing_threshold &apos;的部分特征
+        self.missing_threshold = missing_threshold
+        # 计算每一列特征的缺失率
+        missing_series = self.data.isnull().sum() / self.data.shape[0]
+        self.missing_stats = pd.DataFrame(missing_series).rename(columns = {&apos;index&apos;: &apos;feature&apos;, 0: &apos;missing_fraction&apos;})
+        # 将特征的缺失率排序
+        self.missing_stats = self.missing_stats.sort_values(&apos;missing_fraction&apos;, ascending = False)
+        #找到缺失百分比大于阈值的列
+        record_missing = pd.DataFrame(missing_series[missing_series &gt; missing_threshold]).reset_index().rename(columns = 
+                                                                                                                   {&apos;index&apos;: &apos;feature&apos;, 
+                                                                                                                    0: &apos;missing_fraction&apos;})
+        to_drop = list(record_missing[&apos;feature&apos;])
+        self.record_missing = record_missing
+        self.ops[&apos;missing&apos;] = to_drop
 
-    print(&apos;%d features with greater than %0.2f missing values.\n&apos; % (len(self.ops[&apos;missing&apos;]), self.missing_threshold))</code></pre>
+        print(&apos;%d features with greater than %0.2f missing values.\n&apos; % (len(self.ops[&apos;missing&apos;]), self.missing_threshold))
+
+    def identify_single_unique(self):
+    # 查找只有一个唯一值的特征
+
+        # 计算每个列中的惟一计数
+        unique_counts = self.data.nunique()
+        self.unique_stats = pd.DataFrame(unique_counts).rename(columns = {&apos;index&apos;: &apos;feature&apos;, 0: &apos;nunique&apos;})
+        self.unique_stats = self.unique_stats.sort_values(&apos;nunique&apos;, ascending = True)
+
+        # 查找只有惟一计数的列
+        record_single_unique = pd.DataFrame(unique_counts[unique_counts == 1]).reset_index().rename(columns = {&apos;index&apos;: &apos;feature&apos;, 
+                                                                                                               0: &apos;nunique&apos;})
+        to_drop = list(record_single_unique[&apos;feature&apos;])
+        self.record_single_unique = record_single_unique
+        self.ops[&apos;single_unique&apos;] = to_drop
+        print(&apos;%d features with a single unique value.\n&apos; % len(self.ops[&apos;single_unique&apos;]))
+
+    def identify_collinear(self, correlation_threshold, one_hot=False):
+        &quot;&quot;&quot;
+        找寻相关系数大于“correlation_threshold”的特征并删除
+
+        参数
+        --------
+        correlation_threshold : float between 0 and 1
+        one_hot : boolean, default = False
+        &quot;&quot;&quot;
+        self.correlation_threshold = correlation_threshold
+        self.one_hot_correlated = one_hot
+        # 计算每一列之间的相关性
+        if one_hot:
+
+            # one_hot编码
+            features = pd.get_dummies(self.data)
+            self.one_hot_features = [column for column in features.columns if column not in self.base_features]
+
+            # 向原始数据添加一个热编码数据
+            self.data_all = pd.concat([features[self.one_hot_features], self.data], axis = 1)
+
+            corr_matrix = pd.get_dummies(features).corr()
+
+        else:
+            corr_matrix = self.data.corr()
+
+        self.corr_matrix = corr_matrix
+
+        # 提取关联矩阵的上三角
+        upper = corr_matrix.where(np.triu(np.ones(corr_matrix.shape), k = 1).astype(np.bool))
+
+        # 选择相关性高于阈值的特性
+         # 需要使用绝对值
+        to_drop = [column for column in upper.columns if any(upper[column].abs() &gt; correlation_threshold)]
+
+        # 保存线性相关特征
+        record_collinear = pd.DataFrame(columns = [&apos;drop_feature&apos;, &apos;corr_feature&apos;, &apos;corr_value&apos;])
+
+        # 遍历列以删除相关特性对
+        for column in to_drop:
+
+            # 找出相关特征
+            corr_features = list(upper.index[upper[column].abs() &gt; correlation_threshold])
+
+            # 找出相关系数
+            corr_values = list(upper[column][upper[column].abs() &gt; correlation_threshold])
+            drop_features = [column for _ in range(len(corr_features))]
+
+            # 记录信息(现在需要一个临时df)
+            temp_df = pd.DataFrame.from_dict({&apos;drop_feature&apos;: drop_features,
+                                                 &apos;corr_feature&apos;: corr_features,
+                                                 &apos;corr_value&apos;: corr_values})
+
+            #添加到dataframe
+            record_collinear = record_collinear.append(temp_df, ignore_index = True)
+
+        self.record_collinear = record_collinear
+        self.ops[&apos;collinear&apos;] = to_drop
+
+        print(&apos;%d features with a correlation magnitude greater than %0.2f.\n&apos; % (len(self.ops[&apos;collinear&apos;]), self.correlation_threshold))
+
+    def identify_zero_importance(self, task, eval_metric=None, 
+                                 n_iterations=10, early_stopping = True):
+        &quot;&quot;&quot;
+        根据梯度增强机识别零重要性的特征。
+        gbm可以使用验证集进行早期停止训练，以防止过拟合。
+        在“n_iteration”上对特征重要性求平均值以减少方差。
+
+        参数 
+        --------
+        eval_metric : string
+            评价指标用于梯度提升机的早期停止，如果&apos; early_stopped &apos;为真，则必须提供
+        task : string
+            机器学习任务，是“classification”还是“regression”
+        n_iterations : int, default = 10
+            gbm的训练迭代次数
+        early_stopping : boolean, default = True
+            是否在训练时使用提前停止与验证集
+
+        Notes
+        --------
+            - 在训练前热编码特征
+            - gbm没有针对任何特定任务进行优化，可能需要进行一些超参数调优
+            - 特性重要性，包括零重要性特性，可以在运行过程中改变
+        &quot;&quot;&quot;
+        if early_stopping and eval_metric is None:
+            raise ValueError(&quot;&quot;&quot;eval metric must be provided with early stopping. Examples include &quot;auc&quot; for classification or
+                             &quot;l2&quot; for regression.&quot;&quot;&quot;)
+        if self.labels is None:
+             raise ValueError(&quot;No training labels provided.&quot;)
+        # 热编码特征
+        features = pd.get_dummies(self.data)
+        self.one_hot_features = [column for column in features.columns if column not in self.base_features]
+
+        # 将热编码数据添加到原始数据中
+        self.data_all = pd.concat([features[self.one_hot_features], self.data], axis = 1)
+
+        # 提取特征名字
+        feature_names = list(features.columns)
+
+        # 转换成np array
+        features = np.array(features)
+        labels = np.array(self.labels).reshape((-1, ))
+
+        # 创建特征重要性数组
+        feature_importance_values = np.zeros(len(feature_names))
+
+        print(&apos;Training Gradient Boosting Model\n&apos;)
+
+        # 在每折中迭代
+        for _ in range(n_iterations):
+            if task == &apos;classification&apos;:
+                model = lgb.LGBMClassifier(n_estimators=1000, learning_rate = 0.05, verbose = -1)
+
+            elif task == &apos;regression&apos;:
+                model = lgb.LGBMRegressor(n_estimators=1000, learning_rate = 0.05, verbose = -1)
+            else:
+                raise ValueError(&apos;Task must be either &quot;classification&quot; or &quot;regression&quot;&apos;)
+
+            # 如果使用早期停止训练需要一个验证集
+            if early_stopping:
+                train_features, valid_features, train_labels, valid_labels = train_test_split(features, labels, test_size = 0.15, stratify=labels)
+                # 使用早停机制训练模型
+                model.fit(train_features, train_labels, eval_metric = eval_metric,
+                              eval_set = [(valid_features, valid_labels)],
+                              early_stopping_rounds = 100, verbose = -1)
+                # 清空内存
+                gc.enable()
+                del train_features, train_labels, valid_features, valid_labels
+                gc.collect()
+            else:
+                model.fit(features, labels)
+
+            # 记录特征重要性
+            feature_importance_values += model.feature_importances_ / n_iterations
+
+        feature_importances = pd.DataFrame({&apos;feature&apos;: feature_names, &apos;importance&apos;: feature_importance_values})
+
+        # 根据特征重要性排序
+        feature_importances = feature_importances.sort_values(&apos;importance&apos;, ascending = False).reset_index(drop = True)
+
+        # 归一化特征重要性
+        feature_importances[&apos;normalized_importance&apos;] = feature_importances[&apos;importance&apos;] / feature_importances[&apos;importance&apos;].sum()
+        feature_importances[&apos;cumulative_importance&apos;] = np.cumsum(feature_importances[&apos;normalized_importance&apos;])
+
+        # 提取特征重要性为0的特征
+        record_zero_importance = feature_importances[feature_importances[&apos;importance&apos;] == 0.0]
+
+        to_drop = list(record_zero_importance[&apos;feature&apos;])
+
+        self.feature_importances = feature_importances
+        self.record_zero_importance = record_zero_importance
+        self.ops[&apos;zero_importance&apos;] = to_drop
+
+        print(&apos;\n%d features with zero importance after one-hot encoding.\n&apos; % len(self.ops[&apos;zero_importance&apos;]))
+
+    def identify_low_importance(self, cumulative_importance):
+        &quot;&quot;&quot;
+        找到特征重要性低于“cumulative_importance”的特征
+
+        参数
+        --------
+        cumulative_importance : float between 0 and 1
+            重要性分数
+        &quot;&quot;&quot;
+        self.cumulative_importance = cumulative_importance
+
+        # 特征重要性需要在运行之前计算
+        if self.feature_importances is None:
+            raise NotImplementedError(&quot;&quot;&quot;Feature importances have not yet been determined. 
+                                     Call the `identify_zero_importance` method first.&quot;&quot;&quot;)
+
+        # 将特征重要性排序
+        self.feature_importances = self.feature_importances.sort_values(&apos;cumulative_importance&apos;)
+
+        # 识别出特征重要性低于设定阈值的特征
+        record_low_importance = self.feature_importances[self.feature_importances[&apos;cumulative_importance&apos;] &gt; cumulative_importance]
+
+        to_drop = list(record_low_importance[&apos;feature&apos;])
+
+        self.record_low_importance = record_low_importance
+        self.ops[&apos;low_importance&apos;] = to_drop
+
+        print(&apos;%d features required for cumulative importance of %0.2f after one hot encoding.&apos; % (len(self.feature_importances) -
+                                                                            len(self.record_low_importance), self.cumulative_importance))
+        print(&apos;%d features do not contribute to cumulative importance of %0.2f.\n&apos; % (len(self.ops[&apos;low_importance&apos;]),
+                                                                                               self.cumulative_importance))
+
+    def identify_all(self, selection_params):
+        &quot;&quot;&quot;
+        使用所有五种方法来删除不需要的特征
+
+        参数
+        --------
+        selection_params : dict
+            在五种特征选择方法中使用的参数。
+            参数必须包含键[&apos;missing_threshold&apos;， &apos;correlation_threshold&apos;， &apos;eval_metric&apos;， &apos;task&apos;， &apos; collecative_importance &apos;]
+
+        # 检查所必要的参数
+        for param in [&apos;missing_threshold&apos;, &apos;correlation_threshold&apos;, &apos;eval_metric&apos;, &apos;task&apos;, &apos;cumulative_importance&apos;]:
+            if param not in selection_params.keys():
+                raise ValueError(&apos;%s is a required parameter for this method.&apos; % param)
+
+        # 实现五种方法
+        self.identify_missing(selection_params[&apos;missing_threshold&apos;])
+        self.identify_single_unique()
+        self.identify_collinear(selection_params[&apos;correlation_threshold&apos;])
+        self.identify_zero_importance(task = selection_params[&apos;task&apos;], eval_metric = selection_params[&apos;eval_metric&apos;])
+        self.identify_low_importance(selection_params[&apos;cumulative_importance&apos;])
+
+        # 查找要删除的特性的数量
+        self.all_identified = set(list(chain(*list(self.ops.values()))))
+        self.n_identified = len(self.all_identified)
+
+        print(&apos;%d total features out of %d identified for removal after one-hot encoding.\n&apos; % (self.n_identified, 
+                                                                                                  self.data_all.shape[1]))
+
+     def check_removal(self, keep_one_hot=True):
+         &quot;&quot;&quot;
+         在删除前检查已识别的特征。返回一个列表的独特的功能识别。
+         &quot;&quot;&quot;
+        self.all_identified = set(list(chain(*list(self.ops.values()))))
+        print(&apos;Total of %d features identified for removal&apos; % len(self.all_identified))
+
+        if not keep_one_hot:
+            if self.one_hot_features is None:
+                print(&apos;Data has not been one-hot encoded&apos;)
+            else:
+                one_hot_to_remove = [x for x in self.one_hot_features if x not in self.all_identified]
+                print(&apos;%d additional one-hot features can be removed&apos; % len(one_hot_to_remove))
+
+        return list(self.all_identified)
+
+    def remove(self, methods, keep_one_hot = True):
+        &quot;&quot;&quot;
+        根据指定的方法从数据中删除特征。
+
+        参数
+        --------
+            methods : &apos;all&apos; or list of methods
+                可以是[&apos;missing&apos;， &apos;single_unique&apos;， &apos;collinear&apos;， &apos;zero_importance&apos;， &apos;low_importance&apos;]
+            keep_one_hot : boolean, default = True
+                是否热编码
+
+        返回
+        --------
+            data : dataframe
+                删除了特征的数据
+
+        Notes 
+        --------
+            -如果使用特性重要度，则一个热编码列将被添加到数据中(然后可能被删除)
+            -在转换数据之前，检查将被删除的功能!
+        features_to_drop = []
+
+        if methods == &apos;all&apos;:
+
+            # 热编码数据
+            data = self.data_all
+
+            print(&apos;{} methods have been run\n&apos;.format(list(self.ops.keys())))
+
+            # 找到需要删除的特征
+            features_to_drop = set(list(chain(*list(self.ops.values()))))
+
+        else:
+            # Need to use one-hot encoded data as well
+            if &apos;zero_importance&apos; in methods or &apos;low_importance&apos; in methods or self.one_hot_correlated:
+                data = self.data_all
+
+            else:
+                data = self.data
+
+            # 遍历指定方法
+            for method in methods:
+                # 确定方法已经在运行
+                if method not in self.ops.keys():
+                    raise NotImplementedError(&apos;%s method has not been run&apos; % method)
+
+                # 添加要删除的方法
+                else:
+                    features_to_drop.append(self.ops[method])
+
+            # 找到要删除的特征
+            features_to_drop = set(list(chain(*features_to_drop)))
+
+        features_to_drop = list(features_to_drop)
+
+        if not keep_one_hot:
+
+            if self.one_hot_features is None:
+                print(&apos;Data has not been one-hot encoded&apos;)
+            else:
+
+                features_to_drop = list(set(features_to_drop) | set(self.one_hot_features))
+
+        # 在原数据中删除特征
+        data = data.drop(columns = features_to_drop)
+        self.removed_features = features_to_drop
+
+        if not keep_one_hot:
+            print(&apos;Removed %d features including one-hot features.&apos; % len(features_to_drop))
+         else:
+            print(&apos;Removed %d features.&apos; % len(features_to_drop))
+
+        return data
+
+    # 各种绘图函数
+    def plot_missing(self):
+        &quot;&quot;&quot;Histogram of missing fraction in each feature&quot;&quot;&quot;
+        if self.record_missing is None:
+            raise NotImplementedError(&quot;Missing values have not been calculated. Run `identify_missing`&quot;)
+
+        self.reset_plot()
+
+        # Histogram of missing values
+        plt.style.use(&apos;seaborn-white&apos;)
+        plt.figure(figsize = (7, 5))
+        plt.hist(self.missing_stats[&apos;missing_fraction&apos;], bins = np.linspace(0, 1, 11), edgecolor = &apos;k&apos;, color = &apos;red&apos;, linewidth = 1.5)
+        plt.xticks(np.linspace(0, 1, 11));
+        plt.xlabel(&apos;Missing Fraction&apos;, size = 14); plt.ylabel(&apos;Count of Features&apos;, size = 14); 
+        plt.title(&quot;Fraction of Missing Values Histogram&quot;, size = 16);
+
+
+    def plot_unique(self):
+        &quot;&quot;&quot;Histogram of number of unique values in each feature&quot;&quot;&quot;
+        if self.record_single_unique is None:
+            raise NotImplementedError(&apos;Unique values have not been calculated. Run `identify_single_unique`&apos;)
+
+        self.reset_plot()
+
+        # Histogram of number of unique values
+        self.unique_stats.plot.hist(edgecolor = &apos;k&apos;, figsize = (7, 5))
+        plt.ylabel(&apos;Frequency&apos;, size = 14); plt.xlabel(&apos;Unique Values&apos;, size = 14); 
+        plt.title(&apos;Number of Unique Values Histogram&apos;, size = 16);
+
+
+    def plot_collinear(self, plot_all = False):
+        &quot;&quot;&quot;
+        Heatmap of the correlation values. If plot_all = True plots all the correlations otherwise
+        plots only those features that have a correlation above the threshold
+
+        Notes
+        --------
+            - Not all of the plotted correlations are above the threshold because this plots
+            all the variables that have been idenfitied as having even one correlation above the threshold
+            - The features on the x-axis are those that will be removed. The features on the y-axis
+            are the correlated features with those on the x-axis
+
+        Code adapted from https://seaborn.pydata.org/examples/many_pairwise_correlations.html
+        &quot;&quot;&quot;
+
+        if self.record_collinear is None:
+            raise NotImplementedError(&apos;Collinear features have not been idenfitied. Run `identify_collinear`.&apos;)
+
+        if plot_all:
+            corr_matrix_plot = self.corr_matrix
+            title = &apos;All Correlations&apos;
+
+        else:
+            # Identify the correlations that were above the threshold
+            # columns (x-axis) are features to drop and rows (y_axis) are correlated pairs
+            corr_matrix_plot = self.corr_matrix.loc[list(set(self.record_collinear[&apos;corr_feature&apos;])), 
+                                                    list(set(self.record_collinear[&apos;drop_feature&apos;]))]
+
+            title = &quot;Correlations Above Threshold&quot;
+
+
+        f, ax = plt.subplots(figsize=(10, 8))
+
+        # Diverging colormap
+        cmap = sns.diverging_palette(220, 10, as_cmap=True)
+
+        # Draw the heatmap with a color bar
+        sns.heatmap(corr_matrix_plot, cmap=cmap, center=0,
+                    linewidths=.25, cbar_kws={&quot;shrink&quot;: 0.6})
+
+        # Set the ylabels 
+        ax.set_yticks([x + 0.5 for x in list(range(corr_matrix_plot.shape[0]))])
+        ax.set_yticklabels(list(corr_matrix_plot.index), size = int(160 / corr_matrix_plot.shape[0]));
+
+        # Set the xlabels 
+        ax.set_xticks([x + 0.5 for x in list(range(corr_matrix_plot.shape[1]))])
+        ax.set_xticklabels(list(corr_matrix_plot.columns), size = int(160 / corr_matrix_plot.shape[1]));
+        plt.title(title, size = 14)
+
+    def plot_feature_importances(self, plot_n = 15, threshold = None):
+        &quot;&quot;&quot;
+        Plots `plot_n` most important features and the cumulative importance of features.
+        If `threshold` is provided, prints the number of features needed to reach `threshold` cumulative importance.
+
+        Parameters
+        --------
+
+        plot_n : int, default = 15
+            Number of most important features to plot. Defaults to 15 or the maximum number of features whichever is smaller
+
+        threshold : float, between 0 and 1 default = None
+            Threshold for printing information about cumulative importances
+
+        &quot;&quot;&quot;
+
+        if self.record_zero_importance is None:
+            raise NotImplementedError(&apos;Feature importances have not been determined. Run `idenfity_zero_importance`&apos;)
+
+        # Need to adjust number of features if greater than the features in the data
+        if plot_n &gt; self.feature_importances.shape[0]:
+            plot_n = self.feature_importances.shape[0] - 1
+
+        self.reset_plot()
+
+        # Make a horizontal bar chart of feature importances
+        plt.figure(figsize = (10, 6))
+        ax = plt.subplot()
+
+        # Need to reverse the index to plot most important on top
+        # There might be a more efficient method to accomplish this
+        ax.barh(list(reversed(list(self.feature_importances.index[:plot_n]))), 
+                self.feature_importances[&apos;normalized_importance&apos;][:plot_n], 
+                align = &apos;center&apos;, edgecolor = &apos;k&apos;)
+
+        # Set the yticks and labels
+        ax.set_yticks(list(reversed(list(self.feature_importances.index[:plot_n]))))
+        ax.set_yticklabels(self.feature_importances[&apos;feature&apos;][:plot_n], size = 12)
+
+        # Plot labeling
+        plt.xlabel(&apos;Normalized Importance&apos;, size = 16); plt.title(&apos;Feature Importances&apos;, size = 18)
+        plt.show()
+
+        # Cumulative importance plot
+        plt.figure(figsize = (6, 4))
+        plt.plot(list(range(1, len(self.feature_importances) + 1)), self.feature_importances[&apos;cumulative_importance&apos;], &apos;r-&apos;)
+        plt.xlabel(&apos;Number of Features&apos;, size = 14); plt.ylabel(&apos;Cumulative Importance&apos;, size = 14); 
+        plt.title(&apos;Cumulative Feature Importance&apos;, size = 16);
+
+        if threshold:
+
+            # Index of minimum number of features needed for cumulative importance threshold
+            # np.where returns the index so need to add 1 to have correct number
+            importance_index = np.min(np.where(self.feature_importances[&apos;cumulative_importance&apos;] &gt; threshold))
+            plt.vlines(x = importance_index + 1, ymin = 0, ymax = 1, linestyles=&apos;--&apos;, colors = &apos;blue&apos;)
+            plt.show();
+
+            print(&apos;%d features required for %0.2f of cumulative importance&apos; % (importance_index + 1, threshold))
+
+    def reset_plot(self):
+        plt.rcParams = plt.rcParamsDefault</code></pre><p><strong>2. nmf_list.py 代码分析：</strong></p>
+<pre><code>import pickle
+import numpy as np
+import pandas as pd
+from collections import Counter
+from sklearn.decomposition import NMF
+from sklearn.preprocessing import LabelEncoder
+from sklearn.feature_extraction.text import TfidfVectorizer
+import tqdm
+from gensim.models import FastText, Word2Vec
+import multiprocessing
+
+class nmf_list(object):
+    def __init__(self,data,by_name,to_list,nmf_n,top_n):
+        self.data = data
+        self.by_name = by_name
+        self.to_list = to_list
+        self.nmf_n = nmf_n
+        self.top_n = top_n
+
+    def run(self,tf_n):
+        df_all = self.data.groupby(self.by_name)[self.to_list].apply(lambda x :&apos;|&apos;.join(x)).reset_index()
+        self.data =df_all.copy()
+
+        print(&apos;bulid word_fre&apos;)
+    # 词频的构建
+    def word_fre(x):
+        word_dict = []
+        x = x.split(&apos;|&apos;)
+        docs = []
+        for doc in x:
+            doc = doc.split()
+            docs.append(doc)
+            word_dict.extend(doc)
+        word_dict = Counter(word_dict)
+        new_word_dict = {}
+        for key,value in word_dict.items():
+            new_word_dict[key] = [value,0]
+        del word_dict  
+        del x
+        for doc in docs:
+            doc = Counter(doc)
+            for word in doc.keys():
+                new_word_dict[word][1] += 1
+        return new_word_dict 
+    self.data[&apos;word_fre&apos;] = self.data[self.to_list].apply(word_fre)
+
+    print(&apos;bulid top_&apos; + str(self.top_n))
+    # 设定100个高频词
+    def top_100(word_dict):
+        return sorted(word_dict.items(),key = lambda x:(x[1][1],x[1][0]),reverse = True)[:self.top_n]
+    self.data[&apos;top_&apos;+str(self.top_n)] = self.data[&apos;word_fre&apos;].apply(top_100)
+    def top_100_word(word_list):
+        words = []
+        for i in word_list:
+            i = list(i)
+            words.append(i[0])
+        return words 
+    self.data[&apos;top_&apos;+str(self.top_n)+&apos;_word&apos;] = self.data[&apos;top_&apos; + str(self.top_n)].apply(top_100_word)
+    # print(&apos;top_&apos;+str(self.top_n)+&apos;_word的shape&apos;)
+    print(self.data.shape)
+
+    word_list = []
+    for i in self.data[&apos;top_&apos;+str(self.top_n)+&apos;_word&apos;].values:
+        word_list.extend(i)
+    word_list = Counter(word_list)
+    word_list = sorted(word_list.items(),key = lambda x:x[1],reverse = True)
+    user_fre = []
+    for i in word_list:
+        i = list(i)
+        user_fre.append(i[1]/self.data[self.by_name].nunique())
+    stop_words = []
+    for i,j in zip(word_list,user_fre):
+        if j&gt;0.5:
+            i = list(i)
+            stop_words.append(i[0])
+
+    print(&apos;start title_feature&apos;)
+    # 讲融合后的taglist当作一句话进行文本处理
+    self.data[&apos;title_feature&apos;] = self.data[self.to_list].apply(lambda x: x.split(&apos;|&apos;))
+    self.data[&apos;title_feature&apos;] = self.data[&apos;title_feature&apos;].apply(lambda line: [w for w in line if w not in stop_words])
+    self.data[&apos;title_feature&apos;] = self.data[&apos;title_feature&apos;].apply(lambda x: &apos; &apos;.join(x))
+
+    print(&apos;start NMF&apos;)
+    # 使用tfidf对元素进行处理
+    tfidf_vectorizer = TfidfVectorizer(ngram_range=(tf_n,tf_n))
+    tfidf = tfidf_vectorizer.fit_transform(self.data[&apos;title_feature&apos;].values)
+    #使用nmf算法，提取文本的主题分布
+    text_nmf = NMF(n_components=self.nmf_n).fit_transform(tfidf)
+
+
+    # 整理并输出文件
+    name = [str(tf_n) + self.to_list + &apos;_&apos; +str(x) for x in range(1,self.nmf_n+1)]
+    tag_list = pd.DataFrame(text_nmf)
+    print(tag_list.shape)
+    tag_list.columns = name
+    tag_list[self.by_name] = self.data[self.by_name]
+    column_name = [self.by_name] + name
+    tag_list = tag_list[column_name]
+    return tag_list</code></pre>
     </div>
 
     
