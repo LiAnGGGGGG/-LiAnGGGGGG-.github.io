@@ -31,7 +31,7 @@
 <meta property="og:image" content="https://note.youdao.com/yws/api/personal/file/5045B84827DC4E5B87F4E56EE349769F?method=download&shareKey=7afd0c781b27434a8a4595a52bbd0861">
 <meta property="og:image" content="https://note.youdao.com/yws/api/personal/file/BAC79B4C1B3440D6BFF6A1D51AC8A0FF?method=download&shareKey=16b799d9748d761fab551bec75914030">
 <meta property="article:published_time" content="2020-05-30T01:15:34.000Z">
-<meta property="article:modified_time" content="2020-06-03T11:13:19.990Z">
+<meta property="article:modified_time" content="2020-06-04T02:25:15.553Z">
 <meta property="article:author" content="LiAnG">
 <meta property="article:tag" content="算法竞赛">
 <meta name="twitter:card" content="summary">
@@ -230,7 +230,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-06-03 19:13:19" itemprop="dateModified" datetime="2020-06-03T19:13:19+08:00">2020-06-03</time>
+                <time title="修改时间：2020-06-04 10:25:15" itemprop="dateModified" datetime="2020-06-04T10:25:15+08:00">2020-06-04</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -269,14 +269,14 @@
                 <i class="far fa-file-word"></i>
               </span>
                 <span class="post-meta-item-text">本文字数：</span>
-              <span>22k</span>
+              <span>40k</span>
             </span>
             <span class="post-meta-item" title="阅读时长">
               <span class="post-meta-item-icon">
                 <i class="far fa-clock"></i>
               </span>
                 <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>20 分钟</span>
+              <span>36 分钟</span>
             </span>
 
         </div>
@@ -385,8 +385,7 @@
 <li>nmf_list.py 处理轨迹文件</li>
 <li>model.py 模型文件</li>
 </ul>
-<p><strong>1. feature_selector.py代码分析：</strong></p>
-<pre><code># numpy and pandas for data manipulation
+<h3 id="1-feature-selector-py代码分析："><a href="#1-feature-selector-py代码分析：" class="headerlink" title="1. feature_selector.py代码分析："></a><strong>1. feature_selector.py代码分析：</strong></h3><pre><code># numpy and pandas for data manipulation
 import pandas as pd
 import numpy as np
 
@@ -955,8 +954,7 @@ Notes
             print(&apos;%d features required for %0.2f of cumulative importance&apos; % (importance_index + 1, threshold))
 
     def reset_plot(self):
-        plt.rcParams = plt.rcParamsDefault</code></pre><p><strong>2. nmf_list.py 代码分析：</strong></p>
-<pre><code>import pickle
+        plt.rcParams = plt.rcParamsDefault</code></pre><h3 id="2-nmf-list-py-代码分析："><a href="#2-nmf-list-py-代码分析：" class="headerlink" title="2. nmf_list.py 代码分析："></a><strong>2. nmf_list.py 代码分析：</strong></h3><pre><code>import pickle
 import numpy as np
 import pandas as pd
 from collections import Counter
@@ -1054,7 +1052,446 @@ class nmf_list(object):
     tag_list[self.by_name] = self.data[self.by_name]
     column_name = [self.by_name] + name
     tag_list = tag_list[column_name]
-    return tag_list</code></pre>
+    return tag_list</code></pre><h3 id="3-model-py-代码分析："><a href="#3-model-py-代码分析：" class="headerlink" title="3. model.py  代码分析："></a><strong>3. model.py  代码分析：</strong></h3><pre><code>import gc
+import pandas as pd
+import numpy as np
+import os
+import time
+import lightgbm as lgb
+from copy import deepcopy
+from sklearn.model_selection import StratifiedKFold
+from sklearn.metrics import f1_score
+from sklearn import metrics
+from sklearn.metrics import precision_recall_fscore_support
+import warnings
+from glob import glob
+from scipy.sparse import csr_matrix
+
+start_t = time.time()
+print(&apos;ww_900_start&apos;)
+pd.set_option(&apos;display.max_columns&apos;, 100)
+warnings.filterwarnings(&apos;ignore&apos;)
+
+# 添加需要提取的特征
+def group_feature(df, key, target, aggs,flag):   
+    agg_dict = {}
+    for ag in aggs:
+        agg_dict[&apos;{}_{}_{}&apos;.format(target,ag,flag)] = ag
+    print(agg_dict)
+    t = df.groupby(key)[target].agg(agg_dict).reset_index()
+    return t
+
+# 计算两个经纬度之间的haversine距离
+def haversine_dist(lat1,lng1,lat2,lng2):
+    lat1, lng1, lat2, lng2 = map(np.radians, (lat1, lng1, lat2, lng2))
+    radius = 6371  # Earth&apos;s radius taken from google
+    lat = lat2 - lat1
+    lng = lng2 - lng1
+    d = np.sin(lat/2) ** 2 + np.cos(lat1) * np.cos(lat2) * np.sin(lng/2) ** 2
+    h = 2 * radius * np.arcsin(np.sqrt(d))
+    return h
+
+# 提取特征
+def extract_feature(df, train, flag):
+
+    if (flag == &apos;on_night&apos;) or (flag == &apos;on_day&apos;): 
+        t = group_feature(df, &apos;ship&apos;,&apos;speed&apos;,[&apos;max&apos;,&apos;mean&apos;,&apos;median&apos;,&apos;std&apos;,&apos;skew&apos;],flag)
+        train = pd.merge(train, t, on=&apos;ship&apos;, how=&apos;left&apos;)
+
+    if flag == &quot;0&quot;:
+        t = group_feature(df, &apos;ship&apos;,&apos;direction&apos;,[&apos;max&apos;,&apos;median&apos;,&apos;mean&apos;,&apos;std&apos;,&apos;skew&apos;],flag)
+        train = pd.merge(train, t, on=&apos;ship&apos;, how=&apos;left&apos;) 
+
+    elif flag == &quot;1&quot;:
+        t = group_feature(df, &apos;ship&apos;,&apos;speed&apos;,[&apos;max&apos;,&apos;mean&apos;,&apos;median&apos;,&apos;std&apos;,&apos;skew&apos;],flag)
+        train = pd.merge(train, t, on=&apos;ship&apos;, how=&apos;left&apos;)
+        t = group_feature(df, &apos;ship&apos;,&apos;direction&apos;,[&apos;max&apos;,&apos;median&apos;,&apos;mean&apos;,&apos;std&apos;,&apos;skew&apos;],flag)
+        train = pd.merge(train, t, on=&apos;ship&apos;, how=&apos;left&apos;) 
+        hour_nunique = df.groupby(&apos;ship&apos;)[&apos;speed&apos;].nunique().to_dict()
+        train[&apos;speed_nunique_{}&apos;.format(flag)] = train[&apos;ship&apos;].map(hour_nunique)   
+        hour_nunique = df.groupby(&apos;ship&apos;)[&apos;direction&apos;].nunique().to_dict()
+        train[&apos;direction_nunique_{}&apos;.format(flag)] = train[&apos;ship&apos;].map(hour_nunique)  
+
+    t = group_feature(df, &apos;ship&apos;,&apos;x&apos;,[&apos;max&apos;,&apos;min&apos;,&apos;mean&apos;,&apos;median&apos;,&apos;std&apos;,&apos;skew&apos;],flag)
+    train = pd.merge(train, t, on=&apos;ship&apos;, how=&apos;left&apos;)
+    t = group_feature(df, &apos;ship&apos;,&apos;y&apos;,[&apos;max&apos;,&apos;min&apos;,&apos;mean&apos;,&apos;median&apos;,&apos;std&apos;,&apos;skew&apos;],flag)
+    train = pd.merge(train, t, on=&apos;ship&apos;, how=&apos;left&apos;)
+    t = group_feature(df, &apos;ship&apos;,&apos;base_dis_diff&apos;,[&apos;max&apos;,&apos;min&apos;,&apos;mean&apos;,&apos;std&apos;,&apos;skew&apos;],flag)
+    train = pd.merge(train, t, on=&apos;ship&apos;, how=&apos;left&apos;)
+
+    train[&apos;x_max_x_min_{}&apos;.format(flag)] = train[&apos;x_max_{}&apos;.format(flag)] - train[&apos;x_min_{}&apos;.format(flag)]
+    train[&apos;y_max_y_min_{}&apos;.format(flag)] = train[&apos;y_max_{}&apos;.format(flag)] - train[&apos;y_min_{}&apos;.format(flag)]
+    train[&apos;y_max_x_min_{}&apos;.format(flag)] = train[&apos;y_max_{}&apos;.format(flag)] - train[&apos;x_min_{}&apos;.format(flag)]
+    train[&apos;x_max_y_min_{}&apos;.format(flag)] = train[&apos;x_max_{}&apos;.format(flag)] - train[&apos;y_min_{}&apos;.format(flag)]
+    train[&apos;slope_{}&apos;.format(flag)] = train[&apos;y_max_y_min_{}&apos;.format(flag)] / np.where(train[&apos;x_max_x_min_{}&apos;.format(flag)]==0, 0.001, train[&apos;x_max_x_min_{}&apos;.format(flag)])
+    train[&apos;area_{}&apos;.format(flag)] = train[&apos;x_max_x_min_{}&apos;.format(flag)] * train[&apos;y_max_y_min_{}&apos;.format(flag)]
+
+    mode_hour = df.groupby(&apos;ship&apos;)[&apos;hour&apos;].agg(lambda x:x.value_counts().index[0]).to_dict()
+    train[&apos;mode_hour_{}&apos;.format(flag)] = train[&apos;ship&apos;].map(mode_hour)
+    train[&apos;slope_median_{}&apos;.format(flag)] = train[&apos;y_median_{}&apos;.format(flag)] / np.where(train[&apos;x_median_{}&apos;.format(flag)]==0, 0.001, train[&apos;x_median_{}&apos;.format(flag)])
+
+    return train
+
+# 提取数据
+def get_data(files, is_sort=True, sort_column=&quot;time&quot;):
+    datas = [pd.read_csv(f) for f in files]
+    if is_sort:
+        dfs = [df.sort_values(by=sort_column, ascending=True, na_position=&apos;last&apos;) for df in datas]
+    df = pd.concat(datas, axis=0, ignore_index=True)
+    return df
+
+# 处理提取文件数据
+def extract_dt(df):
+    df[&apos;time&apos;] = pd.to_datetime(df[&apos;time&apos;], format=&apos;%m%d %H:%M:%S&apos;)
+    df[&apos;date&apos;] = df[&apos;time&apos;].dt.date
+    df[&apos;hour&apos;] = df[&apos;time&apos;].dt.hour
+
+    df[&apos;x_dis_diff&apos;] = (df[&apos;x&apos;] - 6165599).abs()
+    df[&apos;y_dis_diff&apos;] = (df[&apos;y&apos;] - 5202660).abs()
+    df[&apos;base_dis_diff&apos;] = ((df[&apos;x_dis_diff&apos;]**2)+(df[&apos;y_dis_diff&apos;]**2))**0.5    
+    del df[&apos;x_dis_diff&apos;],df[&apos;y_dis_diff&apos;]    
+
+    df[&quot;x&quot;] = df[&quot;x&quot;] / 1e6
+    df[&quot;y&quot;] = df[&quot;y&quot;] / 1e6    
+    df[&apos;day_nig&apos;] = 0
+    df.loc[(df[&apos;hour&apos;] &gt; 5) &amp; (df[&apos;hour&apos;] &lt; 20),&apos;day_nig&apos;] = 1
+    return df
+
+train_files = glob(&quot;tcdata/hy_round2_train_20200225/*.csv&quot;)
+test_files = glob(&quot;tcdata/hy_round2_testB_20200312/*.csv&quot;)
+train_files = sorted(train_files)
+test_files = sorted(test_files)
+
+train = get_data(train_files)
+train.columns = [&apos;ship&apos;,&apos;x&apos;,&apos;y&apos;,&apos;speed&apos;,&apos;direction&apos;,&apos;time&apos;,&apos;type&apos;]
+test = get_data(test_files)
+test.columns = [&apos;ship&apos;,&apos;x&apos;,&apos;y&apos;,&apos;speed&apos;,&apos;direction&apos;,&apos;time&apos;]
+
+train = extract_dt(train)
+test = extract_dt(test)
+train_label = train.drop_duplicates([&apos;ship&apos;],keep = &apos;first&apos;)
+test_label = test.drop_duplicates([&apos;ship&apos;],keep = &apos;first&apos;)
+train_label[&apos;type&apos;] = train_label[&apos;type&apos;].map({&apos;围网&apos;:0,&apos;刺网&apos;:1,&apos;拖网&apos;:2})
+
+num = train_label.shape[0]
+data_label = train_label.append(test_label)
+data =train.append(test)
+# 将数据分成speed为0和非0、白天和晚上
+data_1 = data[data[&apos;speed&apos;]==0]
+data_2 = data[data[&apos;speed&apos;]!=0]
+data_label = extract_feature(data_1, data_label,&quot;0&quot;)
+data_label = extract_feature(data_2, data_label,&quot;1&quot;)
+
+data_1 = data[data[&apos;day_nig&apos;] == 0]
+data_2 = data[data[&apos;day_nig&apos;] == 1]
+data_label = extract_feature(data_1, data_label,&quot;on_night&quot;)
+data_label = extract_feature(data_2, data_label,&quot;on_day&quot;)
+
+# 读取NMF降维后的特征
+if os.path.isfile(&apos;nmf_testb.csv&apos;):
+    nmf_fea = pd.read_csv(&apos;nmf_testb.csv&apos;)
+    data_label = data_label.merge(nmf_fea,on=&apos;ship&apos;,how = &apos;left&apos;)
+    del nmf_fea
+else:
+    for j in range(1,4):
+        print(&apos;********* {} *******&apos;.format(j))
+        for i in [&apos;speed&apos;,&apos;x&apos;,&apos;y&apos;]:
+            data[i + &apos;_str&apos;] = data[i].astype(str)
+            from nmf_list import nmf_list
+            nmf = nmf_list(data,&apos;ship&apos;,i + &apos;_str&apos;,8,2)
+            nmf_a = nmf.run(j)
+            data_label = data_label.merge(nmf_a,on = &apos;ship&apos;,how = &apos;left&apos;)
+
+
+first = &quot;0&quot;
+second = &quot;1&quot;
+data_label[&apos;direction_median_ratio&apos;] = data_label[&apos;direction_median_{}&apos;.format(second)] / data_label[&apos;direction_median_{}&apos;.format(first)]
+data_label[&apos;slope_ratio&apos;] = data_label[&apos;slope_{}&apos;.format(second)] / data_label[&apos;slope_{}&apos;.format(first)] 
+data_label[&apos;slope_mean_ratio&apos;] = data_label[&apos;slope_median_{}&apos;.format(second)] / data_label[&apos;slope_median_{}&apos;.format(first)]
+
+first = &quot;on_night&quot;
+second = &quot;on_day&quot;
+data_label[&apos;speed_median_ratio&apos;] = data_label[&apos;speed_median_{}&apos;.format(second)] / data_label[&apos;speed_median_{}&apos;.format(first)] 
+data_label[&apos;speed_std_ratio&apos;] = data_label[&apos;speed_std_{}&apos;.format(second)] / data_label[&apos;speed_std_{}&apos;.format(first)] 
+
+# 计算特征
+flag = &apos;all&apos;
+for cc in [&apos;direction&apos;,&apos;speed&apos;]:
+    t = group_feature(data_label,cc, &apos;ship&apos;,[&apos;count&apos;],flag +cc+ &apos;x&apos;)
+    data_label = pd.merge(data_label, t, on=cc, how=&apos;left&apos;)  
+
+for i in [&quot;0&quot;,&quot;1&quot;]:
+    if i == &quot;1&quot;:
+        for j in [
+#                 &apos;slope_speed_cat_nunique_{}&apos;.format(i),
+#                   &apos;slope_mean_speed_cat_nunique_{}&apos;.format(i),
+                  &apos;speed_nunique_{}&apos;.format(i),
+                  &apos;direction_nunique_{}&apos;.format(i)
+                 ]:
+
+            t = group_feature(data_label,j, &apos;ship&apos;,[&apos;count&apos;],j+&quot;_count&quot;)
+            data_label = pd.merge(data_label, t, on=j, how=&apos;left&apos;) 
+    for j in [
+           &apos;slope_median_{}&apos;.format(i),
+#               &apos;x_max_x_min_{}&apos;.format(i),
+#               &apos;y_max_y_min_{}&apos;.format(i)
+             ]:
+#         t = group_feature(data_label,j, &apos;ship&apos;,[&apos;count&apos;],j+&quot;_count&quot;)
+#         data_label = pd.merge(data_label, t, on=j, how=&apos;left&apos;) 
+        t = group_feature(data_label,j, &apos;speed&apos;,[&apos;min&apos;,&apos;max&apos;,&apos;median&apos;,&apos;std&apos;,&apos;skew&apos;],j+&quot;_tongji&quot;)
+        data_label = pd.merge(data_label, t, on=j, how=&apos;left&apos;)
+        # t = group_feature(data_label,j, &apos;direction&apos;,[&apos;min&apos;,&apos;max&apos;,&apos;median&apos;,&apos;std&apos;,&apos;skew&apos;],j+&quot;_tongji&quot;)
+        # data_label = pd.merge(data_label, t, on=j, how=&apos;left&apos;)
+
+def cut_bins(raw_data, col_name=None, q=49):
+    features, bins = pd.qcut(raw_data[col_name], q=q, retbins=True, duplicates=&quot;drop&quot;)
+    labels = list(range(len(bins) - 1))
+    features, bins = pd.qcut(raw_data[col_name], labels=labels, q=q, retbins=True, duplicates=&quot;drop&quot;)
+    return features, bins, labels
+
+
+MAX_CATE = 199
+data[&quot;x_cate&quot;], x_bins, x_labels = cut_bins(data, col_name=&quot;x&quot;, q=MAX_CATE)
+data[&quot;y_cate&quot;], y_bins, y_labels = cut_bins(data, col_name=&quot;y&quot;, q=MAX_CATE)
+# data[&quot;x_sub_y_cate&quot;], x_sub_y_bins, x_sub_y_labels = cut_bins(data, col_name=&quot;x_sub_y&quot;, q=MAX_CATE)
+data[&quot;distance_cate&quot;], dist_bins, dist_labels = cut_bins(data, col_name=&quot;base_dis_diff&quot;, q=MAX_CATE)
+
+data[&quot;speed_cate&quot;], speed_bins, speed_labels = cut_bins(data, col_name=&quot;speed&quot;, q=MAX_CATE)
+
+MAX_CATE = 120
+data[&quot;direct_cate&quot;], speed_bins, speed_labels = cut_bins(data, col_name=&quot;direction&quot;, q=MAX_CATE)
+
+if os.path.isfile(&apos;emb_testb.csv&apos;):
+    w2v_fea = pd.read_csv(&apos;emb_testb.csv&apos;)
+    data_label = data_label.merge(w2v_fea, on=&apos;ship&apos;, how=&apos;left&apos;)
+    del w2v_fea
+else:
+    from gensim.models import Word2Vec
+    import gc
+    def emb(df, f1, f2):
+        emb_size = 23
+        print(&apos;====================================== {} {} ======================================&apos;.format(f1, f2))
+        tmp = df.groupby(f1, as_index=False)[f2].agg({&apos;{}_{}_list&apos;.format(f1, f2): list})
+        sentences = tmp[&apos;{}_{}_list&apos;.format(f1, f2)].values.tolist()
+        del tmp[&apos;{}_{}_list&apos;.format(f1, f2)]
+        for i in range(len(sentences)):
+            sentences[i] = [str(x) for x in sentences[i]]
+        model = Word2Vec(sentences, size=emb_size, window=5, min_count=3, sg=0, hs=1, seed=2222)
+        emb_matrix = []
+        for seq in sentences:
+            vec = []
+            for w in seq:
+                if w in model:
+                    vec.append(model[w])
+            if len(vec) &gt; 0:
+                emb_matrix.append(np.mean(vec, axis=0))
+            else:
+                emb_matrix.append([0] * emb_size)
+        emb_matrix = np.array(emb_matrix)
+        for i in range(emb_size):
+            tmp[&apos;{}_{}_emb_{}&apos;.format(f1, f2, i)] = emb_matrix[:, i]
+        del model, emb_matrix, sentences
+        return tmp
+
+
+    emb_cols = [
+        [&apos;ship&apos;, &apos;x_cate&apos;],
+        [&apos;ship&apos;, &apos;y_cate&apos;],
+        [&apos;ship&apos;, &apos;speed_cate&apos;],
+        [&apos;ship&apos;, &apos;distance_cate&apos;],
+        # [&apos;ship&apos;, &apos;direct_cate&apos;],
+    ]
+    for f1, f2 in emb_cols:
+        data_label = data_label.merge(emb(data, f1, f2), on=f1, how=&apos;left&apos;)
+
+    gc.collect()
+
+    # emb_list = [&apos;ship&apos;]
+    # for i in data_label.columns:
+    #     if &apos;_emb_&apos; in i:
+    #         emb_list.append(i)
+
+    # data_label[emb_list].to_csv(&apos;emb_testb.csv&apos;,index=False)
+
+
+print(&apos;feature done&apos;)
+
+train_label = data_label[:num]
+test_label = data_label[num:]
+features = [x for x in train_label.columns if x not in [&apos;ship&apos;,&apos;type&apos;,&apos;time&apos;,&apos;x&apos;,&apos;y&apos;,&apos;diff_time&apos;,&apos;date&apos;,&apos;day_nig&apos;,&apos;direction&apos;,&apos;speed&apos;,&apos;hour&apos;,
+                                                       &apos;speed_many&apos;,&apos;dire_diff&apos;,&apos;direction_str&apos;,&apos;speed_str&apos;,&apos;dis&apos;,&apos;x_speed&apos;,&apos;y_speed&apos;] ]
+target = &apos;type&apos;
+
+# 特征选择
+from feature_selector import FeatureSelector
+fs = FeatureSelector(data = train_label[features], labels = train_label[target])
+fs.identify_zero_importance(task = &apos;classification&apos;, eval_metric = &apos;multiclass&apos;,
+                            n_iterations = 10, early_stopping = True)
+fs.identify_low_importance(cumulative_importance = 0.97)
+low_importance_features = fs.ops[&apos;low_importance&apos;]
+print(&apos;====low_importance_features=====&apos;)
+print(low_importance_features)
+for i in low_importance_features:
+features.remove(i)
+
+print(&apos;feature number&apos;,len(features))
+gc.collect()
+
+# 评价指标
+def macro_f1(y_hat, data):
+    y_true = data.get_label()
+    y_hat = y_hat.reshape(-1, y_true.shape[0])
+    y_hat = np.argmax(y_hat, axis=0)
+    f1_multi = precision_recall_fscore_support(y_true, y_hat, labels=[0, 1, 2])[2]
+    f1_macro =  f1_score(y_true, y_hat, average =&quot;macro&quot;)
+    assert np.mean(f1_multi) ==  f1_macro
+    return &apos;f1&apos;, f1_macro, True
+
+
+def f1_single(y_hat, data, index=0):
+    y_true = data.get_label()
+    y_hat = y_hat.reshape(-1, y_true.shape[0])
+    y_hat = np.argmax(y_hat, axis=0)
+    f1_multi = precision_recall_fscore_support(y_true, y_hat, labels=[0, 1, 2])[2]
+    f1_s = round(f1_multi[index], 4)
+    return &apos;f1_{}&apos;.format(index), f1_s, True
+
+# 构造模型
+train_X = train_label[features]
+test_X = test_label[features]
+print(train_X.shape, test_X.shape)
+train_y = train_label[target]
+
+
+params = {
+        &apos;task&apos;:&apos;train&apos;, 
+        &apos;num_leaves&apos;: 63,
+        &apos;objective&apos;: &apos;multiclass&apos;,
+        &apos;num_class&apos;: 3,
+        &apos;metric&apos;: &apos;None&apos;, # [f1_0, f1_1, f1_2],
+        &apos;min_data_in_leaf&apos;: 10,
+        &apos;learning_rate&apos;: 0.01,
+        &apos;feature_fraction&apos;: 0.7,
+        &apos;bagging_fraction&apos;: 0.95,
+        &apos;early_stopping_rounds&apos;: 2000,
+#         &apos;lambda_l1&apos;: 0.1,
+#         &apos;lambda_l2&apos;: 0.1,
+        &quot;first_metric_only&quot;: True,
+        &apos;bagging_freq&apos;: 3, 
+        &apos;max_bin&apos;: 255,
+        &apos;random_state&apos;: 42,
+        &apos;verbose&apos; : -1
+    }
+
+
+models = []
+test_preds = []
+val_preds = []
+oof_seed = np.zeros((len(train_label), 3))
+seed = [2222,2018778]
+for j in seed:
+    print(&quot;+++++++++++++++++ seed {} ++++++++++++&quot;.format(str(j)))
+    skf = StratifiedKFold(n_splits=5, shuffle=True, random_state=j)
+    oof = np.zeros((len(train_label), 3))
+    for i, (trn_idx, val_idx) in enumerate(skf.split(train_X, train_y)):
+        print(&quot;-&quot; * 81)
+        print(&quot;[!] fold {}&quot;.format(i))
+        lgb_params = deepcopy(params)
+        # print(lgb_params)
+        trn_X = csr_matrix(train_X)[trn_idx]
+        trn_y = train_y.iloc[trn_idx]
+        val_X = csr_matrix(train_X)[val_idx]
+        val_y = train_y.iloc[val_idx]
+        dtrain = lgb.Dataset(trn_X, trn_y) 
+        dval = lgb.Dataset(val_X, val_y) 
+        model = lgb.train(lgb_params, 
+               dtrain, 
+               num_boost_round=400000,
+               valid_sets=[dval], 
+               feval=lambda preds, train_data: [
+                   macro_f1(preds, train_data),
+                   f1_single(preds, train_data, index=0),
+                   f1_single(preds, train_data, index=1),
+                   f1_single(preds, train_data, index=2)],
+               verbose_eval=-1)
+        models.append(model)
+        # print(model.best_iteration)
+        val_pred = model.predict(val_X, iteration=model.best_iteration)
+        oof[val_idx] = val_pred
+        val_y = train_y.iloc[val_idx]
+        val_pred = np.argmax(val_pred, axis=1)
+        print(str(i), &apos;val f1&apos;, metrics.f1_score(val_y, val_pred, average=&apos;macro&apos;))
+        test_preds.append(model.predict(test_X, iteration=model.best_iteration))
+        print(&quot;[!] fold {} finish\n&quot;.format(i))
+        del dtrain, dval
+        gc.collect()
+    val_pred = np.argmax(oof, axis=1)
+    print(str(j), &apos;every_flod val f1&apos;, metrics.f1_score(train_y, val_pred, average=&apos;macro&apos;))
+    oof_seed += oof/len(seed)
+
+oof1 = np.argmax(oof_seed, axis=1)
+print(&apos;oof f1&apos;, metrics.f1_score(oof1,train_y, average=&apos;macro&apos;))
+val_score = np.round(metrics.f1_score(oof1, train_y, average=&apos;macro&apos;),6)
+
+def ensemble_predictions(predictions, weights=None, type_=&quot;linear&quot;):
+    if not weights:
+        print(&quot;[!] AVE_WGT&quot;)
+        weights = [1./ len(predictions) for _ in range(len(predictions))]
+    assert len(predictions) == len(weights)
+    if np.sum(weights) != 1.0:
+        weights = [w / np.sum(weights) for w in weights]
+    print(&quot;[!] weights = {}&quot;.format(weights))
+    assert np.isclose(np.sum(weights), 1.0)
+    if type_ == &quot;linear&quot;:
+        res = np.average(predictions, weights=weights, axis=0)
+    elif type_ == &quot;harmonic&quot;:
+        res = np.average([1 / p for p in predictions], weights=weights, axis=0)
+        return 1 / res
+    elif type_ == &quot;geometric&quot;:
+        numerator = np.average(
+            [np.log(p) for p in predictions], weights=weights, axis=0
+        )
+        res = np.exp(numerator / sum(weights))
+        return res
+    elif type_ == &quot;rank&quot;:
+        from scipy.stats import rankdata
+        res = np.average([rankdata(p) for p in predictions], weights=weights, axis=0)
+        return res / (len(res) + 1)
+    return res
+
+    def merge(prob, number=-1, index=0):
+        from copy import deepcopy
+        new_prob = deepcopy(prob)
+        top = np.argsort(prob[:, index])[::-1][: number]
+        print(top[: 4])
+        for i in range(len(new_prob)):
+            pad_value = np.array([0, 0, 0])
+            pad_value[index] = 1
+            if i in top:
+                new_prob[i, ] = pad_value
+            else:
+                new_prob[i, index] = 0.
+        return new_prob
+
+
+test_pred_prob = ensemble_predictions(test_preds)
+test_pred = test_pred_prob.argmax(axis=1)
+
+test_pro = test_label[[&apos;ship&apos;]]
+test_pro[&apos;pro_1&apos;] = test_pred_prob[:,0]
+test_pro[&apos;pro_2&apos;] = test_pred_prob[:,1]
+test_pro[&apos;pro_3&apos;] = test_pred_prob[:,2]
+pred_pro = merge(test_pro[[&apos;pro_1&apos;, &apos;pro_2&apos;, &apos;pro_3&apos;]].values, 900,0)
+test_pred = pred_pro.argmax(axis=1)
+
+
+test_data = test_label[[&apos;ship&apos;]]
+test_data[&quot;label&quot;] = test_pred
+test_data[&quot;label&quot;] = test_data[&quot;label&quot;].map({0:&apos;围网&apos;,1:&apos;刺网&apos;,2:&apos;拖网&apos;})
+# test_data[&apos;label&apos;][:100] = &apos;刺网&apos;
+test_data[[&quot;ship&quot;, &quot;label&quot;]].to_csv(&quot;result.csv&quot;, index=False, header=None)
+print(test_data[&quot;label&quot;].value_counts())
+print(&apos;runtime:&apos;, time.time() - start_t)</code></pre>
     </div>
 
     
@@ -1135,7 +1572,7 @@ class nmf_list(object):
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#2020-5-30-赛题解读"><span class="nav-text">2020.5.30 赛题解读</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#赛题背景：渔船作业分类"><span class="nav-text">赛题背景：渔船作业分类</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#竞赛数据"><span class="nav-text">竞赛数据:</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#评估指标"><span class="nav-text">评估指标</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#模型大致思路"><span class="nav-text">模型大致思路</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#具体分析"><span class="nav-text">具体分析</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#代码分析"><span class="nav-text">代码分析</span></a></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#2020-5-30-赛题解读"><span class="nav-text">2020.5.30 赛题解读</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#赛题背景：渔船作业分类"><span class="nav-text">赛题背景：渔船作业分类</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#竞赛数据"><span class="nav-text">竞赛数据:</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#评估指标"><span class="nav-text">评估指标</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#模型大致思路"><span class="nav-text">模型大致思路</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#具体分析"><span class="nav-text">具体分析</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#代码分析"><span class="nav-text">代码分析</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-feature-selector-py代码分析："><span class="nav-text">1. feature_selector.py代码分析：</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-nmf-list-py-代码分析："><span class="nav-text">2. nmf_list.py 代码分析：</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-model-py-代码分析："><span class="nav-text">3. model.py  代码分析：</span></a></li></ol></li></ol></div>
       </div>
       <!--/noindex-->
 
@@ -1218,13 +1655,13 @@ class nmf_list(object):
       <i class="fa fa-chart-area"></i>
     </span>
       <span class="post-meta-item-text">站点总字数：</span>
-    <span title="站点总字数">34k</span>
+    <span title="站点总字数">52k</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
       <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
-    <span title="站点阅读时长">31 分钟</span>
+    <span title="站点阅读时长">47 分钟</span>
 </div>
 <!-- 网站运行时间的设置 -->
 <span id="timeDate">载入天数...</span>

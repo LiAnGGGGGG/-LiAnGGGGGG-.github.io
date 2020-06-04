@@ -295,21 +295,12 @@
 <p>（2） creatDate为文件生成时间，判分不关注。</p>
 <h2 id="2020-6-2-baseline分析"><a href="#2020-6-2-baseline分析" class="headerlink" title="2020.6.2 baseline分析"></a>2020.6.2 baseline分析</h2><p>分析正式赛提供的baseline </p>
 <p><strong>MSE : 176495.2554</strong></p>
-<ul>
-<li>导入所需要的包</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">import pandas as pd</span><br><span class="line"># from tqdm import tqdm</span><br><span class="line">import numpy as np</span><br><span class="line"></span><br><span class="line">from sklearn.metrics import mean_squared_error,explained_variance_score</span><br><span class="line">from sklearn.model_selection import KFold</span><br><span class="line">import lightgbm as lgb</span><br><span class="line"></span><br><span class="line">import warnings</span><br><span class="line">warnings.filterwarnings(&#39;ignore&#39;)</span><br></pre></td></tr></table></figure>
+<h3 id="1-导入所需要的包"><a href="#1-导入所需要的包" class="headerlink" title="1. 导入所需要的包"></a>1. 导入所需要的包</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">import pandas as pd</span><br><span class="line"># from tqdm import tqdm</span><br><span class="line">import numpy as np</span><br><span class="line"></span><br><span class="line">from sklearn.metrics import mean_squared_error,explained_variance_score</span><br><span class="line">from sklearn.model_selection import KFold</span><br><span class="line">import lightgbm as lgb</span><br><span class="line"></span><br><span class="line">import warnings</span><br><span class="line">warnings.filterwarnings(&#39;ignore&#39;)</span><br></pre></td></tr></table></figure>
 
-<ul>
-<li>加载数据</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"># baseline只用到gps定位数据，即train_gps_path</span><br><span class="line">train_gps_path &#x3D; &#39;dataset&#x2F;train0523.csv&#39;</span><br><span class="line">test_data_path &#x3D; &#39;test&#x2F;A_testData0531.csv&#39;</span><br><span class="line">order_data_path &#x3D; &#39;dataset&#x2F;loadingOrderEvent.csv&#39;</span><br><span class="line">port_data_path &#x3D; &#39;dataset&#x2F;port.csv&#39;</span><br><span class="line"></span><br><span class="line"># 取前1000000行</span><br><span class="line">debug &#x3D; True</span><br><span class="line">NDATA &#x3D; 1000000</span><br><span class="line"></span><br><span class="line">if debug:</span><br><span class="line">    train_data &#x3D; pd.read_csv(train_gps_path,nrows&#x3D;NDATA,header&#x3D;None)</span><br><span class="line">else:</span><br><span class="line">    train_data &#x3D; pd.read_csv(train_gps_path,header&#x3D;None)</span><br><span class="line"></span><br><span class="line">train_data.columns &#x3D; [&#39;loadingOrder&#39;,&#39;carrierName&#39;,&#39;timestamp&#39;,&#39;longitude&#39;,</span><br><span class="line">                  &#39;latitude&#39;,&#39;vesselMMSI&#39;,&#39;speed&#39;,&#39;direction&#39;,&#39;vesselNextport&#39;,</span><br><span class="line">                  &#39;vesselNextportETA&#39;,&#39;vesselStatus&#39;,&#39;vesselDatasource&#39;,&#39;TRANSPORT_TRACE&#39;]</span><br><span class="line">test_data &#x3D; pd.read_csv(test_data_path)</span><br><span class="line"></span><br><span class="line">def get_data(data, mode&#x3D;&#39;train&#39;):</span><br><span class="line"></span><br><span class="line">	assert mode&#x3D;&#x3D;&#39;train&#39; or mode&#x3D;&#x3D;&#39;test&#39;</span><br><span class="line">	</span><br><span class="line">	if mode&#x3D;&#x3D;&#39;train&#39;:</span><br><span class="line">	    data[&#39;vesselNextportETA&#39;] &#x3D; pd.to_datetime(data[&#39;vesselNextportETA&#39;], infer_datetime_format&#x3D;True)</span><br><span class="line">	elif mode&#x3D;&#x3D;&#39;test&#39;:</span><br><span class="line">	    data[&#39;temp_timestamp&#39;] &#x3D; data[&#39;timestamp&#39;]</span><br><span class="line">	    data[&#39;onboardDate&#39;] &#x3D; pd.to_datetime(data[&#39;onboardDate&#39;], infer_datetime_format&#x3D;True)</span><br><span class="line">	data[&#39;timestamp&#39;] &#x3D; pd.to_datetime(data[&#39;timestamp&#39;], infer_datetime_format&#x3D;True)</span><br><span class="line">	data[&#39;longitude&#39;] &#x3D; data[&#39;longitude&#39;].astype(float)</span><br><span class="line">	data[&#39;loadingOrder&#39;] &#x3D; data[&#39;loadingOrder&#39;].astype(str)</span><br><span class="line">	data[&#39;latitude&#39;] &#x3D; data[&#39;latitude&#39;].astype(float)</span><br><span class="line">	data[&#39;speed&#39;] &#x3D; data[&#39;speed&#39;].astype(float)</span><br><span class="line">	data[&#39;direction&#39;] &#x3D; data[&#39;direction&#39;].astype(float)</span><br><span class="line">	</span><br><span class="line">	return data</span><br><span class="line"></span><br><span class="line">train_data &#x3D; get_data(train_data, mode&#x3D;&#39;train&#39;)</span><br><span class="line">test_data &#x3D; get_data(test_data, mode&#x3D;&#39;test&#39;)</span><br></pre></td></tr></table></figure>
+<h3 id="2-加载数据"><a href="#2-加载数据" class="headerlink" title="2. 加载数据"></a>2. 加载数据</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"># baseline只用到gps定位数据，即train_gps_path</span><br><span class="line">train_gps_path &#x3D; &#39;dataset&#x2F;train0523.csv&#39;</span><br><span class="line">test_data_path &#x3D; &#39;test&#x2F;A_testData0531.csv&#39;</span><br><span class="line">order_data_path &#x3D; &#39;dataset&#x2F;loadingOrderEvent.csv&#39;</span><br><span class="line">port_data_path &#x3D; &#39;dataset&#x2F;port.csv&#39;</span><br><span class="line"></span><br><span class="line"># 取前1000000行</span><br><span class="line">debug &#x3D; True</span><br><span class="line">NDATA &#x3D; 1000000</span><br><span class="line"></span><br><span class="line">if debug:</span><br><span class="line">    train_data &#x3D; pd.read_csv(train_gps_path,nrows&#x3D;NDATA,header&#x3D;None)</span><br><span class="line">else:</span><br><span class="line">    train_data &#x3D; pd.read_csv(train_gps_path,header&#x3D;None)</span><br><span class="line"></span><br><span class="line">train_data.columns &#x3D; [&#39;loadingOrder&#39;,&#39;carrierName&#39;,&#39;timestamp&#39;,&#39;longitude&#39;,</span><br><span class="line">                  &#39;latitude&#39;,&#39;vesselMMSI&#39;,&#39;speed&#39;,&#39;direction&#39;,&#39;vesselNextport&#39;,</span><br><span class="line">                  &#39;vesselNextportETA&#39;,&#39;vesselStatus&#39;,&#39;vesselDatasource&#39;,&#39;TRANSPORT_TRACE&#39;]</span><br><span class="line">test_data &#x3D; pd.read_csv(test_data_path)</span><br><span class="line"></span><br><span class="line">def get_data(data, mode&#x3D;&#39;train&#39;):</span><br><span class="line"></span><br><span class="line">	assert mode&#x3D;&#x3D;&#39;train&#39; or mode&#x3D;&#x3D;&#39;test&#39;</span><br><span class="line">	</span><br><span class="line">	if mode&#x3D;&#x3D;&#39;train&#39;:</span><br><span class="line">	    data[&#39;vesselNextportETA&#39;] &#x3D; pd.to_datetime(data[&#39;vesselNextportETA&#39;], infer_datetime_format&#x3D;True)</span><br><span class="line">	elif mode&#x3D;&#x3D;&#39;test&#39;:</span><br><span class="line">	    data[&#39;temp_timestamp&#39;] &#x3D; data[&#39;timestamp&#39;]</span><br><span class="line">	    data[&#39;onboardDate&#39;] &#x3D; pd.to_datetime(data[&#39;onboardDate&#39;], infer_datetime_format&#x3D;True)</span><br><span class="line">	data[&#39;timestamp&#39;] &#x3D; pd.to_datetime(data[&#39;timestamp&#39;], infer_datetime_format&#x3D;True)</span><br><span class="line">	data[&#39;longitude&#39;] &#x3D; data[&#39;longitude&#39;].astype(float)</span><br><span class="line">	data[&#39;loadingOrder&#39;] &#x3D; data[&#39;loadingOrder&#39;].astype(str)</span><br><span class="line">	data[&#39;latitude&#39;] &#x3D; data[&#39;latitude&#39;].astype(float)</span><br><span class="line">	data[&#39;speed&#39;] &#x3D; data[&#39;speed&#39;].astype(float)</span><br><span class="line">	data[&#39;direction&#39;] &#x3D; data[&#39;direction&#39;].astype(float)</span><br><span class="line">	</span><br><span class="line">	return data</span><br><span class="line"></span><br><span class="line">train_data &#x3D; get_data(train_data, mode&#x3D;&#39;train&#39;)</span><br><span class="line">test_data &#x3D; get_data(test_data, mode&#x3D;&#39;test&#39;)</span><br></pre></td></tr></table></figure>
 
 <p>由于训练集过于庞大，因此baseline只选取了前100万条数据，因此，我们应该可以通过清洗数据来选取合适的训练数据来降低MSE。</p>
-<ul>
-<li>获取特征，目前baseline的特征只选择经纬度、速度\方向。我们需要进一步可视化数据集，构造更加合理的特征。</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"># 代码参考：https:&#x2F;&#x2F;github.com&#x2F;juzstu&#x2F;TianChi_HaiYang</span><br><span class="line">def get_feature(df, mode&#x3D;&#39;train&#39;):</span><br><span class="line">    </span><br><span class="line">    assert mode&#x3D;&#x3D;&#39;train&#39; or mode&#x3D;&#x3D;&#39;test&#39;</span><br><span class="line">    </span><br><span class="line">    df.sort_values([&#39;loadingOrder&#39;, &#39;timestamp&#39;], inplace&#x3D;True)</span><br><span class="line">    # 特征只选择经纬度、速度\方向</span><br><span class="line">    df[&#39;lat_diff&#39;] &#x3D; df.groupby(&#39;loadingOrder&#39;)[&#39;latitude&#39;].diff(1)</span><br><span class="line">    df[&#39;lon_diff&#39;] &#x3D; df.groupby(&#39;loadingOrder&#39;)[&#39;longitude&#39;].diff(1)</span><br><span class="line">    df[&#39;speed_diff&#39;] &#x3D; df.groupby(&#39;loadingOrder&#39;)[&#39;speed&#39;].diff(1)</span><br><span class="line">    df[&#39;diff_minutes&#39;] &#x3D; df.groupby(&#39;loadingOrder&#39;)[&#39;timestamp&#39;].diff(1).dt.total_seconds() &#x2F;&#x2F; 60</span><br><span class="line">    df[&#39;anchor&#39;] &#x3D; df.apply(lambda x: 1 if x[&#39;lat_diff&#39;] &lt;&#x3D; 0.03 and x[&#39;lon_diff&#39;] &lt;&#x3D; 0.03</span><br><span class="line">                            and x[&#39;speed_diff&#39;] &lt;&#x3D; 0.3 and x[&#39;diff_minutes&#39;] &lt;&#x3D; 10 else 0, axis&#x3D;1)</span><br><span class="line">    </span><br><span class="line">    if mode&#x3D;&#x3D;&#39;train&#39;:</span><br><span class="line">        group_df &#x3D; df.groupby(&#39;loadingOrder&#39;)[&#39;timestamp&#39;].agg(mmax&#x3D;&#39;max&#39;, count&#x3D;&#39;count&#39;, mmin&#x3D;&#39;min&#39;).reset_index()</span><br><span class="line">        # 读取数据的最大值-最小值，即确认时间间隔为label</span><br><span class="line">        group_df[&#39;label&#39;] &#x3D; (group_df[&#39;mmax&#39;] - group_df[&#39;mmin&#39;]).dt.total_seconds()</span><br><span class="line">    elif mode&#x3D;&#x3D;&#39;test&#39;:</span><br><span class="line">        group_df &#x3D; df.groupby(&#39;loadingOrder&#39;)[&#39;timestamp&#39;].agg(count&#x3D;&#39;count&#39;).reset_index()</span><br><span class="line">        </span><br><span class="line">    anchor_df &#x3D; df.groupby(&#39;loadingOrder&#39;)[&#39;anchor&#39;].agg(&#39;sum&#39;).reset_index()</span><br><span class="line">    anchor_df.columns &#x3D; [&#39;loadingOrder&#39;, &#39;anchor_cnt&#39;]</span><br><span class="line">    group_df &#x3D; group_df.merge(anchor_df, on&#x3D;&#39;loadingOrder&#39;, how&#x3D;&#39;left&#39;)</span><br><span class="line">    group_df[&#39;anchor_ratio&#39;] &#x3D; group_df[&#39;anchor_cnt&#39;] &#x2F; group_df[&#39;count&#39;]</span><br><span class="line"></span><br><span class="line">    agg_function &#x3D; [&#39;min&#39;, &#39;max&#39;, &#39;mean&#39;, &#39;median&#39;]</span><br><span class="line">    agg_col &#x3D; [&#39;latitude&#39;, &#39;longitude&#39;, &#39;speed&#39;, &#39;direction&#39;]</span><br><span class="line"></span><br><span class="line">    group &#x3D; df.groupby(&#39;loadingOrder&#39;)[agg_col].agg(agg_function).reset_index()</span><br><span class="line">    group.columns &#x3D; [&#39;loadingOrder&#39;] + [&#39;&#123;&#125;_&#123;&#125;&#39;.format(i, j) for i in agg_col for j in agg_function]</span><br><span class="line">    group_df &#x3D; group_df.merge(group, on&#x3D;&#39;loadingOrder&#39;, how&#x3D;&#39;left&#39;)</span><br><span class="line"></span><br><span class="line">    return group_df</span><br><span class="line">    </span><br><span class="line">train &#x3D; get_feature(train_data, mode&#x3D;&#39;train&#39;)</span><br><span class="line">test &#x3D; get_feature(test_data, mode&#x3D;&#39;test&#39;)</span><br><span class="line">features &#x3D; [c for c in train.columns if c not in [&#39;loadingOrder&#39;, &#39;label&#39;, &#39;mmin&#39;, &#39;mmax&#39;, &#39;count&#39;]]</span><br></pre></td></tr></table></figure>
+<h3 id="3-获取特征，目前baseline的特征只选择经纬度、速度-方向。我们需要进一步可视化数据集，构造更加合理的特征。"><a href="#3-获取特征，目前baseline的特征只选择经纬度、速度-方向。我们需要进一步可视化数据集，构造更加合理的特征。" class="headerlink" title="3. 获取特征，目前baseline的特征只选择经纬度、速度\方向。我们需要进一步可视化数据集，构造更加合理的特征。"></a>3. 获取特征，目前baseline的特征只选择经纬度、速度\方向。我们需要进一步可视化数据集，构造更加合理的特征。</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line"># 代码参考：https:&#x2F;&#x2F;github.com&#x2F;juzstu&#x2F;TianChi_HaiYang</span><br><span class="line">def get_feature(df, mode&#x3D;&#39;train&#39;):</span><br><span class="line">    </span><br><span class="line">    assert mode&#x3D;&#x3D;&#39;train&#39; or mode&#x3D;&#x3D;&#39;test&#39;</span><br><span class="line">    </span><br><span class="line">    df.sort_values([&#39;loadingOrder&#39;, &#39;timestamp&#39;], inplace&#x3D;True)</span><br><span class="line">    # 特征只选择经纬度、速度\方向</span><br><span class="line">    df[&#39;lat_diff&#39;] &#x3D; df.groupby(&#39;loadingOrder&#39;)[&#39;latitude&#39;].diff(1)</span><br><span class="line">    df[&#39;lon_diff&#39;] &#x3D; df.groupby(&#39;loadingOrder&#39;)[&#39;longitude&#39;].diff(1)</span><br><span class="line">    df[&#39;speed_diff&#39;] &#x3D; df.groupby(&#39;loadingOrder&#39;)[&#39;speed&#39;].diff(1)</span><br><span class="line">    df[&#39;diff_minutes&#39;] &#x3D; df.groupby(&#39;loadingOrder&#39;)[&#39;timestamp&#39;].diff(1).dt.total_seconds() &#x2F;&#x2F; 60</span><br><span class="line">    df[&#39;anchor&#39;] &#x3D; df.apply(lambda x: 1 if x[&#39;lat_diff&#39;] &lt;&#x3D; 0.03 and x[&#39;lon_diff&#39;] &lt;&#x3D; 0.03</span><br><span class="line">                            and x[&#39;speed_diff&#39;] &lt;&#x3D; 0.3 and x[&#39;diff_minutes&#39;] &lt;&#x3D; 10 else 0, axis&#x3D;1)</span><br><span class="line">    </span><br><span class="line">    if mode&#x3D;&#x3D;&#39;train&#39;:</span><br><span class="line">        group_df &#x3D; df.groupby(&#39;loadingOrder&#39;)[&#39;timestamp&#39;].agg(mmax&#x3D;&#39;max&#39;, count&#x3D;&#39;count&#39;, mmin&#x3D;&#39;min&#39;).reset_index()</span><br><span class="line">        # 读取数据的最大值-最小值，即确认时间间隔为label</span><br><span class="line">        group_df[&#39;label&#39;] &#x3D; (group_df[&#39;mmax&#39;] - group_df[&#39;mmin&#39;]).dt.total_seconds()</span><br><span class="line">    elif mode&#x3D;&#x3D;&#39;test&#39;:</span><br><span class="line">        group_df &#x3D; df.groupby(&#39;loadingOrder&#39;)[&#39;timestamp&#39;].agg(count&#x3D;&#39;count&#39;).reset_index()</span><br><span class="line">        </span><br><span class="line">    anchor_df &#x3D; df.groupby(&#39;loadingOrder&#39;)[&#39;anchor&#39;].agg(&#39;sum&#39;).reset_index()</span><br><span class="line">    anchor_df.columns &#x3D; [&#39;loadingOrder&#39;, &#39;anchor_cnt&#39;]</span><br><span class="line">    group_df &#x3D; group_df.merge(anchor_df, on&#x3D;&#39;loadingOrder&#39;, how&#x3D;&#39;left&#39;)</span><br><span class="line">    group_df[&#39;anchor_ratio&#39;] &#x3D; group_df[&#39;anchor_cnt&#39;] &#x2F; group_df[&#39;count&#39;]</span><br><span class="line"></span><br><span class="line">    agg_function &#x3D; [&#39;min&#39;, &#39;max&#39;, &#39;mean&#39;, &#39;median&#39;]</span><br><span class="line">    agg_col &#x3D; [&#39;latitude&#39;, &#39;longitude&#39;, &#39;speed&#39;, &#39;direction&#39;]</span><br><span class="line"></span><br><span class="line">    group &#x3D; df.groupby(&#39;loadingOrder&#39;)[agg_col].agg(agg_function).reset_index()</span><br><span class="line">    group.columns &#x3D; [&#39;loadingOrder&#39;] + [&#39;&#123;&#125;_&#123;&#125;&#39;.format(i, j) for i in agg_col for j in agg_function]</span><br><span class="line">    group_df &#x3D; group_df.merge(group, on&#x3D;&#39;loadingOrder&#39;, how&#x3D;&#39;left&#39;)</span><br><span class="line"></span><br><span class="line">    return group_df</span><br><span class="line">    </span><br><span class="line">train &#x3D; get_feature(train_data, mode&#x3D;&#39;train&#39;)</span><br><span class="line">test &#x3D; get_feature(test_data, mode&#x3D;&#39;test&#39;)</span><br><span class="line">features &#x3D; [c for c in train.columns if c not in [&#39;loadingOrder&#39;, &#39;label&#39;, &#39;mmin&#39;, &#39;mmax&#39;, &#39;count&#39;]]</span><br></pre></td></tr></table></figure>
 
 <p>这部分代码可能由于pandas版本问题</p>
 <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">group_df &#x3D; df.groupby(&#39;loadingOrder&#39;)[&#39;timestamp&#39;].agg(mmax&#x3D;&#39;max&#39;, count&#x3D;&#39;count&#39;, mmin&#x3D;&#39;min&#39;).reset_index()</span><br></pre></td></tr></table></figure>
@@ -317,14 +308,12 @@
 <p>需要修改为</p>
 <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">group_df &#x3D; df.groupby(&#39;loadingOrder&#39;)[&#39;timestamp&#39;].agg(&#39;mmax&#39;:&#39;max&#39;, &#39;count&#39;:&#39;count&#39;, &#39;mmin&#39;:&#39;min&#39;).reset_index()</span><br></pre></td></tr></table></figure>
 
-<ul>
-<li>使用十折交叉验证构造模型</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">def mse_score_eval(preds, valid):</span><br><span class="line">    labels &#x3D; valid.get_label()</span><br><span class="line">    scores &#x3D; mean_squared_error(y_true&#x3D;labels, y_pred&#x3D;preds)</span><br><span class="line">    return &#39;mse_score&#39;, scores, True</span><br><span class="line"></span><br><span class="line">def build_model(train, test, pred, label, seed&#x3D;1080, is_shuffle&#x3D;True):</span><br><span class="line">    train_pred &#x3D; np.zeros((train.shape[0], ))</span><br><span class="line">    test_pred &#x3D; np.zeros((test.shape[0], ))</span><br><span class="line">    n_splits &#x3D; 10</span><br><span class="line">    # Kfold</span><br><span class="line">    fold &#x3D; KFold(n_splits&#x3D;n_splits, shuffle&#x3D;is_shuffle, random_state&#x3D;seed)</span><br><span class="line">    kf_way &#x3D; fold.split(train[pred])</span><br><span class="line">    # params</span><br><span class="line">    params &#x3D; &#123;</span><br><span class="line">        &#39;learning_rate&#39;: 0.01,</span><br><span class="line">        &#39;boosting_type&#39;: &#39;gbdt&#39;,</span><br><span class="line">        &#39;objective&#39;: &#39;regression&#39;,</span><br><span class="line">        &#39;num_leaves&#39;: 36,</span><br><span class="line">        &#39;feature_fraction&#39;: 0.6,</span><br><span class="line">        &#39;bagging_fraction&#39;: 0.7,</span><br><span class="line">        &#39;bagging_freq&#39;: 6,</span><br><span class="line">        &#39;seed&#39;: 8,</span><br><span class="line">        &#39;bagging_seed&#39;: 1,</span><br><span class="line">        &#39;feature_fraction_seed&#39;: 7,</span><br><span class="line">        &#39;min_data_in_leaf&#39;: 20,</span><br><span class="line">        &#39;nthread&#39;: 8,</span><br><span class="line">        &#39;verbose&#39;: 1,</span><br><span class="line">    &#125;</span><br><span class="line">    # train</span><br><span class="line">    for n_fold, (train_idx, valid_idx) in enumerate(kf_way, start&#x3D;1):</span><br><span class="line">        train_x, train_y &#x3D; train[pred].iloc[train_idx], train[label].iloc[train_idx]</span><br><span class="line">        valid_x, valid_y &#x3D; train[pred].iloc[valid_idx], train[label].iloc[valid_idx]</span><br><span class="line">        # 数据加载</span><br><span class="line">        n_train &#x3D; lgb.Dataset(train_x, label&#x3D;train_y)</span><br><span class="line">        n_valid &#x3D; lgb.Dataset(valid_x, label&#x3D;valid_y)</span><br><span class="line"></span><br><span class="line">        clf &#x3D; lgb.train(</span><br><span class="line">            params&#x3D;params,</span><br><span class="line">            train_set&#x3D;n_train,</span><br><span class="line">            num_boost_round&#x3D;3000,</span><br><span class="line">            valid_sets&#x3D;[n_valid],</span><br><span class="line">            early_stopping_rounds&#x3D;100,</span><br><span class="line">            verbose_eval&#x3D;100,</span><br><span class="line">            feval&#x3D;mse_score_eval</span><br><span class="line">        )</span><br><span class="line">        train_pred[valid_idx] &#x3D; clf.predict(valid_x, num_iteration&#x3D;clf.best_iteration)</span><br><span class="line">        test_pred +&#x3D; clf.predict(test[pred], num_iteration&#x3D;clf.best_iteration)&#x2F;fold.n_splits</span><br><span class="line">    </span><br><span class="line">    test[&#39;label&#39;] &#x3D; test_pred</span><br><span class="line">    </span><br><span class="line">    return test[[&#39;loadingOrder&#39;, &#39;label&#39;]]</span><br><span class="line"></span><br><span class="line">result &#x3D; build_model(train, test, features, &#39;label&#39;, is_shuffle&#x3D;True)</span><br></pre></td></tr></table></figure>
-<ul>
-<li>生成最终的测试文件</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">test_data &#x3D; test_data.merge(result, on&#x3D;&#39;loadingOrder&#39;, how&#x3D;&#39;left&#39;)</span><br><span class="line">test_data[&#39;ETA&#39;] &#x3D; (test_data[&#39;onboardDate&#39;] + test_data[&#39;label&#39;].apply(lambda x:pd.Timedelta(seconds&#x3D;x))).apply(lambda x:x.strftime(&#39;%Y&#x2F;%m&#x2F;%d  %H:%M:%S&#39;))</span><br><span class="line">test_data.drop([&#39;direction&#39;,&#39;TRANSPORT_TRACE&#39;],axis&#x3D;1,inplace&#x3D;True)</span><br><span class="line">test_data[&#39;onboardDate&#39;] &#x3D; test_data[&#39;onboardDate&#39;].apply(lambda x:x.strftime(&#39;%Y&#x2F;%m&#x2F;%d  %H:%M:%S&#39;))</span><br><span class="line">test_data[&#39;creatDate&#39;] &#x3D; pd.datetime.now().strftime(&#39;%Y&#x2F;%m&#x2F;%d  %H:%M:%S&#39;)</span><br><span class="line">test_data[&#39;timestamp&#39;] &#x3D; test_data[&#39;temp_timestamp&#39;]</span><br><span class="line"># 整理columns顺序</span><br><span class="line">result &#x3D; test_data[[&#39;loadingOrder&#39;, &#39;timestamp&#39;, &#39;longitude&#39;, &#39;latitude&#39;, &#39;carrierName&#39;, &#39;vesselMMSI&#39;, &#39;onboardDate&#39;, &#39;ETA&#39;, &#39;creatDate&#39;]]</span><br><span class="line"></span><br><span class="line">result.to_csv(&#39;result.csv&#39;, index&#x3D;False)</span><br></pre></td></tr></table></figure>]]></content>
+<h3 id="4-使用十折交叉验证构造模型"><a href="#4-使用十折交叉验证构造模型" class="headerlink" title="4. 使用十折交叉验证构造模型"></a>4. 使用十折交叉验证构造模型</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">def mse_score_eval(preds, valid):</span><br><span class="line">    labels &#x3D; valid.get_label()</span><br><span class="line">    scores &#x3D; mean_squared_error(y_true&#x3D;labels, y_pred&#x3D;preds)</span><br><span class="line">    return &#39;mse_score&#39;, scores, True</span><br><span class="line"></span><br><span class="line">def build_model(train, test, pred, label, seed&#x3D;1080, is_shuffle&#x3D;True):</span><br><span class="line">    train_pred &#x3D; np.zeros((train.shape[0], ))</span><br><span class="line">    test_pred &#x3D; np.zeros((test.shape[0], ))</span><br><span class="line">    n_splits &#x3D; 10</span><br><span class="line">    # Kfold</span><br><span class="line">    fold &#x3D; KFold(n_splits&#x3D;n_splits, shuffle&#x3D;is_shuffle, random_state&#x3D;seed)</span><br><span class="line">    kf_way &#x3D; fold.split(train[pred])</span><br><span class="line">    # params</span><br><span class="line">    params &#x3D; &#123;</span><br><span class="line">        &#39;learning_rate&#39;: 0.01,</span><br><span class="line">        &#39;boosting_type&#39;: &#39;gbdt&#39;,</span><br><span class="line">        &#39;objective&#39;: &#39;regression&#39;,</span><br><span class="line">        &#39;num_leaves&#39;: 36,</span><br><span class="line">        &#39;feature_fraction&#39;: 0.6,</span><br><span class="line">        &#39;bagging_fraction&#39;: 0.7,</span><br><span class="line">        &#39;bagging_freq&#39;: 6,</span><br><span class="line">        &#39;seed&#39;: 8,</span><br><span class="line">        &#39;bagging_seed&#39;: 1,</span><br><span class="line">        &#39;feature_fraction_seed&#39;: 7,</span><br><span class="line">        &#39;min_data_in_leaf&#39;: 20,</span><br><span class="line">        &#39;nthread&#39;: 8,</span><br><span class="line">        &#39;verbose&#39;: 1,</span><br><span class="line">    &#125;</span><br><span class="line">    # train</span><br><span class="line">    for n_fold, (train_idx, valid_idx) in enumerate(kf_way, start&#x3D;1):</span><br><span class="line">        train_x, train_y &#x3D; train[pred].iloc[train_idx], train[label].iloc[train_idx]</span><br><span class="line">        valid_x, valid_y &#x3D; train[pred].iloc[valid_idx], train[label].iloc[valid_idx]</span><br><span class="line">        # 数据加载</span><br><span class="line">        n_train &#x3D; lgb.Dataset(train_x, label&#x3D;train_y)</span><br><span class="line">        n_valid &#x3D; lgb.Dataset(valid_x, label&#x3D;valid_y)</span><br><span class="line"></span><br><span class="line">        clf &#x3D; lgb.train(</span><br><span class="line">            params&#x3D;params,</span><br><span class="line">            train_set&#x3D;n_train,</span><br><span class="line">            num_boost_round&#x3D;3000,</span><br><span class="line">            valid_sets&#x3D;[n_valid],</span><br><span class="line">            early_stopping_rounds&#x3D;100,</span><br><span class="line">            verbose_eval&#x3D;100,</span><br><span class="line">            feval&#x3D;mse_score_eval</span><br><span class="line">        )</span><br><span class="line">        train_pred[valid_idx] &#x3D; clf.predict(valid_x, num_iteration&#x3D;clf.best_iteration)</span><br><span class="line">        test_pred +&#x3D; clf.predict(test[pred], num_iteration&#x3D;clf.best_iteration)&#x2F;fold.n_splits</span><br><span class="line">    </span><br><span class="line">    test[&#39;label&#39;] &#x3D; test_pred</span><br><span class="line">    </span><br><span class="line">    return test[[&#39;loadingOrder&#39;, &#39;label&#39;]]</span><br><span class="line"></span><br><span class="line">result &#x3D; build_model(train, test, features, &#39;label&#39;, is_shuffle&#x3D;True)</span><br></pre></td></tr></table></figure>
+<h3 id="5-生成最终的测试文件"><a href="#5-生成最终的测试文件" class="headerlink" title="5. 生成最终的测试文件"></a>5. 生成最终的测试文件</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">test_data &#x3D; test_data.merge(result, on&#x3D;&#39;loadingOrder&#39;, how&#x3D;&#39;left&#39;)</span><br><span class="line">test_data[&#39;ETA&#39;] &#x3D; (test_data[&#39;onboardDate&#39;] + test_data[&#39;label&#39;].apply(lambda x:pd.Timedelta(seconds&#x3D;x))).apply(lambda x:x.strftime(&#39;%Y&#x2F;%m&#x2F;%d  %H:%M:%S&#39;))</span><br><span class="line">test_data.drop([&#39;direction&#39;,&#39;TRANSPORT_TRACE&#39;],axis&#x3D;1,inplace&#x3D;True)</span><br><span class="line">test_data[&#39;onboardDate&#39;] &#x3D; test_data[&#39;onboardDate&#39;].apply(lambda x:x.strftime(&#39;%Y&#x2F;%m&#x2F;%d  %H:%M:%S&#39;))</span><br><span class="line">test_data[&#39;creatDate&#39;] &#x3D; pd.datetime.now().strftime(&#39;%Y&#x2F;%m&#x2F;%d  %H:%M:%S&#39;)</span><br><span class="line">test_data[&#39;timestamp&#39;] &#x3D; test_data[&#39;temp_timestamp&#39;]</span><br><span class="line"># 整理columns顺序</span><br><span class="line">result &#x3D; test_data[[&#39;loadingOrder&#39;, &#39;timestamp&#39;, &#39;longitude&#39;, &#39;latitude&#39;, &#39;carrierName&#39;, &#39;vesselMMSI&#39;, &#39;onboardDate&#39;, &#39;ETA&#39;, &#39;creatDate&#39;]]</span><br><span class="line"></span><br><span class="line">result.to_csv(&#39;result.csv&#39;, index&#x3D;False)</span><br></pre></td></tr></table></figure>
+
+
+<h2 id="2020-6-4-构建自己的方案"><a href="#2020-6-4-构建自己的方案" class="headerlink" title="2020.6.4 构建自己的方案"></a>2020.6.4 构建自己的方案</h2><h3 id="数据清洗："><a href="#数据清洗：" class="headerlink" title="数据清洗："></a>数据清洗：</h3><p>由于数据量十分庞大，首先我们需要对数据进行清洗，删除错误或空缺信息，通过设置chunksize=1000000，分批次读入数据</p>
+]]></content>
       <categories>
         <category>竞赛</category>
       </categories>
@@ -432,8 +421,7 @@
 <li>nmf_list.py 处理轨迹文件</li>
 <li>model.py 模型文件</li>
 </ul>
-<p><strong>1. feature_selector.py代码分析：</strong></p>
-<pre><code># numpy and pandas for data manipulation
+<h3 id="1-feature-selector-py代码分析："><a href="#1-feature-selector-py代码分析：" class="headerlink" title="1. feature_selector.py代码分析："></a><strong>1. feature_selector.py代码分析：</strong></h3><pre><code># numpy and pandas for data manipulation
 import pandas as pd
 import numpy as np
 
@@ -1002,8 +990,7 @@ Notes
             print(&apos;%d features required for %0.2f of cumulative importance&apos; % (importance_index + 1, threshold))
 
     def reset_plot(self):
-        plt.rcParams = plt.rcParamsDefault</code></pre><p><strong>2. nmf_list.py 代码分析：</strong></p>
-<pre><code>import pickle
+        plt.rcParams = plt.rcParamsDefault</code></pre><h3 id="2-nmf-list-py-代码分析："><a href="#2-nmf-list-py-代码分析：" class="headerlink" title="2. nmf_list.py 代码分析："></a><strong>2. nmf_list.py 代码分析：</strong></h3><pre><code>import pickle
 import numpy as np
 import pandas as pd
 from collections import Counter
@@ -1101,7 +1088,446 @@ class nmf_list(object):
     tag_list[self.by_name] = self.data[self.by_name]
     column_name = [self.by_name] + name
     tag_list = tag_list[column_name]
-    return tag_list</code></pre>]]></content>
+    return tag_list</code></pre><h3 id="3-model-py-代码分析："><a href="#3-model-py-代码分析：" class="headerlink" title="3. model.py  代码分析："></a><strong>3. model.py  代码分析：</strong></h3><pre><code>import gc
+import pandas as pd
+import numpy as np
+import os
+import time
+import lightgbm as lgb
+from copy import deepcopy
+from sklearn.model_selection import StratifiedKFold
+from sklearn.metrics import f1_score
+from sklearn import metrics
+from sklearn.metrics import precision_recall_fscore_support
+import warnings
+from glob import glob
+from scipy.sparse import csr_matrix
+
+start_t = time.time()
+print(&apos;ww_900_start&apos;)
+pd.set_option(&apos;display.max_columns&apos;, 100)
+warnings.filterwarnings(&apos;ignore&apos;)
+
+# 添加需要提取的特征
+def group_feature(df, key, target, aggs,flag):   
+    agg_dict = {}
+    for ag in aggs:
+        agg_dict[&apos;{}_{}_{}&apos;.format(target,ag,flag)] = ag
+    print(agg_dict)
+    t = df.groupby(key)[target].agg(agg_dict).reset_index()
+    return t
+
+# 计算两个经纬度之间的haversine距离
+def haversine_dist(lat1,lng1,lat2,lng2):
+    lat1, lng1, lat2, lng2 = map(np.radians, (lat1, lng1, lat2, lng2))
+    radius = 6371  # Earth&apos;s radius taken from google
+    lat = lat2 - lat1
+    lng = lng2 - lng1
+    d = np.sin(lat/2) ** 2 + np.cos(lat1) * np.cos(lat2) * np.sin(lng/2) ** 2
+    h = 2 * radius * np.arcsin(np.sqrt(d))
+    return h
+
+# 提取特征
+def extract_feature(df, train, flag):
+
+    if (flag == &apos;on_night&apos;) or (flag == &apos;on_day&apos;): 
+        t = group_feature(df, &apos;ship&apos;,&apos;speed&apos;,[&apos;max&apos;,&apos;mean&apos;,&apos;median&apos;,&apos;std&apos;,&apos;skew&apos;],flag)
+        train = pd.merge(train, t, on=&apos;ship&apos;, how=&apos;left&apos;)
+
+    if flag == &quot;0&quot;:
+        t = group_feature(df, &apos;ship&apos;,&apos;direction&apos;,[&apos;max&apos;,&apos;median&apos;,&apos;mean&apos;,&apos;std&apos;,&apos;skew&apos;],flag)
+        train = pd.merge(train, t, on=&apos;ship&apos;, how=&apos;left&apos;) 
+
+    elif flag == &quot;1&quot;:
+        t = group_feature(df, &apos;ship&apos;,&apos;speed&apos;,[&apos;max&apos;,&apos;mean&apos;,&apos;median&apos;,&apos;std&apos;,&apos;skew&apos;],flag)
+        train = pd.merge(train, t, on=&apos;ship&apos;, how=&apos;left&apos;)
+        t = group_feature(df, &apos;ship&apos;,&apos;direction&apos;,[&apos;max&apos;,&apos;median&apos;,&apos;mean&apos;,&apos;std&apos;,&apos;skew&apos;],flag)
+        train = pd.merge(train, t, on=&apos;ship&apos;, how=&apos;left&apos;) 
+        hour_nunique = df.groupby(&apos;ship&apos;)[&apos;speed&apos;].nunique().to_dict()
+        train[&apos;speed_nunique_{}&apos;.format(flag)] = train[&apos;ship&apos;].map(hour_nunique)   
+        hour_nunique = df.groupby(&apos;ship&apos;)[&apos;direction&apos;].nunique().to_dict()
+        train[&apos;direction_nunique_{}&apos;.format(flag)] = train[&apos;ship&apos;].map(hour_nunique)  
+
+    t = group_feature(df, &apos;ship&apos;,&apos;x&apos;,[&apos;max&apos;,&apos;min&apos;,&apos;mean&apos;,&apos;median&apos;,&apos;std&apos;,&apos;skew&apos;],flag)
+    train = pd.merge(train, t, on=&apos;ship&apos;, how=&apos;left&apos;)
+    t = group_feature(df, &apos;ship&apos;,&apos;y&apos;,[&apos;max&apos;,&apos;min&apos;,&apos;mean&apos;,&apos;median&apos;,&apos;std&apos;,&apos;skew&apos;],flag)
+    train = pd.merge(train, t, on=&apos;ship&apos;, how=&apos;left&apos;)
+    t = group_feature(df, &apos;ship&apos;,&apos;base_dis_diff&apos;,[&apos;max&apos;,&apos;min&apos;,&apos;mean&apos;,&apos;std&apos;,&apos;skew&apos;],flag)
+    train = pd.merge(train, t, on=&apos;ship&apos;, how=&apos;left&apos;)
+
+    train[&apos;x_max_x_min_{}&apos;.format(flag)] = train[&apos;x_max_{}&apos;.format(flag)] - train[&apos;x_min_{}&apos;.format(flag)]
+    train[&apos;y_max_y_min_{}&apos;.format(flag)] = train[&apos;y_max_{}&apos;.format(flag)] - train[&apos;y_min_{}&apos;.format(flag)]
+    train[&apos;y_max_x_min_{}&apos;.format(flag)] = train[&apos;y_max_{}&apos;.format(flag)] - train[&apos;x_min_{}&apos;.format(flag)]
+    train[&apos;x_max_y_min_{}&apos;.format(flag)] = train[&apos;x_max_{}&apos;.format(flag)] - train[&apos;y_min_{}&apos;.format(flag)]
+    train[&apos;slope_{}&apos;.format(flag)] = train[&apos;y_max_y_min_{}&apos;.format(flag)] / np.where(train[&apos;x_max_x_min_{}&apos;.format(flag)]==0, 0.001, train[&apos;x_max_x_min_{}&apos;.format(flag)])
+    train[&apos;area_{}&apos;.format(flag)] = train[&apos;x_max_x_min_{}&apos;.format(flag)] * train[&apos;y_max_y_min_{}&apos;.format(flag)]
+
+    mode_hour = df.groupby(&apos;ship&apos;)[&apos;hour&apos;].agg(lambda x:x.value_counts().index[0]).to_dict()
+    train[&apos;mode_hour_{}&apos;.format(flag)] = train[&apos;ship&apos;].map(mode_hour)
+    train[&apos;slope_median_{}&apos;.format(flag)] = train[&apos;y_median_{}&apos;.format(flag)] / np.where(train[&apos;x_median_{}&apos;.format(flag)]==0, 0.001, train[&apos;x_median_{}&apos;.format(flag)])
+
+    return train
+
+# 提取数据
+def get_data(files, is_sort=True, sort_column=&quot;time&quot;):
+    datas = [pd.read_csv(f) for f in files]
+    if is_sort:
+        dfs = [df.sort_values(by=sort_column, ascending=True, na_position=&apos;last&apos;) for df in datas]
+    df = pd.concat(datas, axis=0, ignore_index=True)
+    return df
+
+# 处理提取文件数据
+def extract_dt(df):
+    df[&apos;time&apos;] = pd.to_datetime(df[&apos;time&apos;], format=&apos;%m%d %H:%M:%S&apos;)
+    df[&apos;date&apos;] = df[&apos;time&apos;].dt.date
+    df[&apos;hour&apos;] = df[&apos;time&apos;].dt.hour
+
+    df[&apos;x_dis_diff&apos;] = (df[&apos;x&apos;] - 6165599).abs()
+    df[&apos;y_dis_diff&apos;] = (df[&apos;y&apos;] - 5202660).abs()
+    df[&apos;base_dis_diff&apos;] = ((df[&apos;x_dis_diff&apos;]**2)+(df[&apos;y_dis_diff&apos;]**2))**0.5    
+    del df[&apos;x_dis_diff&apos;],df[&apos;y_dis_diff&apos;]    
+
+    df[&quot;x&quot;] = df[&quot;x&quot;] / 1e6
+    df[&quot;y&quot;] = df[&quot;y&quot;] / 1e6    
+    df[&apos;day_nig&apos;] = 0
+    df.loc[(df[&apos;hour&apos;] &gt; 5) &amp; (df[&apos;hour&apos;] &lt; 20),&apos;day_nig&apos;] = 1
+    return df
+
+train_files = glob(&quot;tcdata/hy_round2_train_20200225/*.csv&quot;)
+test_files = glob(&quot;tcdata/hy_round2_testB_20200312/*.csv&quot;)
+train_files = sorted(train_files)
+test_files = sorted(test_files)
+
+train = get_data(train_files)
+train.columns = [&apos;ship&apos;,&apos;x&apos;,&apos;y&apos;,&apos;speed&apos;,&apos;direction&apos;,&apos;time&apos;,&apos;type&apos;]
+test = get_data(test_files)
+test.columns = [&apos;ship&apos;,&apos;x&apos;,&apos;y&apos;,&apos;speed&apos;,&apos;direction&apos;,&apos;time&apos;]
+
+train = extract_dt(train)
+test = extract_dt(test)
+train_label = train.drop_duplicates([&apos;ship&apos;],keep = &apos;first&apos;)
+test_label = test.drop_duplicates([&apos;ship&apos;],keep = &apos;first&apos;)
+train_label[&apos;type&apos;] = train_label[&apos;type&apos;].map({&apos;围网&apos;:0,&apos;刺网&apos;:1,&apos;拖网&apos;:2})
+
+num = train_label.shape[0]
+data_label = train_label.append(test_label)
+data =train.append(test)
+# 将数据分成speed为0和非0、白天和晚上
+data_1 = data[data[&apos;speed&apos;]==0]
+data_2 = data[data[&apos;speed&apos;]!=0]
+data_label = extract_feature(data_1, data_label,&quot;0&quot;)
+data_label = extract_feature(data_2, data_label,&quot;1&quot;)
+
+data_1 = data[data[&apos;day_nig&apos;] == 0]
+data_2 = data[data[&apos;day_nig&apos;] == 1]
+data_label = extract_feature(data_1, data_label,&quot;on_night&quot;)
+data_label = extract_feature(data_2, data_label,&quot;on_day&quot;)
+
+# 读取NMF降维后的特征
+if os.path.isfile(&apos;nmf_testb.csv&apos;):
+    nmf_fea = pd.read_csv(&apos;nmf_testb.csv&apos;)
+    data_label = data_label.merge(nmf_fea,on=&apos;ship&apos;,how = &apos;left&apos;)
+    del nmf_fea
+else:
+    for j in range(1,4):
+        print(&apos;********* {} *******&apos;.format(j))
+        for i in [&apos;speed&apos;,&apos;x&apos;,&apos;y&apos;]:
+            data[i + &apos;_str&apos;] = data[i].astype(str)
+            from nmf_list import nmf_list
+            nmf = nmf_list(data,&apos;ship&apos;,i + &apos;_str&apos;,8,2)
+            nmf_a = nmf.run(j)
+            data_label = data_label.merge(nmf_a,on = &apos;ship&apos;,how = &apos;left&apos;)
+
+
+first = &quot;0&quot;
+second = &quot;1&quot;
+data_label[&apos;direction_median_ratio&apos;] = data_label[&apos;direction_median_{}&apos;.format(second)] / data_label[&apos;direction_median_{}&apos;.format(first)]
+data_label[&apos;slope_ratio&apos;] = data_label[&apos;slope_{}&apos;.format(second)] / data_label[&apos;slope_{}&apos;.format(first)] 
+data_label[&apos;slope_mean_ratio&apos;] = data_label[&apos;slope_median_{}&apos;.format(second)] / data_label[&apos;slope_median_{}&apos;.format(first)]
+
+first = &quot;on_night&quot;
+second = &quot;on_day&quot;
+data_label[&apos;speed_median_ratio&apos;] = data_label[&apos;speed_median_{}&apos;.format(second)] / data_label[&apos;speed_median_{}&apos;.format(first)] 
+data_label[&apos;speed_std_ratio&apos;] = data_label[&apos;speed_std_{}&apos;.format(second)] / data_label[&apos;speed_std_{}&apos;.format(first)] 
+
+# 计算特征
+flag = &apos;all&apos;
+for cc in [&apos;direction&apos;,&apos;speed&apos;]:
+    t = group_feature(data_label,cc, &apos;ship&apos;,[&apos;count&apos;],flag +cc+ &apos;x&apos;)
+    data_label = pd.merge(data_label, t, on=cc, how=&apos;left&apos;)  
+
+for i in [&quot;0&quot;,&quot;1&quot;]:
+    if i == &quot;1&quot;:
+        for j in [
+#                 &apos;slope_speed_cat_nunique_{}&apos;.format(i),
+#                   &apos;slope_mean_speed_cat_nunique_{}&apos;.format(i),
+                  &apos;speed_nunique_{}&apos;.format(i),
+                  &apos;direction_nunique_{}&apos;.format(i)
+                 ]:
+
+            t = group_feature(data_label,j, &apos;ship&apos;,[&apos;count&apos;],j+&quot;_count&quot;)
+            data_label = pd.merge(data_label, t, on=j, how=&apos;left&apos;) 
+    for j in [
+           &apos;slope_median_{}&apos;.format(i),
+#               &apos;x_max_x_min_{}&apos;.format(i),
+#               &apos;y_max_y_min_{}&apos;.format(i)
+             ]:
+#         t = group_feature(data_label,j, &apos;ship&apos;,[&apos;count&apos;],j+&quot;_count&quot;)
+#         data_label = pd.merge(data_label, t, on=j, how=&apos;left&apos;) 
+        t = group_feature(data_label,j, &apos;speed&apos;,[&apos;min&apos;,&apos;max&apos;,&apos;median&apos;,&apos;std&apos;,&apos;skew&apos;],j+&quot;_tongji&quot;)
+        data_label = pd.merge(data_label, t, on=j, how=&apos;left&apos;)
+        # t = group_feature(data_label,j, &apos;direction&apos;,[&apos;min&apos;,&apos;max&apos;,&apos;median&apos;,&apos;std&apos;,&apos;skew&apos;],j+&quot;_tongji&quot;)
+        # data_label = pd.merge(data_label, t, on=j, how=&apos;left&apos;)
+
+def cut_bins(raw_data, col_name=None, q=49):
+    features, bins = pd.qcut(raw_data[col_name], q=q, retbins=True, duplicates=&quot;drop&quot;)
+    labels = list(range(len(bins) - 1))
+    features, bins = pd.qcut(raw_data[col_name], labels=labels, q=q, retbins=True, duplicates=&quot;drop&quot;)
+    return features, bins, labels
+
+
+MAX_CATE = 199
+data[&quot;x_cate&quot;], x_bins, x_labels = cut_bins(data, col_name=&quot;x&quot;, q=MAX_CATE)
+data[&quot;y_cate&quot;], y_bins, y_labels = cut_bins(data, col_name=&quot;y&quot;, q=MAX_CATE)
+# data[&quot;x_sub_y_cate&quot;], x_sub_y_bins, x_sub_y_labels = cut_bins(data, col_name=&quot;x_sub_y&quot;, q=MAX_CATE)
+data[&quot;distance_cate&quot;], dist_bins, dist_labels = cut_bins(data, col_name=&quot;base_dis_diff&quot;, q=MAX_CATE)
+
+data[&quot;speed_cate&quot;], speed_bins, speed_labels = cut_bins(data, col_name=&quot;speed&quot;, q=MAX_CATE)
+
+MAX_CATE = 120
+data[&quot;direct_cate&quot;], speed_bins, speed_labels = cut_bins(data, col_name=&quot;direction&quot;, q=MAX_CATE)
+
+if os.path.isfile(&apos;emb_testb.csv&apos;):
+    w2v_fea = pd.read_csv(&apos;emb_testb.csv&apos;)
+    data_label = data_label.merge(w2v_fea, on=&apos;ship&apos;, how=&apos;left&apos;)
+    del w2v_fea
+else:
+    from gensim.models import Word2Vec
+    import gc
+    def emb(df, f1, f2):
+        emb_size = 23
+        print(&apos;====================================== {} {} ======================================&apos;.format(f1, f2))
+        tmp = df.groupby(f1, as_index=False)[f2].agg({&apos;{}_{}_list&apos;.format(f1, f2): list})
+        sentences = tmp[&apos;{}_{}_list&apos;.format(f1, f2)].values.tolist()
+        del tmp[&apos;{}_{}_list&apos;.format(f1, f2)]
+        for i in range(len(sentences)):
+            sentences[i] = [str(x) for x in sentences[i]]
+        model = Word2Vec(sentences, size=emb_size, window=5, min_count=3, sg=0, hs=1, seed=2222)
+        emb_matrix = []
+        for seq in sentences:
+            vec = []
+            for w in seq:
+                if w in model:
+                    vec.append(model[w])
+            if len(vec) &gt; 0:
+                emb_matrix.append(np.mean(vec, axis=0))
+            else:
+                emb_matrix.append([0] * emb_size)
+        emb_matrix = np.array(emb_matrix)
+        for i in range(emb_size):
+            tmp[&apos;{}_{}_emb_{}&apos;.format(f1, f2, i)] = emb_matrix[:, i]
+        del model, emb_matrix, sentences
+        return tmp
+
+
+    emb_cols = [
+        [&apos;ship&apos;, &apos;x_cate&apos;],
+        [&apos;ship&apos;, &apos;y_cate&apos;],
+        [&apos;ship&apos;, &apos;speed_cate&apos;],
+        [&apos;ship&apos;, &apos;distance_cate&apos;],
+        # [&apos;ship&apos;, &apos;direct_cate&apos;],
+    ]
+    for f1, f2 in emb_cols:
+        data_label = data_label.merge(emb(data, f1, f2), on=f1, how=&apos;left&apos;)
+
+    gc.collect()
+
+    # emb_list = [&apos;ship&apos;]
+    # for i in data_label.columns:
+    #     if &apos;_emb_&apos; in i:
+    #         emb_list.append(i)
+
+    # data_label[emb_list].to_csv(&apos;emb_testb.csv&apos;,index=False)
+
+
+print(&apos;feature done&apos;)
+
+train_label = data_label[:num]
+test_label = data_label[num:]
+features = [x for x in train_label.columns if x not in [&apos;ship&apos;,&apos;type&apos;,&apos;time&apos;,&apos;x&apos;,&apos;y&apos;,&apos;diff_time&apos;,&apos;date&apos;,&apos;day_nig&apos;,&apos;direction&apos;,&apos;speed&apos;,&apos;hour&apos;,
+                                                       &apos;speed_many&apos;,&apos;dire_diff&apos;,&apos;direction_str&apos;,&apos;speed_str&apos;,&apos;dis&apos;,&apos;x_speed&apos;,&apos;y_speed&apos;] ]
+target = &apos;type&apos;
+
+# 特征选择
+from feature_selector import FeatureSelector
+fs = FeatureSelector(data = train_label[features], labels = train_label[target])
+fs.identify_zero_importance(task = &apos;classification&apos;, eval_metric = &apos;multiclass&apos;,
+                            n_iterations = 10, early_stopping = True)
+fs.identify_low_importance(cumulative_importance = 0.97)
+low_importance_features = fs.ops[&apos;low_importance&apos;]
+print(&apos;====low_importance_features=====&apos;)
+print(low_importance_features)
+for i in low_importance_features:
+features.remove(i)
+
+print(&apos;feature number&apos;,len(features))
+gc.collect()
+
+# 评价指标
+def macro_f1(y_hat, data):
+    y_true = data.get_label()
+    y_hat = y_hat.reshape(-1, y_true.shape[0])
+    y_hat = np.argmax(y_hat, axis=0)
+    f1_multi = precision_recall_fscore_support(y_true, y_hat, labels=[0, 1, 2])[2]
+    f1_macro =  f1_score(y_true, y_hat, average =&quot;macro&quot;)
+    assert np.mean(f1_multi) ==  f1_macro
+    return &apos;f1&apos;, f1_macro, True
+
+
+def f1_single(y_hat, data, index=0):
+    y_true = data.get_label()
+    y_hat = y_hat.reshape(-1, y_true.shape[0])
+    y_hat = np.argmax(y_hat, axis=0)
+    f1_multi = precision_recall_fscore_support(y_true, y_hat, labels=[0, 1, 2])[2]
+    f1_s = round(f1_multi[index], 4)
+    return &apos;f1_{}&apos;.format(index), f1_s, True
+
+# 构造模型
+train_X = train_label[features]
+test_X = test_label[features]
+print(train_X.shape, test_X.shape)
+train_y = train_label[target]
+
+
+params = {
+        &apos;task&apos;:&apos;train&apos;, 
+        &apos;num_leaves&apos;: 63,
+        &apos;objective&apos;: &apos;multiclass&apos;,
+        &apos;num_class&apos;: 3,
+        &apos;metric&apos;: &apos;None&apos;, # [f1_0, f1_1, f1_2],
+        &apos;min_data_in_leaf&apos;: 10,
+        &apos;learning_rate&apos;: 0.01,
+        &apos;feature_fraction&apos;: 0.7,
+        &apos;bagging_fraction&apos;: 0.95,
+        &apos;early_stopping_rounds&apos;: 2000,
+#         &apos;lambda_l1&apos;: 0.1,
+#         &apos;lambda_l2&apos;: 0.1,
+        &quot;first_metric_only&quot;: True,
+        &apos;bagging_freq&apos;: 3, 
+        &apos;max_bin&apos;: 255,
+        &apos;random_state&apos;: 42,
+        &apos;verbose&apos; : -1
+    }
+
+
+models = []
+test_preds = []
+val_preds = []
+oof_seed = np.zeros((len(train_label), 3))
+seed = [2222,2018778]
+for j in seed:
+    print(&quot;+++++++++++++++++ seed {} ++++++++++++&quot;.format(str(j)))
+    skf = StratifiedKFold(n_splits=5, shuffle=True, random_state=j)
+    oof = np.zeros((len(train_label), 3))
+    for i, (trn_idx, val_idx) in enumerate(skf.split(train_X, train_y)):
+        print(&quot;-&quot; * 81)
+        print(&quot;[!] fold {}&quot;.format(i))
+        lgb_params = deepcopy(params)
+        # print(lgb_params)
+        trn_X = csr_matrix(train_X)[trn_idx]
+        trn_y = train_y.iloc[trn_idx]
+        val_X = csr_matrix(train_X)[val_idx]
+        val_y = train_y.iloc[val_idx]
+        dtrain = lgb.Dataset(trn_X, trn_y) 
+        dval = lgb.Dataset(val_X, val_y) 
+        model = lgb.train(lgb_params, 
+               dtrain, 
+               num_boost_round=400000,
+               valid_sets=[dval], 
+               feval=lambda preds, train_data: [
+                   macro_f1(preds, train_data),
+                   f1_single(preds, train_data, index=0),
+                   f1_single(preds, train_data, index=1),
+                   f1_single(preds, train_data, index=2)],
+               verbose_eval=-1)
+        models.append(model)
+        # print(model.best_iteration)
+        val_pred = model.predict(val_X, iteration=model.best_iteration)
+        oof[val_idx] = val_pred
+        val_y = train_y.iloc[val_idx]
+        val_pred = np.argmax(val_pred, axis=1)
+        print(str(i), &apos;val f1&apos;, metrics.f1_score(val_y, val_pred, average=&apos;macro&apos;))
+        test_preds.append(model.predict(test_X, iteration=model.best_iteration))
+        print(&quot;[!] fold {} finish\n&quot;.format(i))
+        del dtrain, dval
+        gc.collect()
+    val_pred = np.argmax(oof, axis=1)
+    print(str(j), &apos;every_flod val f1&apos;, metrics.f1_score(train_y, val_pred, average=&apos;macro&apos;))
+    oof_seed += oof/len(seed)
+
+oof1 = np.argmax(oof_seed, axis=1)
+print(&apos;oof f1&apos;, metrics.f1_score(oof1,train_y, average=&apos;macro&apos;))
+val_score = np.round(metrics.f1_score(oof1, train_y, average=&apos;macro&apos;),6)
+
+def ensemble_predictions(predictions, weights=None, type_=&quot;linear&quot;):
+    if not weights:
+        print(&quot;[!] AVE_WGT&quot;)
+        weights = [1./ len(predictions) for _ in range(len(predictions))]
+    assert len(predictions) == len(weights)
+    if np.sum(weights) != 1.0:
+        weights = [w / np.sum(weights) for w in weights]
+    print(&quot;[!] weights = {}&quot;.format(weights))
+    assert np.isclose(np.sum(weights), 1.0)
+    if type_ == &quot;linear&quot;:
+        res = np.average(predictions, weights=weights, axis=0)
+    elif type_ == &quot;harmonic&quot;:
+        res = np.average([1 / p for p in predictions], weights=weights, axis=0)
+        return 1 / res
+    elif type_ == &quot;geometric&quot;:
+        numerator = np.average(
+            [np.log(p) for p in predictions], weights=weights, axis=0
+        )
+        res = np.exp(numerator / sum(weights))
+        return res
+    elif type_ == &quot;rank&quot;:
+        from scipy.stats import rankdata
+        res = np.average([rankdata(p) for p in predictions], weights=weights, axis=0)
+        return res / (len(res) + 1)
+    return res
+
+    def merge(prob, number=-1, index=0):
+        from copy import deepcopy
+        new_prob = deepcopy(prob)
+        top = np.argsort(prob[:, index])[::-1][: number]
+        print(top[: 4])
+        for i in range(len(new_prob)):
+            pad_value = np.array([0, 0, 0])
+            pad_value[index] = 1
+            if i in top:
+                new_prob[i, ] = pad_value
+            else:
+                new_prob[i, index] = 0.
+        return new_prob
+
+
+test_pred_prob = ensemble_predictions(test_preds)
+test_pred = test_pred_prob.argmax(axis=1)
+
+test_pro = test_label[[&apos;ship&apos;]]
+test_pro[&apos;pro_1&apos;] = test_pred_prob[:,0]
+test_pro[&apos;pro_2&apos;] = test_pred_prob[:,1]
+test_pro[&apos;pro_3&apos;] = test_pred_prob[:,2]
+pred_pro = merge(test_pro[[&apos;pro_1&apos;, &apos;pro_2&apos;, &apos;pro_3&apos;]].values, 900,0)
+test_pred = pred_pro.argmax(axis=1)
+
+
+test_data = test_label[[&apos;ship&apos;]]
+test_data[&quot;label&quot;] = test_pred
+test_data[&quot;label&quot;] = test_data[&quot;label&quot;].map({0:&apos;围网&apos;,1:&apos;刺网&apos;,2:&apos;拖网&apos;})
+# test_data[&apos;label&apos;][:100] = &apos;刺网&apos;
+test_data[[&quot;ship&quot;, &quot;label&quot;]].to_csv(&quot;result.csv&quot;, index=False, header=None)
+print(test_data[&quot;label&quot;].value_counts())
+print(&apos;runtime:&apos;, time.time() - start_t)</code></pre>]]></content>
       <categories>
         <category>竞赛</category>
       </categories>
