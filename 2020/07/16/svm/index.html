@@ -20,30 +20,37 @@
     var CONFIG = {"hostname":"liangggggg.github.io","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
   </script>
 
-  <meta name="description" content="Stay hungry, stay foolish">
-<meta property="og:type" content="website">
-<meta property="og:title" content="LiAnG&#39;s Blog">
-<meta property="og:url" content="https://liangggggg.github.io/index.html">
+  <meta name="description" content="1 支持向量机（SVM）原理从算法的功能来看，SVM几乎涵盖了机器学习的所有算法需求     功能    有监督学习 线性二分类与多分类（Linear Support Vector Classiﬁcation）    非线性二分类与多分类（Support Vector Classiﬁcation, SVC）    普通连续型变量的回归（Support Vector Regression）    概">
+<meta property="og:type" content="article">
+<meta property="og:title" content="机器学习笔记（二）支持向量机（SVM）">
+<meta property="og:url" content="https://liangggggg.github.io/2020/07/16/svm/index.html">
 <meta property="og:site_name" content="LiAnG&#39;s Blog">
-<meta property="og:description" content="Stay hungry, stay foolish">
+<meta property="og:description" content="1 支持向量机（SVM）原理从算法的功能来看，SVM几乎涵盖了机器学习的所有算法需求     功能    有监督学习 线性二分类与多分类（Linear Support Vector Classiﬁcation）    非线性二分类与多分类（Support Vector Classiﬁcation, SVC）    普通连续型变量的回归（Support Vector Regression）    概">
 <meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://note.youdao.com/yws/api/personal/file/A4A7E90B88454F098F8BDBDCCF02B27D?method=download&shareKey=a5c90f8c069094d544bacfbb471dbd02">
+<meta property="og:image" content="https://note.youdao.com/yws/api/personal/file/F29C776BA1854D9C87B9BA1EEFF2F3B9?method=download&shareKey=f6addba1a1e3223deb09059443ef2cf1">
+<meta property="og:image" content="https://note.youdao.com/yws/api/personal/file/B26C385AAC024C1791BBFDDF643F3D01?method=download&shareKey=aa3e06d8df0f9b472581aa1282400ae3">
+<meta property="article:published_time" content="2020-07-16T13:24:13.000Z">
+<meta property="article:modified_time" content="2020-07-17T08:17:34.190Z">
 <meta property="article:author" content="LiAnG">
+<meta property="article:tag" content="机器学习">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://note.youdao.com/yws/api/personal/file/A4A7E90B88454F098F8BDBDCCF02B27D?method=download&shareKey=a5c90f8c069094d544bacfbb471dbd02">
 
-<link rel="canonical" href="https://liangggggg.github.io/">
+<link rel="canonical" href="https://liangggggg.github.io/2020/07/16/svm/">
 
 
 <script id="page-configurations">
   // https://hexo.io/docs/variables.html
   CONFIG.page = {
     sidebar: "",
-    isHome : true,
-    isPost : false,
+    isHome : false,
+    isPost : true,
     lang   : 'zh-CN'
   };
 </script>
 
-  <title>LiAnG's Blog</title>
+  <title>机器学习笔记（二）支持向量机（SVM） | LiAnG's Blog</title>
   
 
 
@@ -186,9 +193,10 @@
         <div class="content-wrap">
           
 
-          <div class="content index posts-expand">
+          <div class="content post posts-expand">
             
-      
+
+    
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
@@ -204,10 +212,9 @@
       <meta itemprop="name" content="LiAnG's Blog">
     </span>
       <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2020/07/16/svm/" class="post-title-link" itemprop="url">机器学习笔记（二）支持向量机（SVM）</a>
-        </h2>
+        <h1 class="post-title" itemprop="name headline">
+          机器学习笔记（二）支持向量机（SVM）
+        </h1>
 
         <div class="post-meta">
             <span class="post-meta-item">
@@ -236,6 +243,13 @@
             </span>
 
           
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span>
   
   <span class="post-meta-item">
     
@@ -274,7 +288,7 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h1 id="1-支持向量机（SVM）原理"><a href="#1-支持向量机（SVM）原理" class="headerlink" title="1 支持向量机（SVM）原理"></a>1 支持向量机（SVM）原理</h1><p>从算法的功能来看，SVM几乎涵盖了机器学习的所有算法需求</p>
+        <h1 id="1-支持向量机（SVM）原理"><a href="#1-支持向量机（SVM）原理" class="headerlink" title="1 支持向量机（SVM）原理"></a>1 支持向量机（SVM）原理</h1><p>从算法的功能来看，SVM几乎涵盖了机器学习的所有算法需求</p>
 <table>
 <thead>
 <tr>
@@ -311,476 +325,89 @@
 <td align="left">转导支持向量机（Transductive Support Vector Machines，TSVM）</td>
 </tr>
 </tbody></table>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2020/07/16/svm/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
+<a id="more"></a>
+<h2 id="1-1-线性SVM用于分类的原理"><a href="#1-1-线性SVM用于分类的原理" class="headerlink" title="1.1 线性SVM用于分类的原理"></a>1.1 线性SVM用于分类的原理</h2><p>要理解SVM的损失函数，先定义决策边界，假设数据中共计有$N$个训练样本，每个训练样本$i$可以被表示为$(x_i,y_i)(i=1,2,\dots N)$，其中$x_i$是$(x_{1i},x_{2i}\dots x_{ni})^T$这样一个特征向量，每个样本总共包含$n$个特征。</p>
+<p>二分类标签$y_i$取值为${-1,1}$</p>
+<p>若$n=2$，则有$i=(x_{1i},x_{2i},y_i)^T$，在二维平面上，以$x_2$为横坐标，$x_1$为从坐标，$y$为颜色，来可视化所有的$N$个样本</p>
+<p><img src="https://note.youdao.com/yws/api/personal/file/A4A7E90B88454F098F8BDBDCCF02B27D?method=download&shareKey=a5c90f8c069094d544bacfbb471dbd02" alt></p>
+<p>所以要在这个数据集上找寻一个决策边界(超平面)，让紫色点的标签为1，红色点的标签为-1</p>
+<p>二维平面上，任意一条线可以表示为：<br>$$x_1 = ax_2+b$$</p>
+<p>将表达式变换：<br>$$0=ax_2-x_1+b$$<br>$$0=(a,-1)*\binom{x_2}{x_1}+b$$<br>$$0=w^Tx+b$$</p>
+<p>其中$(a,-1)$是参数向量$w$，$x$是特征向量，$b$是截距，在SVM中，使用这个表达式表示决策边界。</p>
+<p><strong>我们的目标是求解能够让边际最大化的决策边界</strong></p>
+<p>如果在决策边界上任意取两个点$x_a,x_b$，并代入决策边界的表达式，则有：<br>$$w^Tx_a+b=0$$<br>$$w^Tx_b+b=0$$<br>两式相减，可以得到：<br>$$w^T*(x_a-x_b)=0$$</p>
+<p>两个向量的点积为0，证明参数向量$w$的方向垂直与我们的决策边界</p>
+<p><img src="https://note.youdao.com/yws/api/personal/file/F29C776BA1854D9C87B9BA1EEFF2F3B9?method=download&shareKey=f6addba1a1e3223deb09059443ef2cf1" alt></p>
+<p>由于紫色的点代表标签$y=1，y=-1$，因此以下式判定：<br>$$<br>y=<br>\begin{cases}<br>1, &amp;if\ w*x_t+b&gt;0\\<br>-1, &amp;if\ w * x_t+b&lt;0<br>\end{cases}<br>$$</p>
+<p><strong>注意：决策边界以上的点都为正，以下的点都为负，是人为规定的，不会影响对参数$w$和截距$b$的求解</strong></p>
+<p>决策边界的两边要有两个超平面，两个超平面在二维空间中是两条平行线（虚线超平面），而他们之间的距离就是我们的边际$d$。<br>我们将这两条平行线表示为：</p>
+<p>$$w * x+b=k, w * x+b=-k$$</p>
+<p>两边同时除以$k$,则可以得到：</p>
+<p>$$w * x+b=1, w * x+b=-1$$</p>
+<p>表达式两边1和-1分别表示了两条平行决策边界的虚线到决策边界的相对距离。让这两条线分别过两类数据中距离决策边界最近的点，这些点被称为“支持向量”。</p>
+<p>令紫色类的点为$x_p$，红色类的点为$x_r$，则可以得到：</p>
+<p>$$w * x_p+b=1,w * x_r+b=-1$$</p>
+<p>两个式相减，则有：<br>$$w * (w_p-w_r)=2$$<br>如下图所示，$(x_p-x_r)$可以表示为两点之间的连线，而边际$d$是平行于$w$的。</p>
+<p>又因为以下数学性质：</p>
+<table>
+<thead>
+<tr>
+<th align="left">线性代数中模长的运用</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">向量$b$除以自身的模长可以得到$b$方向上的单位向量</td>
+</tr>
+<tr>
+<td align="left">向量a乘以向量b方向上的单位向量，可以得到向量a在向量b方向上的投影的长度。</td>
+</tr>
+</tbody></table>
+<p>所以，将上述式子两边同时除以$||w||$, 则可以得到：<br>$$\frac{w*(x_p-x_r)}{||w||}=\frac{2}{||w||}$$<br>$$d = \frac{2}{||w||}$$</p>
+<p><img src="https://note.youdao.com/yws/api/personal/file/B26C385AAC024C1791BBFDDF643F3D01?method=download&shareKey=aa3e06d8df0f9b472581aa1282400ae3" alt></p>
+<p>所以，求最大边界，对应的就是最大化d,求解以下函数的最小值：<br>$$f(w)=\frac{||w||^2}{2}$$</p>
+<p>对于任意样本，可以把决策函数写作：<br>$$w * x_i+b&gt;=1\   if\ y_i=1$$<br>$$w * x_i+b&lt;=-1 \  if\ y_i=-1$$<br>将两个式子整合：<br>$$y_i(w*x_i+b)&gt;=1, i=1,2,\dots N$$</p>
+<h2 id="1-2-线性SVM的拉格朗日对偶函数和决策函数"><a href="#1-2-线性SVM的拉格朗日对偶函数和决策函数" class="headerlink" title="1.2 线性SVM的拉格朗日对偶函数和决策函数"></a>1.2 线性SVM的拉格朗日对偶函数和决策函数</h2><p>损失函数分为两个部分：最要最小化的函数，以及参数求解后必须满足的约束条件</p>
+<h3 id="1-2-1-将损失函数从最初形态转换为拉格朗日乘数形态"><a href="#1-2-1-将损失函数从最初形态转换为拉格朗日乘数形态" class="headerlink" title="1.2.1 将损失函数从最初形态转换为拉格朗日乘数形态"></a>1.2.1 将损失函数从最初形态转换为拉格朗日乘数形态</h3><p><strong>1.为什么要进行转换？</strong></p>
+<p>我们的目标是求解让损失函数最小化的$w$，希望能够找出一种方式，能在满足条件$y_i(w*x_i+b)&gt;=1$，因此，一种业界认可的方式是使用拉格朗日乘数法(standard Lagrange multiplier method)</p>
+<p><strong>2.为什么可以进行转换</strong></p>
+<p>拉格朗日乘数法正好可以用来解决凸优化问题，使用拉格朗日乘数法将损失函数改写为考虑了约束条件的形式：<br>$$L(w,b,\alpha)=\frac{1}{2}||w||^2-\sum_{i=1}^N\alpha_i(y_i(w*x_i+b)-1) (\alpha_i&gt;=0)$$</p>
+<p>其中，$\alpha_i$叫作拉格朗日乘数。</p>
+<p><strong>3.怎样进行转换</strong></p>
+
     </div>
 
     
     
     
+
       <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
+          <div class="post-tags">
+              <a href="/tags/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/" rel="tag"># 机器学习</a>
+          </div>
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://liangggggg.github.io/2020/07/15/tree/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/timg.jpg">
-      <meta itemprop="name" content="LiAnG">
-      <meta itemprop="description" content="Stay hungry, stay foolish">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="LiAnG's Blog">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2020/07/15/tree/" class="post-title-link" itemprop="url">机器学习笔记（一）决策树</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2020-07-15 16:04:19" itemprop="dateCreated datePublished" datetime="2020-07-15T16:04:19+08:00">2020-07-15</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-07-16 19:17:56" itemprop="dateModified" datetime="2020-07-16T19:17:56+08:00">2020-07-16</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/" itemprop="url" rel="index"><span itemprop="name">机器学习</span></a>
-                </span>
-            </span>
-
-          
-  
-  <span class="post-meta-item">
-    
-      <span class="post-meta-item-icon">
-        <i class="far fa-comment"></i>
-      </span>
-      <span class="post-meta-item-text">Valine：</span>
-    
-    <a title="valine" href="/2020/07/15/tree/#valine-comments" itemprop="discussionUrl">
-      <span class="post-comments-count valine-comment-count" data-xid="/2020/07/15/tree/" itemprop="commentCount"></span>
-    </a>
-  </span>
-  
-  
-            <span class="post-meta-item" title="本文字数">
-              <span class="post-meta-item-icon">
-                <i class="far fa-file-word"></i>
-              </span>
-                <span class="post-meta-item-text">本文字数：</span>
-              <span>3.1k</span>
-            </span>
-            <span class="post-meta-item" title="阅读时长">
-              <span class="post-meta-item-icon">
-                <i class="far fa-clock"></i>
-              </span>
-                <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>3 分钟</span>
-            </span>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h1 id="决策树"><a href="#决策树" class="headerlink" title="决策树"></a>决策树</h1><h2 id="1-决策树原理"><a href="#1-决策树原理" class="headerlink" title="1 决策树原理"></a>1 决策树原理</h2><h3 id="1-1-决策树是如何工作的"><a href="#1-1-决策树是如何工作的" class="headerlink" title="1.1 决策树是如何工作的"></a>1.1 决策树是如何工作的</h3><p>决策树（Decision Tree）是一种非常参数的有监督学习方法，它能够从一系列有特征和标签的数据中总结出决策规则，并用树状图的结构来呈现这些规则，以解决分类和回归问题。决策树算法容易理解，适用各种数据，在解决各种问题时都有良好表现，尤其是以树模型为核心的各种集成算法，在各个行业和领域都有广泛的应用。</p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2020/07/15/tree/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
         
-      
-    </div>
 
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://liangggggg.github.io/2020/07/15/xingce/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/timg.jpg">
-      <meta itemprop="name" content="LiAnG">
-      <meta itemprop="description" content="Stay hungry, stay foolish">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="LiAnG's Blog">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2020/07/15/xingce/" class="post-title-link" itemprop="url">行测笔记：判断推理（一）图形推理</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2020-07-15 08:28:45" itemprop="dateCreated datePublished" datetime="2020-07-15T08:28:45+08:00">2020-07-15</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-07-17 09:28:03" itemprop="dateModified" datetime="2020-07-17T09:28:03+08:00">2020-07-17</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E8%A1%8C%E6%B5%8B%E7%AC%94%E8%AF%95/" itemprop="url" rel="index"><span itemprop="name">行测笔试</span></a>
-                </span>
-            </span>
-
-          
-  
-  <span class="post-meta-item">
-    
-      <span class="post-meta-item-icon">
-        <i class="far fa-comment"></i>
-      </span>
-      <span class="post-meta-item-text">Valine：</span>
-    
-    <a title="valine" href="/2020/07/15/xingce/#valine-comments" itemprop="discussionUrl">
-      <span class="post-comments-count valine-comment-count" data-xid="/2020/07/15/xingce/" itemprop="commentCount"></span>
-    </a>
-  </span>
-  
-  
-            <span class="post-meta-item" title="本文字数">
-              <span class="post-meta-item-icon">
-                <i class="far fa-file-word"></i>
-              </span>
-                <span class="post-meta-item-text">本文字数：</span>
-              <span>2.4k</span>
-            </span>
-            <span class="post-meta-item" title="阅读时长">
-              <span class="post-meta-item-icon">
-                <i class="far fa-clock"></i>
-              </span>
-                <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>2 分钟</span>
-            </span>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h2 id="图形推理的命题形式"><a href="#图形推理的命题形式" class="headerlink" title="图形推理的命题形式"></a>图形推理的命题形式</h2><ol>
-<li>一组图：从左往右读题，找整体规律的共同点。或间隔跳跃观察</li>
-<li>两组图：找第一组规律，应用于第二组</li>
-<li>九宫格：横行（最多）、数列、对角线观察规律</li>
-<li>分组分类：找寻每组统一规律</li>
-<li>空间类：折纸盒，转化成平面思维（截面图、三视图、立体拼合）</li></ol>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2020/07/15/xingce/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
         
-      
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2020/07/15/tree/" rel="prev" title="机器学习笔记（一）决策树">
+      <i class="fa fa-chevron-left"></i> 机器学习笔记（一）决策树
+    </a></div>
+      <div class="post-nav-item"></div>
     </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
       </footer>
+    
   </article>
   
   
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://liangggggg.github.io/2020/05/30/My-New-Post/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/timg.jpg">
-      <meta itemprop="name" content="LiAnG">
-      <meta itemprop="description" content="Stay hungry, stay foolish">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="LiAnG's Blog">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2020/05/30/My-New-Post/" class="post-title-link" itemprop="url">学习日志：2020智慧海洋建设top5方案学习</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2020-05-30 09:15:34" itemprop="dateCreated datePublished" datetime="2020-05-30T09:15:34+08:00">2020-05-30</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-06-04 10:25:15" itemprop="dateModified" datetime="2020-06-04T10:25:15+08:00">2020-06-04</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E7%AB%9E%E8%B5%9B/" itemprop="url" rel="index"><span itemprop="name">竞赛</span></a>
-                </span>
-            </span>
-
-          
-  
-  <span class="post-meta-item">
-    
-      <span class="post-meta-item-icon">
-        <i class="far fa-comment"></i>
-      </span>
-      <span class="post-meta-item-text">Valine：</span>
-    
-    <a title="valine" href="/2020/05/30/My-New-Post/#valine-comments" itemprop="discussionUrl">
-      <span class="post-comments-count valine-comment-count" data-xid="/2020/05/30/My-New-Post/" itemprop="commentCount"></span>
-    </a>
-  </span>
-  
-  
-            <span class="post-meta-item" title="本文字数">
-              <span class="post-meta-item-icon">
-                <i class="far fa-file-word"></i>
-              </span>
-                <span class="post-meta-item-text">本文字数：</span>
-              <span>40k</span>
-            </span>
-            <span class="post-meta-item" title="阅读时长">
-              <span class="post-meta-item-icon">
-                <i class="far fa-clock"></i>
-              </span>
-                <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>36 分钟</span>
-            </span>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h2 id="2020-5-30-赛题解读"><a href="#2020-5-30-赛题解读" class="headerlink" title="2020.5.30 赛题解读"></a>2020.5.30 赛题解读</h2><h3 id="赛题背景：渔船作业分类"><a href="#赛题背景：渔船作业分类" class="headerlink" title="赛题背景：渔船作业分类"></a>赛题背景：渔船作业分类</h3><p>本赛题基于位置数据对海上目标进行智能识别和作业行为分析，要求选手通过分析渔船北斗设备位置数据，得出该船的生产作业行为，具体判断出是拖网作业、围网作业还是流刺网作业。初赛将提供11000条(其中7000条训练数据、2000条testA、2000条testB)渔船轨迹北斗数据。</p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2020/05/30/My-New-Post/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://liangggggg.github.io/2020/05/29/hello-world/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/timg.jpg">
-      <meta itemprop="name" content="LiAnG">
-      <meta itemprop="description" content="Stay hungry, stay foolish">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="LiAnG's Blog">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2020/05/29/hello-world/" class="post-title-link" itemprop="url">学习日志：2020华为云大数据挑战赛（正式赛）</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2020-05-29 21:15:34" itemprop="dateCreated datePublished" datetime="2020-05-29T21:15:34+08:00">2020-05-29</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-07-15 14:40:41" itemprop="dateModified" datetime="2020-07-15T14:40:41+08:00">2020-07-15</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E7%AB%9E%E8%B5%9B/" itemprop="url" rel="index"><span itemprop="name">竞赛</span></a>
-                </span>
-            </span>
-
-          
-  
-  <span class="post-meta-item">
-    
-      <span class="post-meta-item-icon">
-        <i class="far fa-comment"></i>
-      </span>
-      <span class="post-meta-item-text">Valine：</span>
-    
-    <a title="valine" href="/2020/05/29/hello-world/#valine-comments" itemprop="discussionUrl">
-      <span class="post-comments-count valine-comment-count" data-xid="/2020/05/29/hello-world/" itemprop="commentCount"></span>
-    </a>
-  </span>
-  
-  
-            <span class="post-meta-item" title="本文字数">
-              <span class="post-meta-item-icon">
-                <i class="far fa-file-word"></i>
-              </span>
-                <span class="post-meta-item-text">本文字数：</span>
-              <span>26k</span>
-            </span>
-            <span class="post-meta-item" title="阅读时长">
-              <span class="post-meta-item-icon">
-                <i class="far fa-clock"></i>
-              </span>
-                <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>24 分钟</span>
-            </span>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h2 id="2020-5-29-正式赛题解读"><a href="#2020-5-29-正式赛题解读" class="headerlink" title="2020.5.29 正式赛题解读"></a>2020.5.29 正式赛题解读</h2><h3 id="赛题背景：船运到达时间预测"><a href="#赛题背景：船运到达时间预测" class="headerlink" title="赛题背景：船运到达时间预测"></a>赛题背景：船运到达时间预测</h3><p>通过船运的历史数据构建模型，对目的港到达时间进行预测，预测时间简称为ETA（estimated time of arrival），目的港到达时间预测为ARRIVAL_ETA。</p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2020/05/29/hello-world/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-
   
 
 
 
           </div>
           
+    <div class="comments" id="valine-comments"></div>
 
 <script>
   window.addEventListener('tabs:register', () => {
@@ -827,6 +454,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#1-支持向量机（SVM）原理"><span class="nav-text">1 支持向量机（SVM）原理</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-1-线性SVM用于分类的原理"><span class="nav-text">1.1 线性SVM用于分类的原理</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#1-2-线性SVM的拉格朗日对偶函数和决策函数"><span class="nav-text">1.2 线性SVM的拉格朗日对偶函数和决策函数</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-2-1-将损失函数从最初形态转换为拉格朗日乘数形态"><span class="nav-text">1.2.1 将损失函数从最初形态转换为拉格朗日乘数形态</span></a></li></ol></li></ol></li></ol></div>
       </div>
       <!--/noindex-->
 
