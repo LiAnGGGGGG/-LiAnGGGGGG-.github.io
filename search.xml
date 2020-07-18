@@ -88,231 +88,146 @@
 <p>拉格朗日乘数法正好可以用来解决凸优化问题，使用拉格朗日乘数法将损失函数改写为考虑了约束条件的形式：<br>$$L(w,b,\alpha)=\frac{1}{2}||w||^2-\sum_{i=1}^N\alpha_i(y_i(w*x_i+b)-1) (\alpha_i&gt;=0)$$</p>
 <p>其中，$\alpha_i$叫作拉格朗日乘数。</p>
 <p><strong>3.怎样进行转换</strong></p>
+<p>拉格朗日函数分为两个部分，第一部分是原始损失函数，第二部分是约束条件。我们希望，$L(w,b,\alpha)$在满足约束条件下，最小化损失函数。所以要先以$\alpha$为参数，求解$L(w,b,\alpha)$的最大值，在以$w,b$为参数，求解$L(w,b,\alpha)$的最小值。</p>
+<p>因此，我们的目标可写作：</p>
+<p>$$\min_{w,b}\max_{\alpha_i&gt;=0}L(w,b,\alpha) (\alpha_i&gt;=0)$$</p>
+<p>首先，第一步执行max，即最大化$L(w,b,\alpha)$，有两种情况：</p>
+<ul>
+<li>当$y_i(w * x_i+b)&gt;1$，函数的第二部分$\sum_{i=1}^N\alpha_i(y_i(w*x_i+b)-1)$一定为正，式子$\frac{1}{2}||w||^2$就要减去一个正数，此时若需要最大化$L(w,b,\alpha)$,则$\alpha$必须取到0</li>
+<li>当$y_i(w * x_i+b)&lt;1$，函数的第二部分$\sum_{i=1}^N\alpha_i(y_i(w*x_i+b)-1)$一定为负，式子$\frac{1}{2}||w||^2$就要减去一个负数，此时若需要最大化$L(w,b,\alpha)$,则$\alpha$必须取到正无穷</li>
+</ul>
+<p>因此，可以把函数的第二部分当做一个惩罚项，只有当$y_i(w*x_i+b)&gt;1$时函数没有受到惩罚，从而在求解最小值的时候让约束条件满足</p>
+<p>现在，$L(w,b,\alpha)$是我们新的损失函数，目标要通过先最大化，再最小化求解$w，b$</p>
+<h3 id="1-2-2-将拉格朗日函数转换为拉格朗日对偶函数"><a href="#1-2-2-将拉格朗日函数转换为拉格朗日对偶函数" class="headerlink" title="1.2.2 将拉格朗日函数转换为拉格朗日对偶函数"></a>1.2.2 将拉格朗日函数转换为拉格朗日对偶函数</h3><p><strong>1.为什么要进行转换？</strong><br>求极值，最简单的方法是对参数求导后让一阶导数为0，这里对参数$w,b$分别求偏导并使其为0</p>
+<p>$$<br>\begin{equation}\begin{split}<br>L(w,b,\alpha)&amp;=\frac{1}{2}||w||^2-\sum_{i=1}^N\alpha_i(y_i(w * x_i+b)-1)\\<br>&amp;=\frac{1}{2}||w||^2-\sum_{i=1}^N(\alpha_iy_iw * x_i+\alpha_iy_ib-\alpha_i) \\<br>&amp; =\frac{1}{2}||w||^2-\sum_{i=1}^N(\alpha_iy_iw * x_i)-\sum_{i=1}^N\alpha_iy_ib+\sum_{i=1}^N\alpha_i\\<br>&amp;=\frac{1}{2}(w^Tw)^{\frac{1}{2}*2}-\sum_{i=1}^N(\alpha_iy_iw * x_i)-\sum_{i=1}^N\alpha_iy_ib+\sum_{i=1}^N\alpha_i<br>\end{split}\end{equation}<br>$$</p>
+<p>$$<br>\begin{equation}\begin{split}<br>\frac{\partial L(w,b,\alpha)}{\partial w}&amp;=\frac{1}{2}*2w-\sum_{i=1}^N\alpha_iy_ix_i \\<br>&amp;=w-\sum_{i=1}^N\alpha_iy_ix_i=0 \to w = \sum_{i=1}^N\alpha_iy_ix_i<br>\end{split}\end{equation}<br>$$</p>
+<p>$$<br>\begin{equation}\begin{split}<br>\frac{\partial L(w,b,\alpha)}{\partial b}&amp;=\sum_{i=1}^N\alpha_iy_i=0 \to \sum_{i=1}^N\alpha_iy_i=0 \\<br>\end{split}\end{equation}<br>$$</p>
+<p>由于两个求偏导结果中都带有未知的拉格朗日乘数$\alpha_i$，因此需要有一种方法来求解拉格朗日乘数，而拉格朗日对偶函数，是只带有$alpha_i$而不带有$w,b$的形式，可以求解$\alpha_i$然后再代入（2）、（3）式中来求解参数$w,b$</p>
+<p><strong>2.为什么能够进行转换</strong></p>
+<p>对于任意一个拉格朗日函数$L(x,\alpha)=f(x)+\sum_{i=1}^q\alpha_ih_i(x)$，都存在一个与它对应的对偶函数$g(\alpha)$，只带有拉格朗日乘数$\alpha$作为唯一参数。如果$L(x,\alpha)$存在最优解并可以表示为$\min_xL(x,\alpha)$，并且对偶函数的最优解也存在并可以表示为$\max_\alpha g(\alpha)$，则可以定义对偶差异(dual gap)<br>$$\Delta = \min_{x}L(x,\alpha)-\max_\alpha g(\alpha)$$</p>
+<p>如果$\Delta=0$,则称$L(x,\alpha)$与其对偶函数之间存在强对偶关系，此时可以通过求其对偶函数的最优解来代替原始函数。</p>
+<p>强对偶关系存在需要满足KKT(Karush-Kuhn-Tucker)条件：<br>$$<br>\begin{equation}\begin{split}<br>\frac{\partial L}{\partial x_i}=0,\forall_i = 1,2,\dots,d \\<br>h_i(x)&lt;=0,\forall_i = 1,2,\dots,q \\<br>\alpha_i&gt;=0,\forall_i = 1,2,\dots,q \\<br>\alpha_ih_i(x)=0,\forall_i = 1,2,\dots,q \\<br>\end{split}\end{equation}<br>$$</p>
+<p>如果我们可以让KKT条件全部成立，则可以求解出$L(w,b,\alpha)$的对偶函数来求解$\alpha$</p>
+<p>之前求偏导时，得到<br>$$w = \sum_{i=1}^N\alpha_iy_ix_i$$<br>$$\sum_{i=1}^N\alpha_iy_i=0$$</p>
+<p>并且满足：<br>$$-(y(w*x_i+b)-1)&lt;=0, \alpha_i&gt;=0$$</p>
+<p>接下来，只需要满足：<br>$$\alpha_i(y_i(w*x_i+b)-1)=0$$</p>
+<p>当这个条件满足时，能够让$y_i(w*x_i+b)-1=0$是在虚线的超平面上的样本点，即我们的支持向量，其余样本点必须满足$\alpha_i=0$。</p>
+<p>现在KKT的五个条件都得到了满足，可以使用对偶函数求解。</p>
+<p><strong>3.怎样进行转换</strong></p>
+<p>首先将求导为0代入原始：<br>$$<br>\begin{equation}\begin{split}<br>L(w,b,\alpha)&amp;=\frac{1}{2}||w||^2-\sum_{i=1}^N\alpha_i(y_i(w * x_i+b)-1)\\<br>&amp;=\frac{1}{2}||w||^2-\sum_{i=1}^N(\alpha_iy_iw * x_i+\alpha_iy_ib-\alpha_i) \\<br>&amp; =\frac{1}{2}||w||^2-\sum_{i=1}^N(\alpha_iy_iw * x_i)-\sum_{i=1}^N\alpha_iy_ib+\sum_{i=1}^N\alpha_i\\<br>&amp;=\frac{1}{2}(w^Tw)^{\frac{1}{2}*2}-w\sum_{i=1}^N(\alpha_iy_i * x_i)-b\sum_{i=1}^N\alpha_iy_i+\sum_{i=1}^N\alpha_i \\<br>\end{split}\end{equation}</p>
+<p>将（2）、（3）式代入则有<br>$$=\frac{1}{2}w^Tw-w^Tw+\sum_{i=1}^N\alpha_i $$</p>
+<p>$$=-\frac{1}{2}w^Tw+\sum_{i=1}^N\alpha_i$$</p>
+<p>将（2）式代入，则有：<br>$$=-\frac{1}{2}\sum_{i=1}^N\alpha_iy_ix_i^T * \sum_{i=1}^N\alpha_iy_ix_i+\sum_{i=1}^N\alpha_i$$</p>
+<p>令这两个$w$源于不同的特征和标签：<br>$$=-\frac{1}{2}\sum_{i=1,j=1}^N\alpha_iy_ix_i^T\alpha_iy_ix_i+\sum_{i=1}^N\alpha_i$$</p>
+<p>$$=\sum_{i=1}^N\alpha_i-\frac{1}{2}\sum_{i=1,j=1}^N\alpha_i\alpha_jy_iy_jx_i^Tx_j$$</p>
+<p>将矩阵相乘转换为内积形式：<br>$$L_d = \sum_{i=1}^N\alpha_i-\frac{1}{2}\sum_{i=1,j=1}^N\alpha_i\alpha_jy_iy_jx_i * x_j$$</p>
+<p>函数$L_d$就是对偶函数，其对偶差异$L(w,b,\alpha)$和$L_d$，则有：<br>$$\Delta = \min_{w,b}\max_{\alpha_i&gt;=0}L(w,b,\alpha)-\max_{\alpha_i&gt;=0}L_d$$</p>
+<p>又因为在推导$L_d$时，对$L(w,b,\alpha)$偏导为0，所以可以把公式写成：<br>$$\Delta = \min_{w,b}\max_{\alpha_i&gt;=0}L(w,b,\alpha)-\max_{\alpha_i&gt;=0}\min_{w,b}L(w,b,\alpha)$$</p>
+<p>又因为所有KKT条件满足，所以：<br>$$ \min_{w,b}\max_{\alpha_i&gt;=0}L(w,b,\alpha)=\max_{\alpha_i&gt;=0}\min_{w,b}L(w,b,\alpha)$$</p>
+<p>所以，我们只需要求解对偶函数的最大值就可以了，最终，目标函数变化为：<br>$$\max_{\alpha_i&gt;=0}(\sum_{i=1}^N\alpha_i-\frac{1}{2}\sum_{i=1,j=1}^N\alpha_i\alpha_jy_iy_jx_i * x_j)$$</p>
+<h3 id="1-2-3-求解拉格朗日对偶函数极值及其后续过程"><a href="#1-2-3-求解拉格朗日对偶函数极值及其后续过程" class="headerlink" title="1.2.3 求解拉格朗日对偶函数极值及其后续过程"></a>1.2.3 求解拉格朗日对偶函数极值及其后续过程</h3><p>需要使用梯度下降、SMO或者二次规划(QP, quadratic programming)来求解，但是这一过程对数学要求的程度已经远远超出了需要的程度，因此不再深入了解。</p>
+<p>只需要知道，一旦求到了$\alpha$值，就可以求得决策边界参数$w,b$</p>
+<p>当求得参数后，就可以得到决策边界的表达式：<br>$$f(x_{test})=sign(w*x_{test}+b)$$</p>
+<p>其中$x_{test}$是任意测试样本，$sign(h)$是符号函数。</p>
+<p>至此，我们对SVM的原理已经有了一个比较深刻的理解。</p>
+<h2 id="1-3-非线性SVM与核函数"><a href="#1-3-非线性SVM与核函数" class="headerlink" title="1.3 非线性SVM与核函数"></a>1.3 非线性SVM与核函数</h2><h3 id="1-3-1-SVC在非线性数据上的推广"><a href="#1-3-1-SVC在非线性数据上的推广" class="headerlink" title="1.3.1 SVC在非线性数据上的推广"></a>1.3.1 SVC在非线性数据上的推广</h3><p>为了找出非线性数据的线性决策边界，我们需要将数据从原始空间$x$，投射到新空间$\Phi(x)$中，$\Phi(x)$是一个映射函数，代表某种非线性变换。线性SVM的原理可以很容易推广到非线性情况下，推导过程和逻辑都与线性SVM一样，只是在定义决策边界之前，需要对数据升维，将原始的$x$，转换成$\Phi(x)$</p>
+<p>因此，非线性SVM的损失函数初始形态为：<br>$$\min_{w,b}\frac{||w||^2}{2}$$<br>$$subject\  to\  y_i(w * \Phi(x)+b&gt;=1), i=1,2,\dots,N$$<br>拉格朗日和拉格朗日对偶函数也可得：<br>$$L(w,b,\alpha)=\frac{1}{2}||w||^2-\sum_{i=1}^N\alpha_i(y_i(w * \Phi(x)+b)-1)$$<br>$$L_d = \sum_{i=1}^N\alpha_i - \frac{1}{2}\sum_{i,j}\alpha_i\alpha_j y_i y_j\Phi(x_i)\Phi(x_j)$$</p>
+<p>同理可以使用相同的推导方式让拉格朗日函数满足KKT条件，并且对每个参数求导，再使用梯度下降或SMO等方式求解，最终得到决策边界函数：<br>$$f(x_{test})=sign(w*\Phi(x_{test})+b)$$</p>
+<h3 id="1-3-2-重要参数kernel"><a href="#1-3-2-重要参数kernel" class="headerlink" title="1.3.2 重要参数kernel"></a>1.3.2 重要参数kernel</h3><p>但是，我们不清楚什么样的数据应该使用什么类型的映射函数确保在变换空间中可以找出决策边界。</p>
+<table>
+<thead>
+<tr>
+<th align="left">关键概念：核函数</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">解决这个问题的数学方式，叫作“核技巧”(Kernel Trick)，是一种讷讷够使用数据原始空间中的向量计算表示生维后的空间中的点积结果的数学方式$K(u,v)=\Phi(u)*\Phi(v)$,而这个点积函数$K(u,v)$，就被叫作“核函数”(Kernel Funciton)</td>
+</tr>
+</tbody></table>
+<p>选用不同的核函数，就可以解决不同数据分布下寻找超平面的问题。以下是“kernel”在Sklearn中的几种选项：</p>
+<p><img src="https://note.youdao.com/yws/api/personal/file/0D76DD0804FD486EA95C591CDF1335C5?method=download&shareKey=c5e8aae3bd6137b2f4c315008302565b" alt></p>
+<h3 id="1-3-3-核函数的优势和缺陷"><a href="#1-3-3-核函数的优势和缺陷" class="headerlink" title="1.3.3 核函数的优势和缺陷"></a>1.3.3 核函数的优势和缺陷</h3><ol>
+<li>线性核，尤其是多项式核：在高次项计算非常缓慢</li>
+<li>rbf和多项式核不擅长处理量纲不统一的数据集</li>
+</ol>
+<p><strong>因此，SVM执行之前，推荐先进行数据的无量纲化处理</strong></p>
+<h3 id="1-3-4-核函数相关的参数：degree-amp-gamma-amp-coef0"><a href="#1-3-4-核函数相关的参数：degree-amp-gamma-amp-coef0" class="headerlink" title="1.3.4 核函数相关的参数：degree &amp; gamma &amp; coef0"></a>1.3.4 核函数相关的参数：degree &amp; gamma &amp; coef0</h3><ul>
+<li>gamma是表达式中的$\gamma$</li>
+<li>degree是多项式核函数的次数$d$</li>
+<li>ceof0是常数项</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th align="left">参数</th>
+<th align="left">含义</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">degree</td>
+<td align="left">整数，可不填，默认3</td>
+</tr>
+<tr>
+<td align="left"></td>
+<td align="left">多项式核函数的次数（’poly’），如果核函数没有选择”poly”，这个参数会被忽略</td>
+</tr>
+<tr>
+<td align="left">gamma</td>
+<td align="left">浮点数，可不填，默认“auto”</td>
+</tr>
+<tr>
+<td align="left"></td>
+<td align="left">核函数的系数，仅在参数Kernel的选项为”rbf”,”poly”和”sigmoid”的时候有效</td>
+</tr>
+<tr>
+<td align="left"></td>
+<td align="left">输入“auto”，自动使用1/(n_features)作为gamma的取值</td>
+</tr>
+<tr>
+<td align="left"></td>
+<td align="left">输入”scale”，则使用1/(n_features * X.std())作为gamma的取值</td>
+</tr>
+<tr>
+<td align="left">ceof0</td>
+<td align="left">浮点数，可不填，默认=0.0</td>
+</tr>
+<tr>
+<td align="left"></td>
+<td align="left">核函数中的常数项，它只在参数kernel为’poly’和’sigmoid’的时候有效。</td>
+</tr>
+</tbody></table>
+<h3 id="1-4-硬间隔与软间隔：重要参数C"><a href="#1-4-硬间隔与软间隔：重要参数C" class="headerlink" title="1.4 硬间隔与软间隔：重要参数C"></a>1.4 硬间隔与软间隔：重要参数C</h3><h3 id="1-4-1-SVM在软间隔数据上的推广"><a href="#1-4-1-SVM在软间隔数据上的推广" class="headerlink" title="1.4.1 SVM在软间隔数据上的推广"></a>1.4.1 SVM在软间隔数据上的推广</h3><p>我们可以通过调整我们对决策边界的定义，将硬间隔时得出的数学结论推广到软间隔的情况上，让决策边界能够忍  受一小部分训练误差。这个时候，我们的决策边界就不是单纯地寻求最大边际了，因为对于软间隔地数据来说，边  际越大被分错的样本也就会越多，因此我们需要找出一个”最大边际“与”被分错的样本数量“之间的平衡<br>|关键概念：硬间隔与软间隔|<br>|:–|<br>|当两组数据是完全线性可分，我们可以找出一个决策边界使得训练集上的分类误差为0，这两种数据就被称为  是存在”硬间隔“的。当两组数据几乎是完全线性可分的，但决策边界在训练集上存在较小的训练误差，这两种数据就被称为是存在”软间隔“。|</p>
+<p><img src="https://note.youdao.com/yws/api/personal/file/C2FFA1AA25854902ACF46B5A0C5D3410?method=download&shareKey=95be7710c6d12317d6fbda16a8bd436e" alt></p>
+<p>由上图可知，超平面无法让数据上的训练误差为0，因此需要放松判别函数的条件，引入松弛系数$\zeta$来帮助优化判别函数：<br>$$w<em>x_i +b&gt;=1-\zeta_i if\ y_i = 1$$<br>$$w</em>x_i +b&lt;=-1+\zeta_i if\ y_i = -1$$</p>
+<p>其中$\zeta_i&gt;0$，在求解最大边际的损失函数中加上一个惩罚项，我们的拉格朗日函数，拉格朗日对偶函数也因此被松弛系数改变：<br>$$\min_{w,b,\zeta}\frac{||w||^2}{2}+C\sum_{i=1}^n\zeta_i$$<br>$$subject to y_i(w* \Phi(x_i)+b&gt;=1-\zeta_i)$$<br>$$\zeta_i&gt;=0,i=1,2,\dots,N$$</p>
+<p>其中，$C$是用来控制惩罚力度的系数</p>
+<p>拉格朗日函数为(其中$\mu$是第二个拉格朗日乘数)：<br>$$L(w,b,\alpha,\zeta)= \frac{1}{2}||w||^2+C\sum_{i=1}^N\zeta_i-\sum_{i=1}^N\alpha_i(y_i(w*\zeta(x_i)+b)-1+\zeta_i)-\sum_{i=1}^N\mu_i\zeta_i$$</p>
+<p>需要满足的KKT条件为：<br>$$\frac{\partial L(w,b,\alpha,\zeta)}{\partial w}=\frac{\partial L(w,b,\alpha,\zeta)}{\partial b}=\frac{\partial L(w,b,\alpha,\zeta)}{\partial \zeta}=0$$</p>
+<p>$$\zeta_i&gt;=0,\alpha_i&gt;=0,\mu_i&gt;=0$$<br>$$\alpha_i(y_i(w*\Phi(x_i)+b)-1+\zeta_i)=0$$<br>$$\mu_i\zeta_i=0$$</p>
+<p>拉格朗日对偶函数为：<br>$$L_D = \sum_{i=1}^N\alpha_i - \frac{1}{2}\sum_{i,j}\alpha_i\alpha_jy_iy_j\Phi(x_i)\Phi(x_j)$$<br>$$subject\  to\  C &gt;=\alpha_i&gt;=0$$<br>公式中唯一出现的新变量，松弛系数惩罚力度$C$。由参数$C$来进行控制</p>
+<h3 id="1-4-2-重要参数C"><a href="#1-4-2-重要参数C" class="headerlink" title="1.4.2 重要参数C"></a>1.4.2 重要参数C</h3><p>参数C用于权衡”训练样本的正确分类“与”决策函数的边际最大化“两个不可同时完成的目标，希望找出一个平衡点来让模型的效果最佳。</p>
+<table>
+<thead>
+<tr>
+<th align="left">参数</th>
+<th align="left">含义</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">C</td>
+<td align="left">浮点数，默认1，必须大于等于0，可不填</td>
+</tr>
+<tr>
+<td align="left"></td>
+<td align="left">松弛系数的惩罚项系数。如果C值设定比较大，那SVC可能会选择边际较小的，能够更好地分类所有训练点的决策边界，不过模型的训练时间也会更长。如果C的设定值较小，那SVC会尽量最大化边界，决策功能会更简单，但代价是训练的准确度。换句话说，C在SVM中的影响就像正则化参数对逻辑回归的影响。</td>
+</tr>
+</tbody></table>
 ]]></content>
       <categories>
         <category>机器学习</category>
       </categories>
       <tags>
         <tag>机器学习</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>行测笔记：判断推理（一）图形推理</title>
-    <url>/2020/07/15/xingce/</url>
-    <content><![CDATA[<h2 id="图形推理的命题形式"><a href="#图形推理的命题形式" class="headerlink" title="图形推理的命题形式"></a>图形推理的命题形式</h2><ol>
-<li>一组图：从左往右读题，找整体规律的共同点。或间隔跳跃观察</li>
-<li>两组图：找第一组规律，应用于第二组</li>
-<li>九宫格：横行（最多）、数列、对角线观察规律</li>
-<li>分组分类：找寻每组统一规律</li>
-<li>空间类：折纸盒，转化成平面思维（截面图、三视图、立体拼合）<a id="more"></a>
-
-</li>
-</ol>
-<h2 id="图形推理考什么？（学习重点：识别图形特征）"><a href="#图形推理考什么？（学习重点：识别图形特征）" class="headerlink" title="图形推理考什么？（学习重点：识别图形特征）"></a>图形推理考什么？（学习重点：识别图形特征）</h2><ol>
-<li>位置规律</li>
-<li>样式规律</li>
-<li>属性规律</li>
-<li>特殊规律</li>
-<li>数量规律</li>
-<li>空间规律</li>
-</ol>
-<h2 id="一、位置规律"><a href="#一、位置规律" class="headerlink" title="一、位置规律"></a>一、位置规律</h2><h3 id="位置类识别特征（各图元素组成相同）"><a href="#位置类识别特征（各图元素组成相同）" class="headerlink" title="位置类识别特征（各图元素组成相同）"></a>位置类识别特征（各图元素组成相同）</h3><h3 id="（1）平移："><a href="#（1）平移：" class="headerlink" title="（1）平移："></a>（1）平移：</h3><ol>
-<li>方向 ：直线（上下、左右、对角线）、绕圈（顺/逆时针）</li>
-<li>步数 ：恒定、递增（等差）、周期（考的少）</li>
-</ol>
-<p><strong>技巧：1.多个元素分开看，边做边排除 2.位置规律——就近走原则</strong></p>
-<h3 id="宫格型黑块平移"><a href="#宫格型黑块平移" class="headerlink" title="宫格型黑块平移"></a>宫格型黑块平移</h3><p><strong>1.个别黑块可重合</strong></p>
-<ul>
-<li>题干和选项大部分元素组成完全一致，个别一两幅图少黑块</li>
-<li>题干第一幅图的黑块一般不会重合</li>
-</ul>
-<p><strong>2.黑块走到头后怎么办？</strong></p>
-<ul>
-<li>循环走：从头开始</li>
-<li>折返走：直接弹回</li>
-</ul>
-<p><strong>3.“双胞胎”黑块们如何分辨</strong>：就近走原则</p>
-<h3 id="多宫格方向判定"><a href="#多宫格方向判定" class="headerlink" title="多宫格方向判定"></a>多宫格方向判定</h3><p>题型特征：16宫格图形多个黑块平移</p>
-<ol>
-<li>绕圈走：中间颜色数量相同，优先考虑内外圈分开看</li>
-<li>走直线：中间颜色数量不同，有限考虑走直线</li>
-</ol>
-<h3 id="（2）旋转："><a href="#（2）旋转：" class="headerlink" title="（2）旋转："></a>（2）旋转：</h3><ol>
-<li>方向：顺时针、逆时针</li>
-<li>常见角度：45、60、90、180度等</li>
-</ol>
-<p><strong>技巧：元素多，没思路？相邻比较走起来！</strong></p>
-<p><strong>钟表类：外面一个框，中心一个点，绕了一圈线——常考旋转</strong></p>
-<h3 id="（3）翻转"><a href="#（3）翻转" class="headerlink" title="（3）翻转"></a>（3）翻转</h3><ol>
-<li>左右翻转：竖轴对称</li>
-<li>上下翻转：横轴对称</li>
-</ol>
-<p><strong>元素组成相同优先看位置：对称通常是图形自身的规律，而不是两幅图之间的翻转</strong></p>
-<p><strong>技巧：先看容易看懂的，旋转180度看不出来就转卷子！</strong></p>
-<p><strong>如何区分旋转与翻转</strong><br>只有左右互换（上下不变）——左右翻<br>只有上下互换（左右不变）——上下翻<br>上下、左右都互换——旋转180度</p>
-<p><strong>思维导图</strong><br><img src="https://note.youdao.com/yws/api/personal/file/CC02E070330340E8880E45623154A7F9?method=download&shareKey=ab0d5ad994f7c4d39f8370b641a8faa8" alt></p>
-<h2 id="二、样式规律"><a href="#二、样式规律" class="headerlink" title="二、样式规律"></a>二、样式规律</h2><h3 id="样式类别识别特征：元素组成相似"><a href="#样式类别识别特征：元素组成相似" class="headerlink" title="样式类别识别特征：元素组成相似"></a>样式类别识别特征：元素组成相似</h3><h3 id="（1）加、减、同、异"><a href="#（1）加、减、同、异" class="headerlink" title="（1）加、减、同、异"></a>（1）加、减、同、异</h3><p><strong>识别特征：相同线条重复出现</strong></p>
-<ol>
-<li>相加、相减</li>
-<li>求异（保留不同）</li>
-<li>求同（保留相同）</li>
-</ol>
-<p><strong>技巧：对比选项，从特殊线条入手（横线、竖线、最长最短线）</strong></p>
-<p><strong>位置+样式类题目，先转谁呢？  谁搞特殊，先转谁！</strong></p>
-<ol>
-<li>图1与图2有相同部分——先求同求异再转</li>
-<li>图2与图3有相同部分——转图1</li>
-<li>图1与图3有想吐部分——转图2</li>
-</ol>
-<h3 id="（2）黑白运算"><a href="#（2）黑白运算" class="headerlink" title="（2）黑白运算"></a>（2）黑白运算</h3><p><strong>识别特征：图形轮廓和分割区域相同，内部的颜色不同</strong><br><strong>方法：相同位置颜色做加法（注意顺序）</strong></p>
-<p><strong>注意：</strong></p>
-<ol>
-<li>运算规则具体题目具体找</li>
-<li>黑+白 不等于 白+黑，要具体题目具体验证</li>
-<li>与黑块平移区分：黑块数量相同，优先平移；黑块数量不同，优先黑白运算</li>
-</ol>
-<p><strong>技巧：在确定可能考黑白运算后，从问好处着手解题更快，边找边验证</strong></p>
-<p><strong>思维导图</strong><br><img src="https://note.youdao.com/yws/api/personal/file/96D9D2A1C7614181B52F461B9C1872E7?method=download&shareKey=bb4bd7eaf38467812c12098b8c66fbff" alt></p>
-<h2 id="三、属性规律"><a href="#三、属性规律" class="headerlink" title="三、属性规律"></a>三、属性规律</h2><h3 id="属性类别识别特征-元素组成不相同、不相似——优先属性"><a href="#属性类别识别特征-元素组成不相同、不相似——优先属性" class="headerlink" title="属性类别识别特征: 元素组成不相同、不相似——优先属性"></a>属性类别识别特征: 元素组成不相同、不相似——优先属性</h3><h3 id="（1）对称性"><a href="#（1）对称性" class="headerlink" title="（1）对称性"></a>（1）对称性</h3><ol>
-<li>轴对称：”等腰”元素出现</li>
-<li>中心对称：平行四边形，N,Z,S变形图出现</li>
-<li>轴对称+中心对称：图形存在相互垂直的对称轴</li>
-<li>对称性的细化考法<ul>
-<li>对称轴的方向与数量</li>
-<li>对称轴与图形中线的位置关系：重合、垂直、交点</li>
-<li>角度：平行、垂直、交叉某角度</li>
-</ul>
-</li>
-</ol>
-<p><strong>优先考虑对称轴时，先画出图形对称轴！</strong></p>
-<p><strong>技巧：整体没有规律，分开看</strong></p>
-<h3 id="（2）曲直性"><a href="#（2）曲直性" class="headerlink" title="（2）曲直性"></a>（2）曲直性</h3><ol>
-<li>全直线图形</li>
-<li>全曲线图形</li>
-<li>曲+直图形</li>
-</ol>
-<p><strong>常见考法：三种情况均出现；与其他考点结合命题</strong></p>
-<p><strong>所有图形均有外框——分开看</strong></p>
-<h3 id="（3）开闭性"><a href="#（3）开闭性" class="headerlink" title="（3）开闭性"></a>（3）开闭性</h3><p><strong>题型特征：完整图的图形留了小开口，可以考虑开闭性</strong></p>
-<ol>
-<li>全封闭图形</li>
-<li>全开放图形</li>
-<li>半封闭图形</li>
-</ol>
-<p><strong>黑色粗线条，生活化元素/图形留有小开口——考虑开闭性</strong></p>
-<p><strong>思维导图</strong><br><img src="https://note.youdao.com/yws/api/personal/file/F59E60D6989F4394BE9C6BDDDC9887CF?method=download&shareKey=649c8319245813b64168677ca4240c22" alt></p>
-<h2 id="四、特殊规律"><a href="#四、特殊规律" class="headerlink" title="四、特殊规律"></a>四、特殊规律</h2><h3 id="（1）图形间关系"><a href="#（1）图形间关系" class="headerlink" title="（1）图形间关系"></a>（1）图形间关系</h3><p><strong>识别特征：两个或多个封闭图形连在一起</strong></p>
-<ol>
-<li>相离</li>
-<li>相交<ul>
-<li>相交于点</li>
-<li>相交于边（数量、样式：边的长短、整体还是部分）</li>
-<li>相较于面（形状）</li>
-</ul>
-</li>
-</ol>
-<p><strong>一根线牵出多个图形考虑相交于点，其他考虑相交于边或面</strong></p>
-<h3 id="（2）功能元素"><a href="#（2）功能元素" class="headerlink" title="（2）功能元素"></a>（2）功能元素</h3><p><strong>识别特征：黑点、白点、箭头、小图形</strong></p>
-<ol>
-<li>标记位置（上、下、左、右、内、外）</li>
-<li>标记图形<ul>
-<li>点：交点</li>
-<li>线：直线、曲线 / 最长边、最短边</li>
-<li>角：直角、锐角、钝角 / 最大角、最小角</li>
-<li>面：相交面 / 最大面、最小面 / 直线面、曲线面 / 特殊形状面</li>
-</ul>
-</li>
-</ol>
-<p><strong>思维导图</strong><br><img src="https://note.youdao.com/yws/api/personal/file/84A38B8255CA4301907F28ECCE456AEE?method=download&shareKey=b6b8b1a759af355f000b27566005c2c3" alt></p>
-<h2 id="五、数量规律"><a href="#五、数量规律" class="headerlink" title="五、数量规律"></a>五、数量规律</h2><p><strong>识别特征：元素组成不同、不相似、且属性没规律，数量规律明显</strong></p>
-<h3 id="（1）面数量"><a href="#（1）面数量" class="headerlink" title="（1）面数量"></a>（1）面数量</h3><p><strong>注意：只有封闭的白色区域才算面</strong><br><strong>识别特征</strong><br><strong>1.图形被分割，封闭面明显</strong><br><strong>2.生活化图形、粗线条图形中留空白区域</strong></p>
-<p>面的细化考法：数面特征图，但整体数面无答案</p>
-<ol>
-<li>面的形状：三角形、四边形</li>
-<li>相同面数量</li>
-<li>特殊面的形状：最大面、最小面、相交面</li>
-</ol>
-<h3 id="（2）线数量"><a href="#（2）线数量" class="headerlink" title="（2）线数量"></a>（2）线数量</h3><p><strong>识别特征</strong><br><strong>1.直线数特征图：多边形、单一直线</strong><br><strong>2.曲线数特征图：曲线图形（圆、弧、单一曲线）</strong></p>
-<p><strong>直线和曲线分开数</strong></p>
-<p><strong>线的细化考法</strong></p>
-<ol>
-<li>线的位置：边框线条、框内线条</li>
-<li>直线的细化：横线/竖线</li>
-</ol>
-<p><strong>大部分图形题中有曲线，优先考虑曲线规律</strong></p>
-<p><strong>3.线的特殊考点：笔画问题</strong><br><strong>识别特征</strong><br><strong>1.五角星、圆相切/相交、“日”变形、“田”变形</strong><br><strong>2.多端点、出头端点、圆相交(近年热点)</strong></p>
-<ol>
-<li>可以一笔画<ul>
-<li>线条之间连通</li>
-<li>奇点数量为0或2（奇点：以一个点为中心，发射出奇数条线）</li>
-</ul>
-</li>
-</ol>
-<p><strong>端点都是奇点，别忘了数！</strong></p>
-<ol start="2">
-<li>多笔画<ul>
-<li>笔画数 = 奇点数/2 (奇点数一定是偶数)</li>
-</ul>
-</li>
-</ol>
-<p><strong>不连通图直接数笔画</strong></p>
-<h3 id="（3）点数量"><a href="#（3）点数量" class="headerlink" title="（3）点数量"></a>（3）点数量</h3><p><strong>识别特征</strong><br>1.线条交叉明显（大树杈）<br>2.乱糟糟一团线交叉<br>3.相切较多<br><strong>注意：线与线的交点数量</strong><br>1.顶点、切点是交点<br>2.端点不是交点</p>
-<p><strong>点的细化考法：数点特征图，但整体点无规律</strong></p>
-<ol>
-<li><p>按线的属性细化：曲直交点</p>
-<ul>
-<li>特征：圆或弧多，且存在曲直相交</li>
-</ul>
-</li>
-<li><p>按线的位置细化：内外交点</p>
-<ul>
-<li>特征：图形都有外框（内外分开看思维）</li>
-</ul>
-</li>
-</ol>
-<h3 id="（4）素数量"><a href="#（4）素数量" class="headerlink" title="（4）素数量"></a>（4）素数量</h3><p><strong>*识别特征：独立的小图形</strong></p>
-<ol>
-<li>元素种类</li>
-<li>元素个数</li>
-</ol>
-<p><strong>形状一致，大小不一致也看作一种元素</strong></p>
-<ol start="3">
-<li>部分数：连在一起的就是一部分</li>
-</ol>
-<p><strong>识别特征：生活化图形、黑色粗线条图形</strong></p>
-<p><strong>数量规律特征图总汇(按考频排序)</strong></p>
-<p><img src="https://note.youdao.com/yws/api/personal/file/56CAC826F4B14DAAB59B45411A39D32E?method=download&shareKey=1d6c6fbe4ab78574d6561879d6ab8f91" alt></p>
-<p><strong>思维导图</strong></p>
-<p><img src="https://note.youdao.com/yws/api/personal/file/99C081A3826E4102AC4C11414BEA5180?method=download&shareKey=e819a2b5c9eb4b8fa4c807d63b28184a" alt></p>
-<h3 id="六、空间规律"><a href="#六、空间规律" class="headerlink" title="六、空间规律"></a>六、空间规律</h3><h3 id="（1）相对面"><a href="#（1）相对面" class="headerlink" title="（1）相对面"></a>（1）相对面</h3><p>应用：一组相对面同时出现的选项排除</p>
-<ol>
-<li>同行同列相隔一个面</li>
-<li>Z字形紧邻中线的两端</li>
-</ol>
-<p><strong>出题可能会有无中生有的面</strong></p>
-<h3 id="（2）相邻面——公共边"><a href="#（2）相邻面——公共边" class="headerlink" title="（2）相邻面——公共边"></a>（2）相邻面——公共边</h3><p><strong>方法1：折叠前后相邻关系保持不变</strong></p>
-<ol>
-<li>平面图直接相邻的两个面的公共边</li>
-<li>平面图中构成直角的两个边是同一条边</li>
-<li>一排4个面，两头的两条边是同一条边（1-4-1）</li>
-</ol>
-<p><strong>方法2：画边法</strong></p>
-<ol>
-<li>结合选项，找一个特殊面的唯一点<ul>
-<li>特殊面：只出现一次，有可以区分的唯一点</li>
-<li>唯一点：是指该面中唯一的，没有与其一样的点</li>
-</ul>
-</li>
-<li>顺（逆）时针方向画边，并标出序号</li>
-</ol>
-<p><strong>注意：同一个面、同一个点、同方向</strong><br>3. 题干与选项对应：面不一致排除</p>
-<p><strong>思维导图</strong><br><img src="https://note.youdao.com/yws/api/personal/file/0E167A466553402EB97E034F3FA658C2?method=download&shareKey=0071ee3ee90162d908695fcb5c0c9bc4" alt></p>
-]]></content>
-      <categories>
-        <category>行测笔试</category>
-      </categories>
-      <tags>
-        <tag>行测笔试</tag>
       </tags>
   </entry>
   <entry>
@@ -1647,6 +1562,225 @@ print(&apos;runtime:&apos;, time.time() - start_t)</code></pre>]]></content>
       </categories>
       <tags>
         <tag>机器学习</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>行测笔记：判断推理（一）图形推理</title>
+    <url>/2020/07/15/xingce/</url>
+    <content><![CDATA[<h2 id="图形推理的命题形式"><a href="#图形推理的命题形式" class="headerlink" title="图形推理的命题形式"></a>图形推理的命题形式</h2><ol>
+<li>一组图：从左往右读题，找整体规律的共同点。或间隔跳跃观察</li>
+<li>两组图：找第一组规律，应用于第二组</li>
+<li>九宫格：横行（最多）、数列、对角线观察规律</li>
+<li>分组分类：找寻每组统一规律</li>
+<li>空间类：折纸盒，转化成平面思维（截面图、三视图、立体拼合）<a id="more"></a>
+
+</li>
+</ol>
+<h2 id="图形推理考什么？（学习重点：识别图形特征）"><a href="#图形推理考什么？（学习重点：识别图形特征）" class="headerlink" title="图形推理考什么？（学习重点：识别图形特征）"></a>图形推理考什么？（学习重点：识别图形特征）</h2><ol>
+<li>位置规律</li>
+<li>样式规律</li>
+<li>属性规律</li>
+<li>特殊规律</li>
+<li>数量规律</li>
+<li>空间规律</li>
+</ol>
+<h2 id="一、位置规律"><a href="#一、位置规律" class="headerlink" title="一、位置规律"></a>一、位置规律</h2><h3 id="位置类识别特征（各图元素组成相同）"><a href="#位置类识别特征（各图元素组成相同）" class="headerlink" title="位置类识别特征（各图元素组成相同）"></a>位置类识别特征（各图元素组成相同）</h3><h3 id="（1）平移："><a href="#（1）平移：" class="headerlink" title="（1）平移："></a>（1）平移：</h3><ol>
+<li>方向 ：直线（上下、左右、对角线）、绕圈（顺/逆时针）</li>
+<li>步数 ：恒定、递增（等差）、周期（考的少）</li>
+</ol>
+<p><strong>技巧：1.多个元素分开看，边做边排除 2.位置规律——就近走原则</strong></p>
+<h3 id="宫格型黑块平移"><a href="#宫格型黑块平移" class="headerlink" title="宫格型黑块平移"></a>宫格型黑块平移</h3><p><strong>1.个别黑块可重合</strong></p>
+<ul>
+<li>题干和选项大部分元素组成完全一致，个别一两幅图少黑块</li>
+<li>题干第一幅图的黑块一般不会重合</li>
+</ul>
+<p><strong>2.黑块走到头后怎么办？</strong></p>
+<ul>
+<li>循环走：从头开始</li>
+<li>折返走：直接弹回</li>
+</ul>
+<p><strong>3.“双胞胎”黑块们如何分辨</strong>：就近走原则</p>
+<h3 id="多宫格方向判定"><a href="#多宫格方向判定" class="headerlink" title="多宫格方向判定"></a>多宫格方向判定</h3><p>题型特征：16宫格图形多个黑块平移</p>
+<ol>
+<li>绕圈走：中间颜色数量相同，优先考虑内外圈分开看</li>
+<li>走直线：中间颜色数量不同，有限考虑走直线</li>
+</ol>
+<h3 id="（2）旋转："><a href="#（2）旋转：" class="headerlink" title="（2）旋转："></a>（2）旋转：</h3><ol>
+<li>方向：顺时针、逆时针</li>
+<li>常见角度：45、60、90、180度等</li>
+</ol>
+<p><strong>技巧：元素多，没思路？相邻比较走起来！</strong></p>
+<p><strong>钟表类：外面一个框，中心一个点，绕了一圈线——常考旋转</strong></p>
+<h3 id="（3）翻转"><a href="#（3）翻转" class="headerlink" title="（3）翻转"></a>（3）翻转</h3><ol>
+<li>左右翻转：竖轴对称</li>
+<li>上下翻转：横轴对称</li>
+</ol>
+<p><strong>元素组成相同优先看位置：对称通常是图形自身的规律，而不是两幅图之间的翻转</strong></p>
+<p><strong>技巧：先看容易看懂的，旋转180度看不出来就转卷子！</strong></p>
+<p><strong>如何区分旋转与翻转</strong><br>只有左右互换（上下不变）——左右翻<br>只有上下互换（左右不变）——上下翻<br>上下、左右都互换——旋转180度</p>
+<p><strong>思维导图</strong><br><img src="https://note.youdao.com/yws/api/personal/file/CC02E070330340E8880E45623154A7F9?method=download&shareKey=ab0d5ad994f7c4d39f8370b641a8faa8" alt></p>
+<h2 id="二、样式规律"><a href="#二、样式规律" class="headerlink" title="二、样式规律"></a>二、样式规律</h2><h3 id="样式类别识别特征：元素组成相似"><a href="#样式类别识别特征：元素组成相似" class="headerlink" title="样式类别识别特征：元素组成相似"></a>样式类别识别特征：元素组成相似</h3><h3 id="（1）加、减、同、异"><a href="#（1）加、减、同、异" class="headerlink" title="（1）加、减、同、异"></a>（1）加、减、同、异</h3><p><strong>识别特征：相同线条重复出现</strong></p>
+<ol>
+<li>相加、相减</li>
+<li>求异（保留不同）</li>
+<li>求同（保留相同）</li>
+</ol>
+<p><strong>技巧：对比选项，从特殊线条入手（横线、竖线、最长最短线）</strong></p>
+<p><strong>位置+样式类题目，先转谁呢？  谁搞特殊，先转谁！</strong></p>
+<ol>
+<li>图1与图2有相同部分——先求同求异再转</li>
+<li>图2与图3有相同部分——转图1</li>
+<li>图1与图3有想吐部分——转图2</li>
+</ol>
+<h3 id="（2）黑白运算"><a href="#（2）黑白运算" class="headerlink" title="（2）黑白运算"></a>（2）黑白运算</h3><p><strong>识别特征：图形轮廓和分割区域相同，内部的颜色不同</strong><br><strong>方法：相同位置颜色做加法（注意顺序）</strong></p>
+<p><strong>注意：</strong></p>
+<ol>
+<li>运算规则具体题目具体找</li>
+<li>黑+白 不等于 白+黑，要具体题目具体验证</li>
+<li>与黑块平移区分：黑块数量相同，优先平移；黑块数量不同，优先黑白运算</li>
+</ol>
+<p><strong>技巧：在确定可能考黑白运算后，从问好处着手解题更快，边找边验证</strong></p>
+<p><strong>思维导图</strong><br><img src="https://note.youdao.com/yws/api/personal/file/96D9D2A1C7614181B52F461B9C1872E7?method=download&shareKey=bb4bd7eaf38467812c12098b8c66fbff" alt></p>
+<h2 id="三、属性规律"><a href="#三、属性规律" class="headerlink" title="三、属性规律"></a>三、属性规律</h2><h3 id="属性类别识别特征-元素组成不相同、不相似——优先属性"><a href="#属性类别识别特征-元素组成不相同、不相似——优先属性" class="headerlink" title="属性类别识别特征: 元素组成不相同、不相似——优先属性"></a>属性类别识别特征: 元素组成不相同、不相似——优先属性</h3><h3 id="（1）对称性"><a href="#（1）对称性" class="headerlink" title="（1）对称性"></a>（1）对称性</h3><ol>
+<li>轴对称：”等腰”元素出现</li>
+<li>中心对称：平行四边形，N,Z,S变形图出现</li>
+<li>轴对称+中心对称：图形存在相互垂直的对称轴</li>
+<li>对称性的细化考法<ul>
+<li>对称轴的方向与数量</li>
+<li>对称轴与图形中线的位置关系：重合、垂直、交点</li>
+<li>角度：平行、垂直、交叉某角度</li>
+</ul>
+</li>
+</ol>
+<p><strong>优先考虑对称轴时，先画出图形对称轴！</strong></p>
+<p><strong>技巧：整体没有规律，分开看</strong></p>
+<h3 id="（2）曲直性"><a href="#（2）曲直性" class="headerlink" title="（2）曲直性"></a>（2）曲直性</h3><ol>
+<li>全直线图形</li>
+<li>全曲线图形</li>
+<li>曲+直图形</li>
+</ol>
+<p><strong>常见考法：三种情况均出现；与其他考点结合命题</strong></p>
+<p><strong>所有图形均有外框——分开看</strong></p>
+<h3 id="（3）开闭性"><a href="#（3）开闭性" class="headerlink" title="（3）开闭性"></a>（3）开闭性</h3><p><strong>题型特征：完整图的图形留了小开口，可以考虑开闭性</strong></p>
+<ol>
+<li>全封闭图形</li>
+<li>全开放图形</li>
+<li>半封闭图形</li>
+</ol>
+<p><strong>黑色粗线条，生活化元素/图形留有小开口——考虑开闭性</strong></p>
+<p><strong>思维导图</strong><br><img src="https://note.youdao.com/yws/api/personal/file/F59E60D6989F4394BE9C6BDDDC9887CF?method=download&shareKey=649c8319245813b64168677ca4240c22" alt></p>
+<h2 id="四、特殊规律"><a href="#四、特殊规律" class="headerlink" title="四、特殊规律"></a>四、特殊规律</h2><h3 id="（1）图形间关系"><a href="#（1）图形间关系" class="headerlink" title="（1）图形间关系"></a>（1）图形间关系</h3><p><strong>识别特征：两个或多个封闭图形连在一起</strong></p>
+<ol>
+<li>相离</li>
+<li>相交<ul>
+<li>相交于点</li>
+<li>相交于边（数量、样式：边的长短、整体还是部分）</li>
+<li>相较于面（形状）</li>
+</ul>
+</li>
+</ol>
+<p><strong>一根线牵出多个图形考虑相交于点，其他考虑相交于边或面</strong></p>
+<h3 id="（2）功能元素"><a href="#（2）功能元素" class="headerlink" title="（2）功能元素"></a>（2）功能元素</h3><p><strong>识别特征：黑点、白点、箭头、小图形</strong></p>
+<ol>
+<li>标记位置（上、下、左、右、内、外）</li>
+<li>标记图形<ul>
+<li>点：交点</li>
+<li>线：直线、曲线 / 最长边、最短边</li>
+<li>角：直角、锐角、钝角 / 最大角、最小角</li>
+<li>面：相交面 / 最大面、最小面 / 直线面、曲线面 / 特殊形状面</li>
+</ul>
+</li>
+</ol>
+<p><strong>思维导图</strong><br><img src="https://note.youdao.com/yws/api/personal/file/84A38B8255CA4301907F28ECCE456AEE?method=download&shareKey=b6b8b1a759af355f000b27566005c2c3" alt></p>
+<h2 id="五、数量规律"><a href="#五、数量规律" class="headerlink" title="五、数量规律"></a>五、数量规律</h2><p><strong>识别特征：元素组成不同、不相似、且属性没规律，数量规律明显</strong></p>
+<h3 id="（1）面数量"><a href="#（1）面数量" class="headerlink" title="（1）面数量"></a>（1）面数量</h3><p><strong>注意：只有封闭的白色区域才算面</strong><br><strong>识别特征</strong><br><strong>1.图形被分割，封闭面明显</strong><br><strong>2.生活化图形、粗线条图形中留空白区域</strong></p>
+<p>面的细化考法：数面特征图，但整体数面无答案</p>
+<ol>
+<li>面的形状：三角形、四边形</li>
+<li>相同面数量</li>
+<li>特殊面的形状：最大面、最小面、相交面</li>
+</ol>
+<h3 id="（2）线数量"><a href="#（2）线数量" class="headerlink" title="（2）线数量"></a>（2）线数量</h3><p><strong>识别特征</strong><br><strong>1.直线数特征图：多边形、单一直线</strong><br><strong>2.曲线数特征图：曲线图形（圆、弧、单一曲线）</strong></p>
+<p><strong>直线和曲线分开数</strong></p>
+<p><strong>线的细化考法</strong></p>
+<ol>
+<li>线的位置：边框线条、框内线条</li>
+<li>直线的细化：横线/竖线</li>
+</ol>
+<p><strong>大部分图形题中有曲线，优先考虑曲线规律</strong></p>
+<p><strong>3.线的特殊考点：笔画问题</strong><br><strong>识别特征</strong><br><strong>1.五角星、圆相切/相交、“日”变形、“田”变形</strong><br><strong>2.多端点、出头端点、圆相交(近年热点)</strong></p>
+<ol>
+<li>可以一笔画<ul>
+<li>线条之间连通</li>
+<li>奇点数量为0或2（奇点：以一个点为中心，发射出奇数条线）</li>
+</ul>
+</li>
+</ol>
+<p><strong>端点都是奇点，别忘了数！</strong></p>
+<ol start="2">
+<li>多笔画<ul>
+<li>笔画数 = 奇点数/2 (奇点数一定是偶数)</li>
+</ul>
+</li>
+</ol>
+<p><strong>不连通图直接数笔画</strong></p>
+<h3 id="（3）点数量"><a href="#（3）点数量" class="headerlink" title="（3）点数量"></a>（3）点数量</h3><p><strong>识别特征</strong><br>1.线条交叉明显（大树杈）<br>2.乱糟糟一团线交叉<br>3.相切较多<br><strong>注意：线与线的交点数量</strong><br>1.顶点、切点是交点<br>2.端点不是交点</p>
+<p><strong>点的细化考法：数点特征图，但整体点无规律</strong></p>
+<ol>
+<li><p>按线的属性细化：曲直交点</p>
+<ul>
+<li>特征：圆或弧多，且存在曲直相交</li>
+</ul>
+</li>
+<li><p>按线的位置细化：内外交点</p>
+<ul>
+<li>特征：图形都有外框（内外分开看思维）</li>
+</ul>
+</li>
+</ol>
+<h3 id="（4）素数量"><a href="#（4）素数量" class="headerlink" title="（4）素数量"></a>（4）素数量</h3><p><strong>*识别特征：独立的小图形</strong></p>
+<ol>
+<li>元素种类</li>
+<li>元素个数</li>
+</ol>
+<p><strong>形状一致，大小不一致也看作一种元素</strong></p>
+<ol start="3">
+<li>部分数：连在一起的就是一部分</li>
+</ol>
+<p><strong>识别特征：生活化图形、黑色粗线条图形</strong></p>
+<p><strong>数量规律特征图总汇(按考频排序)</strong></p>
+<p><img src="https://note.youdao.com/yws/api/personal/file/56CAC826F4B14DAAB59B45411A39D32E?method=download&shareKey=1d6c6fbe4ab78574d6561879d6ab8f91" alt></p>
+<p><strong>思维导图</strong></p>
+<p><img src="https://note.youdao.com/yws/api/personal/file/99C081A3826E4102AC4C11414BEA5180?method=download&shareKey=e819a2b5c9eb4b8fa4c807d63b28184a" alt></p>
+<h3 id="六、空间规律"><a href="#六、空间规律" class="headerlink" title="六、空间规律"></a>六、空间规律</h3><h3 id="（1）相对面"><a href="#（1）相对面" class="headerlink" title="（1）相对面"></a>（1）相对面</h3><p>应用：一组相对面同时出现的选项排除</p>
+<ol>
+<li>同行同列相隔一个面</li>
+<li>Z字形紧邻中线的两端</li>
+</ol>
+<p><strong>出题可能会有无中生有的面</strong></p>
+<h3 id="（2）相邻面——公共边"><a href="#（2）相邻面——公共边" class="headerlink" title="（2）相邻面——公共边"></a>（2）相邻面——公共边</h3><p><strong>方法1：折叠前后相邻关系保持不变</strong></p>
+<ol>
+<li>平面图直接相邻的两个面的公共边</li>
+<li>平面图中构成直角的两个边是同一条边</li>
+<li>一排4个面，两头的两条边是同一条边（1-4-1）</li>
+</ol>
+<p><strong>方法2：画边法</strong></p>
+<ol>
+<li>结合选项，找一个特殊面的唯一点<ul>
+<li>特殊面：只出现一次，有可以区分的唯一点</li>
+<li>唯一点：是指该面中唯一的，没有与其一样的点</li>
+</ul>
+</li>
+<li>顺（逆）时针方向画边，并标出序号</li>
+</ol>
+<p><strong>注意：同一个面、同一个点、同方向</strong><br>3. 题干与选项对应：面不一致排除</p>
+<p><strong>思维导图</strong><br><img src="https://note.youdao.com/yws/api/personal/file/0E167A466553402EB97E034F3FA658C2?method=download&shareKey=0071ee3ee90162d908695fcb5c0c9bc4" alt></p>
+]]></content>
+      <categories>
+        <category>行测笔试</category>
+      </categories>
+      <tags>
+        <tag>行测笔试</tag>
       </tags>
   </entry>
   <entry>
