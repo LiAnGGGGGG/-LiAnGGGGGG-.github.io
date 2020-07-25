@@ -6,7 +6,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="https://liangggggg.github.io/"/>
-  <updated>2020-07-23T14:06:29.982Z</updated>
+  <updated>2020-07-25T13:24:34.063Z</updated>
   <id>https://liangggggg.github.io/</id>
   
   <author>
@@ -15,6 +15,62 @@
   </author>
   
   <generator uri="https://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>行测笔记：判断推理（四）逻辑判断</title>
+    <link href="https://liangggggg.github.io/2020/07/24/xingce4/"/>
+    <id>https://liangggggg.github.io/2020/07/24/xingce4/</id>
+    <published>2020-07-24T12:26:09.000Z</published>
+    <updated>2020-07-25T13:24:34.063Z</updated>
+    
+    <content type="html"><![CDATA[<h2 id="一、翻译推理"><a href="#一、翻译推理" class="headerlink" title="一、翻译推理"></a>一、翻译推理</h2><p><strong>题目特征</strong></p><ol><li>题干和选项中存在明显的逻辑关联词</li><li>提问方式为：可以推出/不能推出</li></ol><p><strong>解题思维</strong></p><ol><li>先翻译</li><li>再推理<a id="more"></a></li></ol><h3 id="（1）翻译规则之“前-rightarrow-后”"><a href="#（1）翻译规则之“前-rightarrow-后”" class="headerlink" title="（1）翻译规则之“前$\rightarrow$后”"></a>（1）翻译规则之“前$\rightarrow$后”</h3><ol><li>若…则</li><li>只要..就</li><li>所有…都</li><li>为了…一定</li><li>…是…的充分条件</li></ol><p>（出现如果/就/都/一定）</p><h3 id="（2）推理规则之“逆否等价”"><a href="#（2）推理规则之“逆否等价”" class="headerlink" title="（2）推理规则之“逆否等价”"></a>（2）推理规则之“逆否等价”</h3><p>符号表示：$A\rightarrow B = -B\rightarrow -A$</p><p>文字表示:肯前比肯后、否后必否前</p><p>否前、肯后无必然结论</p><h3 id="（3）翻译规则之“后推前”"><a href="#（3）翻译规则之“后推前”" class="headerlink" title="（3）翻译规则之“后推前”"></a>（3）翻译规则之“后推前”</h3><ol><li>只有…才…</li><li>不…不…</li><li>除非..否则不…</li><li>…是…的基础/假设/前提/关键</li><li>…是…的必要/必不可少条件</li></ol><p><strong>“否则不”是一个整体</strong><br>6. 基础/前提/关键;不可缺少/必不可少/必要条件</p><p><strong>谁必不可少，谁在箭头后</strong></p><p>都遵循递推原则：$A\rightarrow B，B\rightarrow C $可得$A\rightarrow B\rightarrow C$</p><h3 id="（4）翻译规则之“且、或”"><a href="#（4）翻译规则之“且、或”" class="headerlink" title="（4）翻译规则之“且、或”"></a>（4）翻译规则之“且、或”</h3><p>A且B：二者同时成立</p><ol><li>和</li><li>并且</li><li>即…又…</li><li>不仅…而且..</li><li>…但是…</li></ol><p>A或B：二者至少一个成立</p><ol><li>或者</li><li>或者…或者…</li><li>至少有一个</li></ol><h3 id="（5）推理规则之“否一推一”"><a href="#（5）推理规则之“否一推一”" class="headerlink" title="（5）推理规则之“否一推一”"></a>（5）推理规则之“否一推一”</h3><p>“或”的翻译：否1$\rightarrow$1</p><p>“或”关系为真，否定一项可以得到另一项</p><p>题干中有确定信息，可由确定信息出发，排除法做题</p><h3 id="（6）推理规则之“德-摩根定律”"><a href="#（6）推理规则之“德-摩根定律”" class="headerlink" title="（6）推理规则之“德*摩根定律”"></a>（6）推理规则之“德*摩根定律”</h3><ol><li>-(A且B) = -A或-B</li><li>-(A或B) = -A且-B</li></ol><p>“且”关系常考考点：缺一不可</p><p>A$\rightarrow$B且C，可以得到：-B$\rightarrow$-A/-C$\rightarrow$-A</p><h3 id="（7）推理方式"><a href="#（7）推理方式" class="headerlink" title="（7）推理方式"></a>（7）推理方式</h3><p>提问方式：</p><p>一下哪项中的推理方式/结构与题干中的推理方式/结构相同</p><p>重结构、轻内容——字母代入做题</p><p>不考虑推理是否正确，只考虑与题干是否一致</p><h2 id="二、组合排列"><a href="#二、组合排列" class="headerlink" title="二、组合排列"></a>二、组合排列</h2><ol><li>两组及以上对象</li><li>对象之间的关系</li></ol><h3 id="（1）排除法、代入法"><a href="#（1）排除法、代入法" class="headerlink" title="（1）排除法、代入法"></a>（1）排除法、代入法</h3><ol><li>排除法：读一句，排一句<ul><li>快速找到“谁”是“谁”</li><li>快速确定“谁”不是“谁”</li></ul></li></ol><p>组合排列常用思维——谁一定不是谁</p><ol start="2"><li>代入法：假设选项正确，代入题干验证是否符合题意<ul><li>题干条件确定优先排除；题干条件不确定代入                                      </li><li>设问中有“可能”、“不可能”考虑代入<br>只猜中一半（一对一错）——混搭来破题</li></ul></li></ol><h3 id="（2）辅助技巧"><a href="#（2）辅助技巧" class="headerlink" title="（2）辅助技巧"></a>（2）辅助技巧</h3><ol><li>最大信息（题干条件中出现次数最多的信息）<br>以此作为推理起点</li><li>符号：”&gt;”、“&lt;”、“=”<br>往往涉及年龄、成绩、收入、身高等大小比较</li></ol><p>比较大小技巧——极值做排除</p><ol start="3"><li>画表格（4个及以上信息）<br>先填入确定信息</li></ol><h2 id="三、特殊题型——材料题"><a href="#三、特殊题型——材料题" class="headerlink" title="三、特殊题型——材料题"></a>三、特殊题型——材料题</h2><ol><li>与非材料题解题方式一致——一则材料、多种技巧</li><li>通过材料直接推出来的结论可以直接应用于所有题目</li></ol><p>当且仅当表示充要条件，即A$\rightarrow$B，且B$\rightarrow$A</p>]]></content>
+    
+    <summary type="html">
+    
+      &lt;h2 id=&quot;一、翻译推理&quot;&gt;&lt;a href=&quot;#一、翻译推理&quot; class=&quot;headerlink&quot; title=&quot;一、翻译推理&quot;&gt;&lt;/a&gt;一、翻译推理&lt;/h2&gt;&lt;p&gt;&lt;strong&gt;题目特征&lt;/strong&gt;&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;题干和选项中存在明显的逻辑关联词&lt;/li&gt;
+&lt;li&gt;提问方式为：可以推出/不能推出&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;&lt;strong&gt;解题思维&lt;/strong&gt;&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;先翻译&lt;/li&gt;
+&lt;li&gt;再推理&lt;/li&gt;&lt;/ol&gt;
+    
+    </summary>
+    
+    
+      <category term="行测笔试" scheme="https://liangggggg.github.io/categories/%E8%A1%8C%E6%B5%8B%E7%AC%94%E8%AF%95/"/>
+    
+    
+      <category term="行测笔试" scheme="https://liangggggg.github.io/tags/%E8%A1%8C%E6%B5%8B%E7%AC%94%E8%AF%95/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>机器学习笔记（四）逻辑回归</title>
+    <link href="https://liangggggg.github.io/2020/07/24/LogisticRegression/"/>
+    <id>https://liangggggg.github.io/2020/07/24/LogisticRegression/</id>
+    <published>2020-07-24T00:38:18.000Z</published>
+    <updated>2020-07-25T06:59:42.597Z</updated>
+    
+    <content type="html"><![CDATA[<p>逻辑回归，是一种名为“回归”的线性分类器，其本质是由线性回归变化而来，一种广泛使用于分类问题的广义回归算法。</p><h2 id="1-逻辑回归原理"><a href="#1-逻辑回归原理" class="headerlink" title="1 逻辑回归原理"></a>1 逻辑回归原理</h2><p>理解逻辑回归，先要理解线性回归，线性回归的方程为：<br>$$z=\theta_0+\theta_1x_1+\theta_2x_2+\dots+\theta_nx_n$$</p><p>其中，$\theta$被统称为模型的参数，其中$\theta_0$被称为截距，$\theta_1\sim\theta_n$被称为系数，用矩阵来表示这个方程，其中$x,\theta$都可以被看作是一个列矩阵，则有：</p><a id="more"></a><p>$$z=\begin{bmatrix}\theta_0,\theta_1,\theta_2,\dots,\theta_n \end{bmatrix}*<br>\begin{bmatrix}x_0\\<br>x_1\\<br>x_2\\<br>\dots\\<br>\theta_n<br>\end{bmatrix}$$</p><p>通过函数$z$，可以使用输入的特征矩阵$X$来输出一组连续型的标签纸$y_pred$，以完成预测连续型变量的任务。但是如果标签是离散变量，则需要通过引入联系函数，将线性回归的方程$z$变成$g(z)$，并且令$g(z)$的值分布在$(0,1)$之间，对于逻辑回归来说，这个联系函数式Sigmoid函数：<br>$$g(z)=\frac{1}{1+\exp^{-z}}$$<br><img src="https://note.youdao.com/yws/api/personal/file/CF992254DF284E19AAF3D5065557A539?method=download&shareKey=55ac36a4ac1688679e29b3df6f2c94c4" alt></p><p>线性回归中$z=\theta^Tx$，将$z$代入，可以得到二元逻辑回归模型的一般形式：<br>$$g(z)=y(x)=\frac{1}{1+\exp^{-\theta^Tx}}$$</p><p>$y(x)$取值都在$[0,1]$之间，$y(x)$被视为样本$x$作为正例的可能性，则$1-y(x)$是其反例的可能性，两者的比值：<br>$$\frac{y}{1-y}$$</p><p>称为“几率”（odds），反映了$x$作为正例的相对可能性，对几率取对数则得到“对数几率”(log odds,亦称logit): $ln\frac{y}{1-y}$</p><p>在此基础上取对数，可以得到：<br>$$ln\frac{y(x)}{1-y(x)}=ln(\frac{\frac{1}{1+e^{-\theta^Tx}}}{1-\frac{1}{1+\exp^{-\theta^Tx}}})$$<br>$$=ln(\frac{\frac{1}{1+\exp^{-\theta^Tx}}}{\frac{\exp^{-\theta^Tx}}{1+\exp^{-\theta^Tx}}})$$<br>$$=ln(\exp^{\theta^Tx})$$<br>$$=\theta^Tx$$</p><p>我们发现，$y(x)$的形式几率取对数的本质其实就是线性回归$z$，<strong>注意，虽然我们熟悉的逻辑回归通常被用于处理二分类问题，但逻辑回归也可以做多分类</strong></p><h2 id="2-二元逻辑回归的损失函数"><a href="#2-二元逻辑回归的损失函数" class="headerlink" title="2 二元逻辑回归的损失函数"></a>2 二元逻辑回归的损失函数</h2><p>逻辑回归的损失函数式由极大似然估计推导出来的，具体结果可以写作:<br>$$J(\theta)=-\sum_{i=1}^m(y_i*log(y_\theta(x_i))+(1-y_i) * log(1-y_\theta(x_i)))$$</p><p>其中，$\theta$表示求解出来的一组参数，$m$是样本的个数，$y_i$是样本$i$上真实的标签，$y_\theta(x_i)$是样本$i$上，基于参数$\theta$计算出来的逻辑回归返回值，$x_i$是样本i各个特征的取值。</p><h3 id="2-1-损失函数极大似然推导"><a href="#2-1-损失函数极大似然推导" class="headerlink" title="2.1 损失函数极大似然推导"></a>2.1 损失函数极大似然推导</h3><p>二元逻辑回归的标签服从伯努利分布（0-1分布），因此我们可以将一个特征向量$x$,参数为$\theta$的模型中的一个样本$i$的预测情况表现为如下形式：</p><ul><li><p>样本$i$在由特征向量$x_i$和参数$\theta$组成的预测函数中，样本标签被预测为1的概率为：<br>$$P_1 = P(\hat y_i = 1|x_i,\theta)=y_\theta(x_i)$$</p></li><li><p>样本$i$在由特征向量$x_i$和参数$\theta$组成的预测函数中，样本标签被预测为0的概率为：<br>$$P_1 = P(\hat y_i = 0|x_i,\theta)=1-y_\theta(x_i)$$</p></li></ul><p>当$P_1$为1时，预测为1，当$P_0$为1时，代表预测为0</p><p>将两种取值的概率整合，可以得到如下等式：</p><p>$$P(\hat y_i|x_i,\theta)=P_i^{y_i}*P_0^{1-y_i}$$</p><p>$P(\hat y_i|x_i,\theta)$的本质是样本$i$由特征向量$x_i$和参数$\theta$组成的预测函数中，预测出所有可能的$\hat y_i$的概率，因此1是它的最大值，因此我们是在追求$P(\hat y_i|x_i,\theta)$的最大值。</p><p>$P(\hat y_i|x_i,\theta)$是对单个样本$i$而言的函数，对一个训练集的$m$个样本来说，所有样本在特征矩阵$X$和参数$\theta$组成的预测函数中，预测出所有可能的$\hat y$的概率$P$为：</p><p>$$P = \prod_{i=1}^m P(\hat y_i|x_i,\theta)$$<br>$$= \prod_{i=1}^m (P_i^{y_i})$$<br>$$= \prod_{i=1}^m (y_0(x_i)^{y_i}*(1-y_0(x_i))^{1-y_i})$$</p><p>对该概率$P$取对数，再有$log(A*B)=logA+logB$和$logA^B=BlogA$可得到：</p><p>$$logP= log\prod_{i=1}^m (y_0(x_i)^{y_i}*(1-y_0(x_i))^{1-y_i})$$</p><p>$$=\sum_{i=1}^m log(y_0(x_i)^{y_i}*(1-y_0(x_i))^{1-y_i})$$</p><p>$$=\sum_{i=1}^m(logy_0(x_i)^{y_i}+log(1-y_0(x_i))^{1-y_i})$$</p><p>$$=\sum_{i=1}^m(y_i * log(y_0(x_i))+(1-y_i) * log(1-y_0(x_i)))$$</p><p>这就是交叉熵函数，为了便于定义“损失”含义，把极大值问题转换为极小值问题，因此我们对$logP$取负，并且让参数$\theta$作为函数的自变量，就得到了我们的损失函数$J(\theta)$</p><p>$$J(\theta)=-\sum_{i=1}^m(y_i * log(y_\theta(x_i))+(1-y_i) * log(1-y_0(x_i)))$$</p><h3 id="2-2-正则化"><a href="#2-2-正则化" class="headerlink" title="2.2 正则化"></a>2.2 正则化</h3><p>正则化是用来防止模型过拟合的过程，常用的有$L_1$正则化和$L_2$正则化，如下所示：</p><p>$$ J(\theta)_{L_1} = C * J(\theta) +\sum_j^n |\theta_j|\ (j&gt;=1)$$</p><p>$$J(\theta)_{L_2}=C * J(\theta)+\sqrt{\sum_j^n(\theta_j)^2}\ (j&gt;=1)$$</p><table><thead><tr><th align="left">参数</th><th align="left">说明</th></tr></thead><tbody><tr><td align="left">penalty</td><td align="left">可以输入”l1”或”l2”来指定使用哪一种正则化方式，不填写默认”l2”。注意，若选择”l1”正则化，参数solver仅能够使用求解方式”liblinear”和”saga“，若使用“l2”正则化，参数solver中所有的求解方式都可以使用。</td></tr><tr><td align="left">C</td><td align="left">C正则化强度的倒数，必须是一个大于0的浮点数，不填写默认1.0，即默认正则项与损失函数的比值是1：1。C越小，损失函数会越小，模型对损失函数的惩罚越重，正则化的效力越强，参数会逐渐被压缩得越来越小。</td></tr></tbody></table><h3 id="2-3-梯度下降"><a href="#2-3-梯度下降" class="headerlink" title="2.3 梯度下降"></a>2.3 梯度下降</h3><p>现在有一个带两个特征并且没有截距的逻辑回归$y(x_1,x_2)$，两个特征所对应的参数分别为$[\theta_1,\theta_2]$。下面这个平面就是我们损失函数$J(\theta_1,\theta_2)$在$\theta_1,\theta_2,j$为坐标轴的三维立体坐标系上的图像，我们寻求损失函数的最小值，也就是求图像的最低点。</p><p><img src="https://note.youdao.com/yws/api/personal/file/EA89311DC35C43BCB583EE77B28C5533?method=download&shareKey=40697b4035e3fb639c03e8a3a6ee3593" alt></p><p>在逻辑回归中，我们的损失函数为：</p><p>$$J(\theta)=-\sum_{i=1}^m(y_i * log(y_\theta(x_i))+(1-y_i) * log(1-y_0(x_i)))$$</p><p>对这个函数的自变量$\theta$求偏导，可以得到梯度向量在第$j$组$\theta$的坐标点上的表示形式：</p><p>$$\frac{\partial}{\partial \theta_j}J(\theta)=d_j = \sum_{i=1}^m(y_\theta(x_i)-y_i)x_{ij}$$</p><p>在这个公式下，只要给定一组$\theta$的取值$\theta_j$再代入特征矩阵$x$，就可以求得这一组$\theta$取值下的预测结果$y_\theta(x_i)$，结合真实标签$y$，就可以获得这一组$\theta_j$取值下的梯度向量，其大小表示为$d_j$</p><p>我们的目的是在可能的$\theta$上进行遍历，一次次计算梯度向量，并在梯度向量的反方向上让损失函数$J$下降至最小值，在这个过程中，我们的$\theta$和梯度向量的大小$d$都会不断改变，遍历$\theta$的过程可以描述为：</p><p>$$\theta_{j+1}=\theta_j-\alpha * d_j$$</p><p>$$=\theta_j-\alpha * \sum_{i=1}^m(y_\theta(x_i)-y_i)x_{ij}$$</p><p>其中$\theta_{j+1}$是第$j+1$次迭代后的参数向量，$\theta_j$是第$j$此迭代的参数向量，$\alpha$被称为步长，控制着每一步$\theta$的变化</p><p>下面是一张二维平面的求导三角形图，抛物线就是我们的损失函数$J(\theta)$，$A(\theta_a, J(\theta_a))$就是小球最初在的位置，$B(\theta_b, J(\theta_b))$就是一次滚动后小球移动到的位置，A到B的方向就是梯度向量的反方向，指向损失函数在A点下降最快的方向，而梯度向量的大小是点A在图像上对$\theta$求导后的结果，也是点A切线方向的斜率，橙色角$tan$结果，记为$d$</p><p><img src="https://note.youdao.com/yws/api/personal/file/C5409617143F42ECA36A291937F5E6CF?method=download&shareKey=86b3dbbcb321f5712bf5dccd8497561b" alt></p>]]></content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;逻辑回归，是一种名为“回归”的线性分类器，其本质是由线性回归变化而来，一种广泛使用于分类问题的广义回归算法。&lt;/p&gt;
+&lt;h2 id=&quot;1-逻辑回归原理&quot;&gt;&lt;a href=&quot;#1-逻辑回归原理&quot; class=&quot;headerlink&quot; title=&quot;1 逻辑回归原理&quot;&gt;&lt;/a&gt;1 逻辑回归原理&lt;/h2&gt;&lt;p&gt;理解逻辑回归，先要理解线性回归，线性回归的方程为：&lt;br&gt;$$z=\theta_0+\theta_1x_1+\theta_2x_2+\dots+\theta_nx_n$$&lt;/p&gt;
+&lt;p&gt;其中，$\theta$被统称为模型的参数，其中$\theta_0$被称为截距，$\theta_1\sim\theta_n$被称为系数，用矩阵来表示这个方程，其中$x,\theta$都可以被看作是一个列矩阵，则有：&lt;/p&gt;
+    
+    </summary>
+    
+    
+      <category term="机器学习" scheme="https://liangggggg.github.io/categories/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/"/>
+    
+    
+      <category term="机器学习" scheme="https://liangggggg.github.io/tags/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/"/>
+    
+  </entry>
   
   <entry>
     <title>行测笔记：判断推理（三）定义判断</title>
