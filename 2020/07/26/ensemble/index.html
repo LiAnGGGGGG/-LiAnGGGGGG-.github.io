@@ -1,0 +1,946 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/L.jpg">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/L.jpg">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"liangggggg.github.io","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="1 概述多个模型集成称为的模型叫作集成评估器（ensemble estimator），组成集成评估器的每个模型都叫作基评估器(base estimator)。通常来说，有两类集成算法：装袋法（Bagging），提升法(Boosting)。要获得好的集成，个体学习器应“好而不同”，即个体学习器要有一定的“准确性”，并且要有“多样性”   装袋法：多个相互独立的评估器，对其预测进行平均或多数表决原则来">
+<meta property="og:type" content="article">
+<meta property="og:title" content="机器学习笔记（五）集成学习">
+<meta property="og:url" content="https://liangggggg.github.io/2020/07/26/ensemble/index.html">
+<meta property="og:site_name" content="LiAnG&#39;s Blog">
+<meta property="og:description" content="1 概述多个模型集成称为的模型叫作集成评估器（ensemble estimator），组成集成评估器的每个模型都叫作基评估器(base estimator)。通常来说，有两类集成算法：装袋法（Bagging），提升法(Boosting)。要获得好的集成，个体学习器应“好而不同”，即个体学习器要有一定的“准确性”，并且要有“多样性”   装袋法：多个相互独立的评估器，对其预测进行平均或多数表决原则来">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://note.youdao.com/yws/api/personal/file/ADF733049258402C8AD900FD965CB288?method=download&shareKey=18ded5ff7e25a56d46886670b21ef009">
+<meta property="og:image" content="https://note.youdao.com/yws/api/personal/file/4BDC11FD2EB54DFE874F6D1AB68277A0?method=download&shareKey=6ade8a6ff415a53d39ae944bccf89e54">
+<meta property="og:image" content="https://note.youdao.com/yws/api/personal/file/48279AFEA82B4F87A43B6C43E9140635?method=download&shareKey=ec4af651ab4bd7023b0bcaa0f4657e25">
+<meta property="og:image" content="https://note.youdao.com/yws/api/personal/file/2200B3AF1AD249FD85F2101CC7F50213?method=download&shareKey=5ebe9bb0fea9178231e97a37e0f99383">
+<meta property="og:image" content="https://note.youdao.com/yws/api/personal/file/64A336827C294238BBE661A25CE488DF?method=download&shareKey=477b767da38b33f7f049ac795ad5f71a">
+<meta property="og:image" content="https://note.youdao.com/yws/api/personal/file/14DEB79D037D47E69496EE06E38D9930?method=download&shareKey=2ba7a8c972206128b62f304ef25f46aa">
+<meta property="og:image" content="https://note.youdao.com/yws/api/personal/file/9C5D143BEFCA42FC94E784306DFAA089?method=download&shareKey=5423ee0322a0c25fbdc19bfef02e51cb">
+<meta property="og:image" content="https://note.youdao.com/yws/api/personal/file/40FD6184DB4342098CFA5C45D9053E81?method=download&shareKey=6fcc1916a4df5e8182cd835a0a0a20c0">
+<meta property="og:image" content="https://note.youdao.com/yws/api/personal/file/BB4E003C937C441D80F12A44CEE7B01D?method=download&shareKey=6214970cf9c295e487ce3ed91422ef38">
+<meta property="og:image" content="https://note.youdao.com/yws/api/personal/file/119ABC7D390F428F8A036B925FD7C6E8?method=download&shareKey=85e6961c6b845acd5fab61326ede0493">
+<meta property="article:published_time" content="2020-07-26T01:47:42.000Z">
+<meta property="article:modified_time" content="2020-08-02T03:17:17.716Z">
+<meta property="article:author" content="LiAnG">
+<meta property="article:tag" content="机器学习">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://note.youdao.com/yws/api/personal/file/ADF733049258402C8AD900FD965CB288?method=download&shareKey=18ded5ff7e25a56d46886670b21ef009">
+
+<link rel="canonical" href="https://liangggggg.github.io/2020/07/26/ensemble/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>机器学习笔记（五）集成学习 | LiAnG's Blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/atom.xml" title="LiAnG's Blog" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">LiAnG's Blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">Stay hungry, stay foolish</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://liangggggg.github.io/2020/07/26/ensemble/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/timg.jpg">
+      <meta itemprop="name" content="LiAnG">
+      <meta itemprop="description" content="Stay hungry, stay foolish">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="LiAnG's Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          机器学习笔记（五）集成学习
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2020-07-26 09:47:42" itemprop="dateCreated datePublished" datetime="2020-07-26T09:47:42+08:00">2020-07-26</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-08-02 11:17:17" itemprop="dateModified" datetime="2020-08-02T11:17:17+08:00">2020-08-02</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/" itemprop="url" rel="index"><span itemprop="name">机器学习</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2020/07/26/ensemble/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2020/07/26/ensemble/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>11k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>10 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h2 id="1-概述"><a href="#1-概述" class="headerlink" title="1 概述"></a>1 概述</h2><p>多个模型集成称为的模型叫作集成评估器（ensemble estimator），组成集成评估器的每个模型都叫作基评估器(base estimator)。通常来说，有两类集成算法：装袋法（Bagging），提升法(Boosting)。要获得好的集成，个体学习器应“好而不同”，即个体学习器要有一定的“准确性”，并且要有“多样性”</p>
+<p><img src="https://note.youdao.com/yws/api/personal/file/ADF733049258402C8AD900FD965CB288?method=download&shareKey=18ded5ff7e25a56d46886670b21ef009" alt></p>
+<ul>
+<li>装袋法：多个相互独立的评估器，对其预测进行平均或多数表决原则来决定集成评估器的结果（随机森林）</li>
+<li>提升法：基评估器是相关的，是按顺序一一构建的。其核心思想是结合弱评估器的力量一次次对难以评估的样本进行预测，从而构成一个强评估器（Adaboost，梯度提升树）<a id="more"></a>
+
+</li>
+</ul>
+<h2 id="2-Bagging"><a href="#2-Bagging" class="headerlink" title="2 Bagging"></a>2 Bagging</h2><p>Bagging是并行式集成学习方法最著名的代表，通过自助采样法得到多个训练样本的采样集，然后基于每个采样集孙连出一个基学习器，再将这些基学习器进行结合，在对预测输出进行结合时，Bagging通常对分类任务使用简单投票法，对回归任务使用简单平均法。</p>
+<h3 id="2-1-随机森林（Random-Forest-RF）"><a href="#2-1-随机森林（Random-Forest-RF）" class="headerlink" title="2.1 随机森林（Random Forest, RF）"></a>2.1 随机森林（Random Forest, RF）</h3><p>随机森林是非常具有代表性的Bagging集成算法，RF在以决策树为基学习器构建Bagging集成的基础上，进一步在决策树的训练过程中引入了随机属性选择，传统决策树在选择划分属性时是在当前节点的属性集合（假设有d个属性）中选择一个最优属性；而在RF中，对基决策树的每个节点，先从该节点的属性集合中随机选择一个包含$k$个属性的子集，然后再从这个子集中选择一个最优属性用于划分。</p>
+<h3 id="2-2-重要参数"><a href="#2-2-重要参数" class="headerlink" title="2.2 重要参数"></a>2.2 重要参数</h3><h3 id="2-2-1-控制基评估器的参数"><a href="#2-2-1-控制基评估器的参数" class="headerlink" title="2.2.1 控制基评估器的参数"></a>2.2.1 控制基评估器的参数</h3><table>
+<thead>
+<tr>
+<th align="left">参数</th>
+<th align="left">含义</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">criterion</td>
+<td align="left">不纯度的衡量指标，有基尼系数和信息熵两种选择</td>
+</tr>
+<tr>
+<td align="left">max_depth</td>
+<td align="left">树的最大深度，超过最大深度的树枝都会被剪掉</td>
+</tr>
+<tr>
+<td align="left">min_samples_leaf</td>
+<td align="left">一个节点在分枝后的每个子节点都必须包含至少min_samples_leaf个训练样本，否则分枝就不会发生</td>
+</tr>
+<tr>
+<td align="left">min_samples_split</td>
+<td align="left">一个节点必须要包含至少min_samples_split个训练样本，这个节点才允许被分枝，否则分枝就不会发生</td>
+</tr>
+<tr>
+<td align="left">max_features</td>
+<td align="left">max_features限制分枝时考虑的特征个数，超过限制个数的特征都会被舍弃，默认值为总特征个数开平方取整</td>
+</tr>
+<tr>
+<td align="left">min_impurity_decrease</td>
+<td align="left">限制信息增益的大小，信息增益小于设定数值的分枝不会发生</td>
+</tr>
+</tbody></table>
+<h3 id="2-2-2-n-estimators"><a href="#2-2-2-n-estimators" class="headerlink" title="2.2.2 n_estimators"></a>2.2.2 n_estimators</h3><p>这是森林中树木的数量，即基评估器的数量。这个参数对随机森林模型的精确性影响是单调的，n_estimators越大，模型的效果往往越好。但是相应的，任何模型都有决策边界，n_estimators达到一定的程度之后，随机森林的精确性往往不在上升或开始波动，并且，n_estimators越大，需要的计算量和内存也越大，训练的时间也会越来越长。对于这个参数，我们是渴望在训练难度和模型效果之间取得平衡。</p>
+<p>n_estimators的默认值在现有版本的sklearn中是10，但是在即将更新的0.22版本中，这个默认值会被修正为100。这个修正显示出了使用者的调参倾向：要更大的n_estimators。</p>
+<h3 id="2-2-3-random-state"><a href="#2-2-3-random-state" class="headerlink" title="2.2.3 random_state"></a>2.2.3 random_state</h3><p>在决策树中，从最重要的特征中随机选择出一个特征进行分枝，这个功能由参数random_state控制，在随机森林中，用法和分类树相似，通过这个参数控制生成森林的模型，让森林中的树木具有多样性</p>
+<h3 id="2-2-4-bootstrap-amp-oob-score"><a href="#2-2-4-bootstrap-amp-oob-score" class="headerlink" title="2.2.4 bootstrap &amp; oob_score"></a>2.2.4 bootstrap &amp; oob_score</h3><p>Bagging通过自助采样技术来形成不同的训练数据，bootstrap就是用来控制采样技术的参数</p>
+<p>bootstrap参数默认True，代表采用这种有放回的随机抽取技术（通常不会被设置为False）</p>
+<p><img src="https://note.youdao.com/yws/api/personal/file/4BDC11FD2EB54DFE874F6D1AB68277A0?method=download&shareKey=6ade8a6ff415a53d39ae944bccf89e54" alt></p>
+<p>一般来说，自助集大概平均会包含63%的原始数据，每一个样本被抽取到某自助集的概率为：</p>
+<p>$$1-(1-\frac{1}{n})^n$$</p>
+<p>当n足够大时，这个概率收敛与$1-(1/e)$，越等于0.632，因此会约有37%的训练数据被浪费掉，没有参与建模，这些数据被称为袋外数据(out of bag data, oob)。</p>
+<p>也就是说，在使用随机森林时，可以不划分测试集和训练集，用袋外数据来测试我们的模型</p>
+<h2 id="3-boosting"><a href="#3-boosting" class="headerlink" title="3 boosting"></a>3 boosting</h2><p>Boosting是一族可将弱学习器提升为强学习器的算法。先从初始训练集训练出一个基学习器，再根据基学习器的表现对训练样本分布进行调整，使得先前基学习器做错的训练样本在后续受到更多关注，然后基于调整后的样本分布来训练下一个基学习器。</p>
+<h3 id="3-1-Adaboost"><a href="#3-1-Adaboost" class="headerlink" title="3.1 Adaboost"></a>3.1 Adaboost</h3><h4 id="3-1-1-Adaboost原理"><a href="#3-1-1-Adaboost原理" class="headerlink" title="3.1.1 Adaboost原理"></a>3.1.1 Adaboost原理</h4><p>AdaBoost算法是Adaptive Boost的简称，Boosting通过将一系列弱学习器组合起来，通过集成这些弱学习器的学习能力，得到一个强学习器。具体到AdaBoost算法，AdaBoost在之前学习器的基础上改变样本的权重，增加那些之前被分类错误的样本的比重，降低分类正确样本的比重，这样之后的学习器将重点关注那些被分类错误的样本。最后通过将这些学习器通过加权组合成一个强学习器，具体的，分类正确率高的学习器权重较高，分类正确率低的学习器权重较低。</p>
+<p>假设：</p>
+<p>输入：训练集$X={(x_1,y_1),(x_2,y_2),(x_3,y_3),\dots,(x_n,y_n)},\ x_i\in R^n,\ y_i\in 0,1$</p>
+<p>输出：最终学习器$G(x)$</p>
+<ol>
+<li>初始化训练数据的权重分布值：（$D_m$表示第m个弱学习器的样本点的权值）<br>$$D_1=(w_{11},\dots,w_{1i},\dots,w_{1N}),\  w_{1i}=1/N,\  i=1,2,\dots,N$$</li>
+<li>对于M个弱学习器，$m=1,2,3,\dots,M$<ul>
+<li>使用具有权值分布$D_m$的训练数据集进行学习，得到基本分类器$G_m(x)$，其输出值为$-1,1$</li>
+<li>计算弱分类器$G_m(x)$在训练数据集上的分类误差率$e_m$，其值越小的基分类器在最终分类器中的作用越大<br>$$e_m = P(G_m(x)\ne y_i)=\sum_{i=1}^N w_{mi}I(G_m(x_i)\ne y_i)$$<br>其中，$I(G_m(x_i)\ne y_i)$取值为0或1，取0表示分类正确，取1表示分类错误。</li>
+<li>计算弱分类器$G_m(x)$的权重系数$\alpha_m$:<br>$$\alpha_m = \frac{1}{2}ln\frac{1-e_m}{e_m}$$<br>当$e_m$减小是时候$\alpha_m$的值增大，而我们希望得到的是分类误差率越小的弱分类器的权值越大，对最终的预测产生的影响也就越大</li>
+<li>更新训练集的样本权值分布：<br>$$D_{m+1}=(w_{m+1,1},w_{m+1,2},\dots,w_{m+1,N})$$<br>$$w_{m+1,i}=\frac{w_{mi}}{Z_m}exp(-\alpha_m y_i G_m(x_i)),\ i=1,2,\dots,N$$<br>对于二分类，弱分类器$G_m(x)$的输出取值为$-1,1$，$y_i$的取值为$-1,1$，所以对于正确的分类$y_iG_m(x)&gt;0$，错误的分类小于0，由于样本权重值在$0-1$之间，当分类正确时的$w_{m+1,i}$取值较小，而分类错误时$w_{m+1,i}$取值较小，而分类错时取值较大，符合我们期望的权重值高的训练样本点在后面的弱学习器中会得到更多的重视。<br>其中，$Z_m$是规范化因子，主要作用是将$W_{mi}$规范到0-1之间，使得$\sum_{i=1}^Nw_{mi}=1$</li>
+</ul>
+</li>
+</ol>
+<p>$$Z_m = \sum_{i=1}^N w_{mi}exp(-\alpha_m y_i G_m(x_i))$$</p>
+<ol start="3">
+<li>通过加权平均法构建基本分类器的线性组合<br>$$f(x)=\sum_{m=1}^M \alpha_mG_m(x)$$<br>得到最终的分类器<br>$$G(x)=sign(f(x))=sign(\sum_{m=1}^M\alpha_mG_m(x))$$</li>
+</ol>
+<h4 id="3-1-2-Adaboost优缺点"><a href="#3-1-2-Adaboost优缺点" class="headerlink" title="3.1.2 Adaboost优缺点"></a>3.1.2 Adaboost优缺点</h4><h5 id="优点"><a href="#优点" class="headerlink" title="优点"></a>优点</h5><ol>
+<li>不容发生过拟合</li>
+<li>由于AdaBoost并没有限制弱学习器的种类，所以可以使用不同的学习算法来构建弱分类器</li>
+<li>具有很高的精度</li>
+<li>相对于Bagging算法和Random Forest算法，Adaboost充分考虑每个分类器的权重</li>
+<li>参数较少，实际应用中不需要调节太多的参数</li>
+</ol>
+<h5 id="缺点"><a href="#缺点" class="headerlink" title="缺点"></a>缺点</h5><ol>
+<li>AdaBoost迭代次数也就是弱分类器数目不太好设定，可以用交叉验证来确定</li>
+<li>数据不平衡导致分类精度下降</li>
+<li>训练比较耗时，每次重新选择当前分类器最好切分点</li>
+<li>对异常样本敏感，异常样本在迭代中可能会获得比较高的权重，影响最终的枪学习器的预测准确性</li>
+</ol>
+<h3 id="3-2-GBDT（Gradient-Boosting-Decision-Tree，梯度提升树）"><a href="#3-2-GBDT（Gradient-Boosting-Decision-Tree，梯度提升树）" class="headerlink" title="3.2 GBDT（Gradient Boosting Decision Tree，梯度提升树）"></a>3.2 GBDT（Gradient Boosting Decision Tree，梯度提升树）</h3><h4 id="3-2-1-GBDT原理"><a href="#3-2-1-GBDT原理" class="headerlink" title="3.2.1 GBDT原理"></a>3.2.1 GBDT原理</h4><p>输入：训练数据集$T=(x_1,y_1),(x_2,y_2),\dots,(x_N,y_N)$，损失函数为$L(y,f(x))$<br>输出：回归树$F(x)$</p>
+<ol>
+<li>初始化：（估计使损失函数极小化的常数值，是只有一个根节点的树，一般平方损失函数为节点的均值，而绝对损失函数为节点样本的中位数）</li>
+</ol>
+<p>$$f_0(x)=arg\min_c\sum_{i=1}^NL(y_i,c)$$</p>
+<ol start="2">
+<li><p>对$m=1,2,\dots,M$（M表示迭代次数，即生成弱学习器的个数）</p>
+<ul>
+<li>对于样本$i=1,2,\dots,N$，计算损失函数的负梯度在当前模型的值，将它作为残差的估计<br>$$r_{mi}=-\frac{\partial L(y_i,f(x))}{\partial f(x_i)}f(x)=f_{m-1}(x)$$</li>
+<li>对$(x_1,r_{m1}),\dots,(x_N,r_{mN})$拟合一个回归树，得到第$m$棵树的叶结点区域$R_{mj}，\ j=1,2,\dots,J$（$J$表示每棵树的叶结点个数）</li>
+<li>对$j=1,2,\dots,J$，利用线性所搜，估计叶结点区域的值，使损失函数最小化，计算<br>$$c_{mj}=arg\min_c\sum_{x\in R_{mj}}L(y_i,f_{m-1}(x_i+c))$$</li>
+<li>更新<br>$$f_m(x)=f_{m-1}(x)+\sum_{J}^{j=1}c_{mj}I(x\in R_{mj})$$</li>
+</ul>
+</li>
+<li><p>得到最终的回归树<br>$$F(x)=\sum_{m=1}^M\sum_{j=1}^Jc_{mj}I(x\in R_{mj})$$</p>
+</li>
+</ol>
+<h3 id="3-3-XGboost"><a href="#3-3-XGboost" class="headerlink" title="3.3 XGboost"></a>3.3 XGboost</h3><h4 id="3-3-1-目标函数"><a href="#3-3-1-目标函数" class="headerlink" title="3.3.1 目标函数"></a>3.3.1 目标函数</h4><p>不同于逻辑回归和SVM等算法中固定的损失函数写法，集成算法中的损失函数式可选的，要选用什么损失函数取决于我们希望解决什么问题，以及希望使用什么的模型。只要我们选出的函数式一个可微的，能够代表某种损失的函数，它就可以使XGB的损失函数</p>
+<p>并且XGB引入了模型复杂度来衡量算法的运算效率，因此目标函数被写作：传统损失函数+模型复杂度<br>$$0bj = \sum_{i=1}^ml(y_i,\hat y_i)+\sum_{k=1}^k\Omega (f_k)$$</p>
+<p>其中$i$代表数据集中的第$i$个样本，$m$表示导入第k课树的数据总量，$K$代表建立的所有树(n_estimators)</p>
+<p><strong>注意，第二项中没有特征矩阵$x_i$的介入</strong></p>
+<p>第一项传统损失函数式与已建好的所有树相关的</p>
+<p>$$\hat y_i^{(t)}=\sum_k^t f_k(x_i)=\sum_k^{t-1}f_k(x_i)+f_t(x_i)$$</p>
+<p>一个集成模型$(f)$在位置数据集$(D)$上的泛化误差$E(f;D)$,有方差(var)，偏差(bais)和噪声$(\epsilon)$共同决定。</p>
+<p><img src="https://note.youdao.com/yws/api/personal/file/48279AFEA82B4F87A43B6C43E9140635?method=download&shareKey=ec4af651ab4bd7023b0bcaa0f4657e25" alt></p>
+<p>我们使用参数”objective”来确定我们目标函数的第一部分，也是衡量损失的部分</p>
+<table>
+<thead>
+<tr>
+<th align="left">输入</th>
+<th align="left">选用的损失函数</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">reg:linear</td>
+<td align="left">使用线性回归的损失函数，均方误差，回归时使用</td>
+</tr>
+<tr>
+<td align="left">binary:logistic</td>
+<td align="left">使用逻辑回归的损失函数，对数损失log_loss，二分类时使用</td>
+</tr>
+<tr>
+<td align="left">binary:hinge</td>
+<td align="left">使用支持向量机的损失函数，Hinge Loss，二分类时使用</td>
+</tr>
+<tr>
+<td align="left">multi:softmax</td>
+<td align="left">使用softmax损失函数，多分类时使用</td>
+</tr>
+</tbody></table>
+<p>并且允许自定义损失函数（但通常我们还是使用类已经设置好的损失函数）</p>
+<h4 id="3-3-2-求解XGB的目标函数"><a href="#3-3-2-求解XGB的目标函数" class="headerlink" title="3.3.2 求解XGB的目标函数"></a>3.3.2 求解XGB的目标函数</h4><p>由于XGB迭代的是树，不是数字组成的向量，因此无法使用梯度下降，而是将目标函数转化为更简单的，与树结构直接相关的写法，以此来建立树的结构与模型的效果（泛化能力与运行速度）之间的直接联系，因为这种联系，XGB的目标函数又被称为“结构分数”。</p>
+<p>首先，进行第一步转换：</p>
+<p><img src="https://note.youdao.com/yws/api/personal/file/2200B3AF1AD249FD85F2101CC7F50213?method=download&shareKey=5ebe9bb0fea9178231e97a37e0f99383" alt></p>
+<p>其中$g_i,h_i$分别是在损失函数$l(y_i^t,\hat y_i^{(t-1)})$上对$\hat y_i^{(t-1)}$所求的一阶倒数和二阶导数。</p>
+<p>因此，我们的目标函数可以被转化为：</p>
+<p>$$Obj = \sum_{i=1}^m[f_t(x_i)g_i+\frac{1}{2}(f_t(x_i))^2h_i]+\Omega (f_t)$$</p>
+<p>这个式子中，$g_i,h_i$只与传统损失函数相关，核心的部分是我们需要决定的树$f_t$</p>
+<h4 id="3-3-3-参数化决策树-f-k-x"><a href="#3-3-3-参数化决策树-f-k-x" class="headerlink" title="3.3.3 参数化决策树$f_k(x)$"></a>3.3.3 参数化决策树$f_k(x)$</h4><p>对于回归树，通常来说每个叶子节点上的预测值是这个叶子节点上所有样本的标签的均值，但XGB作为普通回归树的改进算法，在$\hat y$上却有所不同。</p>
+<p>对于XGB来说，每个叶子节点上都会有一个预测分数，也称叶子权重，用$f_k(x)$或$w$来表示</p>
+<p>当有多课树的时候，集成模型的回归结果就是所有树的预测分数之和，假设这个集成模型中共有K棵决策树，则整个模型在这个样本$i$上给出的预测结果为:<br>$$\hat y_i^{(k)}=\sum_k^Kf_k(x_i)$$</p>
+<p>我们使用$q(x_i)$表示样本$x_i$所在的叶子节点，并且使用$w_{q(x_i)}$表示这个样本落到第$t$棵树上的第$q(x_i)$个叶子节点中所获得的分数，于是有：</p>
+<p>$$f_t(x_i)=w_q(x_i)$$</p>
+<p>设一棵树上总共包含了$T$个叶子节点，其中每个叶子节点的索引为$j$，则这个叶子节点上的样本权重是$w_j$，依据这个，我们定义模型的复杂度$\Omega(f)$为<br>$$\Omega(f)=\gamma T+正则项(Regularization)$$</p>
+<h4 id="3-3-4-寻找最佳树结构：求解-w-与-T"><a href="#3-3-4-寻找最佳树结构：求解-w-与-T" class="headerlink" title="3.3.4 寻找最佳树结构：求解$w$与$T$"></a>3.3.4 寻找最佳树结构：求解$w$与$T$</h4><p>我们定义了树和树的复杂度表达式：</p>
+<p>$$f_t(x_i)=w_q(x_i), \ \Omega(f_t)=\gamma T+\frac{1}{2}\lambda\sum_{j=1}^Tw_j^2$$</p>
+<p>假设现在第$t$棵树的结构已经被确定为q,可以将树的结构代入我们的损失函数，来继续转化我们的目标函数。转化目标函数的目的是：建立树的结构（叶子节点的数量）与目标函数的大小之间的直接联系，以求出在第$t$次迭代中需要求解的最优树$f_t$。</p>
+<p><img src="https://note.youdao.com/yws/api/personal/file/64A336827C294238BBE661A25CE488DF?method=download&shareKey=477b767da38b33f7f049ac795ad5f71a" alt></p>
+<p>对于橙色框的转化<br><img src="https://note.youdao.com/yws/api/personal/file/14DEB79D037D47E69496EE06E38D9930?method=download&shareKey=2ba7a8c972206128b62f304ef25f46aa" alt></p>
+<p>可以有：<br>$$\sum_{i=1}^m w_{q(x_i)} * g_i = w_{q(x_1)} * g_1 + w_{q(x_2)} * g_2+ w_{q(x_3)} * g_3$$<br>$$=w_1(g_1+g_2)+ w_2*g_3$$<br>$$=\sum_{j=1}^T(w_j\sum_{i\in I_j}g_i)$$</p>
+<p>我们定义：<br>$$G_j = \sum_{i\in I_j}g_i, \ H_j = \sum_{i\in I_j}h_i$$</p>
+<p>于是可以有：</p>
+<p>$$Obj^{(t)}=\sum_{j=1}^T[w_jG_j+\frac{1}{2}w_j^2(H_j+\lambda)]+\gamma T$$</p>
+<p>$$F^{*}(w_j)=w_jG_j+\frac{1}{2}w_j^2(H_j+\lambda)$$</p>
+<p>其中每个$j$取值下都是一个以$w_j$为自变量的二次函数$F^{<em>}$，我们的目标追求是让$Obj$最小，只要单独每一个叶子$j$取值下的二次函数都最小。于是在$F^{</em>}$对$w_j$求导，让一阶导数等于0，可得：</p>
+<p>$$\frac{\partial F^{*}(w_j)}{\partial w_j}=G_j+w_j(H_j+\lambda)$$<br>$$0=G_j+w_j(H_j+\lambda)$$<br>$$w_j = -\frac{G_j}{H_j+\lambda}$$</p>
+<p>代入目标函数，则有：<br>$$Obj^{(t)}=\sum_{j=1}^T[-\frac{G_j}{H_j+\lambda} * G_j + \frac{1}{2}(-\frac{G_j}{H_j+\lambda})]+\gamma T$$<br>$$=\sum_{j=1}^T[-\frac{G_j^2}{H_j+\lambda}+\frac{1}{2} * \frac{G_j^2}{H_j+\lambda}]+\gamma T$$<br>$$=-\frac{1}{2}\sum_{j=1}^T\frac{G_j^2}{H_j+\lambda}+\gamma T$$</p>
+<p>这样我们就建立了树的结构（叶子）和模型效果的直接联系</p>
+<p>下面来看一个例子：</p>
+<p><img src="https://note.youdao.com/yws/api/personal/file/9C5D143BEFCA42FC94E784306DFAA089?method=download&shareKey=5423ee0322a0c25fbdc19bfef02e51cb" alt></p>
+<p>$$Obj = -(\frac{g_1^2}{h_1+\lambda}+\frac{g_4^2}{h_4+\lambda}+\frac{(g_2+g_3+g_5)^2}{h_2+h_3+h_5+\lambda})+3\gamma$$</p>
+<h4 id="3-3-5-寻找最佳分枝：结构分数之差"><a href="#3-3-5-寻找最佳分枝：结构分数之差" class="headerlink" title="3.3.5 寻找最佳分枝：结构分数之差"></a>3.3.5 寻找最佳分枝：结构分数之差</h4><p>XGB使用贪婪算法，认为如果每片叶子都是最优的，则整体生成的树结构就是最优，可以避免枚举所有可能的树结构</p>
+<p><img src="https://note.youdao.com/yws/api/personal/file/40FD6184DB4342098CFA5C45D9053E81?method=download&shareKey=6fcc1916a4df5e8182cd835a0a0a20c0" alt></p>
+<h4 id="3-3-6-让树停止生长：重要参数gamma"><a href="#3-3-6-让树停止生长：重要参数gamma" class="headerlink" title="3.3.6 让树停止生长：重要参数gamma"></a>3.3.6 让树停止生长：重要参数gamma</h4><p>$\gamma$是对梯度提升树影响最大的参数之一，让树停止生长</p>
+<p>对于目标函数减小量的要求是：</p>
+<p>$$\frac{1}{2}[\frac{G^2_L}{H_L+\lambda}+\frac{G^2_R}{H_R+\lambda}-\frac{(G_L+G_R)^2}{H_L+H_R+\lambda}]&gt;\lambda$$</p>
+<h3 id="3-4-Lightgbm"><a href="#3-4-Lightgbm" class="headerlink" title="3.4 Lightgbm"></a>3.4 Lightgbm</h3><p>传统的Boost算法需要对每一个特征扫描所有的样本点来选择最好的切分点，非常耗时。为了解决这种在大样本高纬度数据的环境下耗时问题，Lightgbm使用了两种解决办法</p>
+<ol>
+<li>GOSS (Gradient-based One-Side Sampling, 基于梯度的单边采样)，不是使用所有的样本点来计算梯度，而是对样本进行采样计算梯度</li>
+<li>EFB（Exclusive Feature Bundling， 互斥特征捆绑）， 不是使用所有的特征来进行扫描获得最佳的切分点，而是将某些特征进行捆绑在一起来降低特征的维度，以减少寻找最佳切分点的耗时。 </li>
+</ol>
+<h4 id="3-4-1-GOSS算法"><a href="#3-4-1-GOSS算法" class="headerlink" title="3.4.1 GOSS算法"></a>3.4.1 GOSS算法</h4><p>每个样本的梯度对采样也提供了非常有用的信息，如果一个样本点的梯度小，那么该样本点的训练误差就小并且已经经过了很好的训练</p>
+<p>输入：训练数据，迭代步数$d$，大梯度数据的采样率$a$,小梯度的数据采样率$b$，损失函数和弱学习器的类型；</p>
+<p>输出：训练好的强学习器；</p>
+<ol>
+<li>根据样本点的梯度绝对值进行降序排序；</li>
+<li>对排序后的结果选取前$a * 100%$的样本生成一个大梯度样本点的子集；</li>
+<li>对剩下的样本$（1-a） * 100%$，随机选取$b * （1-a）* 100%$生成小梯度样本点的集合；</li>
+<li>将大梯度样本和采样的小梯度样本合并；</li>
+<li>将小梯度样本乘上一个权重系数$\frac{1-a}{b}$；</li>
+<li>使用上述的采样方法训练一个新的弱学习器；</li>
+<li>不断重复1-6步骤知道达到规定的迭代次数或者收敛</li>
+</ol>
+<p>通过GOSS算法，可以在不改变数据分布的前提下不损失学习器精度的同时大大减少模型的学习速率</p>
+<h4 id="3-4-2-EFB算法"><a href="#3-4-2-EFB算法" class="headerlink" title="3.4.2 EFB算法"></a>3.4.2 EFB算法</h4><p>Lightgbm实现中不仅进行了数据采样，也进行了特征抽样。但是该特征抽样与一般不同，将互斥特征绑定在一起从而减少特征维度。</p>
+<p>主要思想是，实际中高纬度数据往往都是稀疏数据，在稀疏特征空间中许多特征都是互斥的，可以基于直方图（histograms）的方法将互斥的特征捆绑形成一个特征，从而减少特征维度。</p>
+<p>并且允许小部分的冲突，使得模型的性能被影响$O([(1-\gamma)n]^{-2/3})$,这里的$\gamma$是每个绑定的最大冲突率。</p>
+<p>输入：特征F，最大冲突K，图G；<br>输出： 特征捆绑集合bundles;</p>
+<ol>
+<li>构造一个边带有权重的图，其权值对应于特征之间的总冲突；</li>
+<li>通过特征在图中的度来降序排序特征</li>
+<li>检查有序列表中的每个特征，并将其分配给具有小冲突的现有bunding或创建新bunding</li>
+</ol>
+<h4 id="3-4-3-合并互斥特征"><a href="#3-4-3-合并互斥特征" class="headerlink" title="3.4.3 合并互斥特征"></a>3.4.3 合并互斥特征</h4><p>Lightgbm关于互斥特征的合并用到了直方图（Histogram）算法。直方图算法的基本思想是先把连续的特征值离散化成k个整数，同时构造一个宽度为k的直方图。在遍历数据的时候，根据离散化后的值作为索引在直方图中累积统计量，当遍历一次数据后，直方图累积了需要的统计量，然后根据直方图的离散值，遍历寻找最优的分割点。</p>
+<p>由于基于直方图的算法存储的是离散的bins而不是连续的特征值，我们可以通过让互斥特征驻留在不同的bins中来构造feature bundle。这可以通过增加特征原始值的偏移量来实现。比如，假设我们有两个特征，特征A的取值范围是[0,10)，而特征B的取值范围是[0,20)，我们可以给特征B增加偏移量10，使得特征B的取值范围为[10, 30)，最后合并特征A和B，形成新的特征，取值范围为[0,30)来取代特征A和特征B。</p>
+<p>当然，Histogram算法并不是完美的。由于特征被离散化后，找到的并不是很精确的分割点，所以会对结果产生影响。但在不同的数据集上的结果表明，离散化的分割点对最终的精度影响并不是很大，甚至有时候会更好一点。原因是决策树本来就是弱模型，分割点是不是精确并不是太重要；差一点的切分点也有正则化的效果，可以有效地防止过拟合；即使单棵树的训练误差比精确分割的算法稍大，但在Gradient Boosting的框架下没有太大的影响。</p>
+<p><img src="https://note.youdao.com/yws/api/personal/file/BB4E003C937C441D80F12A44CEE7B01D?method=download&shareKey=6214970cf9c295e487ce3ed91422ef38" alt></p>
+<h3 id="3-5-Boosting算法优缺点对比"><a href="#3-5-Boosting算法优缺点对比" class="headerlink" title="3.5 Boosting算法优缺点对比"></a>3.5 Boosting算法优缺点对比</h3><h4 id="3-5-1-XGBoost-vs-GBDT"><a href="#3-5-1-XGBoost-vs-GBDT" class="headerlink" title="3.5.1 XGBoost vs GBDT"></a>3.5.1 XGBoost vs GBDT</h4><p>1）GBDT以传统CART作为基分类器，而XGBoost支持线性分类器，相当于引入L1和L2正则化项的逻辑回归（分类问题）和线性回归（回归问题）；</p>
+<p>2）GBDT在优化时只用到一阶导数，XGBoost对代价函数做了二阶Talor展开，引入了一阶导数和二阶导数。XGBoost支持自定义的损失函数，只要是能满足二阶连续可导的函数均可以作为损失函数；</p>
+<p>3）XGBoost在损失函数中引入正则化项，用于控制模型的复杂度。正则化项包含全部叶子节点的个数，每个叶子节点输出的score的L2模的平方和。从Bias-variance tradeoff角度考虑，正则项降低了模型的方差，防止模型过拟合，这也是xgboost优于传统GBDT的一个特性。</p>
+<p>4）当样本存在缺失值是，xgBoosting能自动学习分裂方向，即XGBoost对样本缺失值不敏感；</p>
+<p>5）XGBoost借鉴RF的做法，支持列抽样，这样不仅能防止过拟合，还能降低计算，这也是xgboost异于传统gbdt的一个特性。</p>
+<p>6）XGBoost在每次迭代之后，会将叶子节点的权重乘上一个学习率（相当于XGBoost中的eta，论文中的Shrinkage），主要是为了削弱每棵树的影响，让后面有更大的学习空间。实际应用中，一般把eta设置得小一点，然后迭代次数设置得大一点；</p>
+<p>7）XGBoost工具支持并行，但并行不是tree粒度的并行，XGBoost也是一次迭代完才能进行下一次迭代的（第t次迭代的代价函数里包含了前面t-1次迭代的预测值），XGBoost的并行是在特征粒度上的。XGBoost在训练之前，预先对数据进行了排序，然后保存为(block)结构，后面的迭代中重复地使用这个结构，大大减小计算量。这个块结构也使得并行成为了可能，在进行节点的分裂时，需要计算每个特征的增益，最终选增益最大的那个特征去做分裂，那么各个特征的增益计算就可以开多线程进行；</p>
+<p>8）可并行的近似直方图算法，树结点在进行分裂时，需要计算每个节点的增益，若数据量较大，对所有节点的特征进行排序，遍历的得到最优分割点，这种贪心法异常耗时，这时引进近似直方图算法，用于生成高效的分割点，即用分裂后的某种值减去分裂前的某种值，获得增益，为了限制树的增长，引入阈值，当增益大于阈值时，进行分裂；</p>
+<h4 id="3-5-2-XGboost-vs-LightGBM"><a href="#3-5-2-XGboost-vs-LightGBM" class="headerlink" title="3.5.2 XGboost vs LightGBM"></a>3.5.2 XGboost vs LightGBM</h4><p>1）XGBoost采用预排序，在迭代之前，对结点的特征做预排序，遍历选择最优分割点，数据量大时，贪心法耗时，LightGBM方法采用histogram算法，占用的内存低，数据分割的复杂度更低，但是不能找到最精确的数据分割点；</p>
+<p>2）XGBoost采用level-wise生成决策树策略，同时分裂同一层的叶子，从而进行多线程优化，不容易过拟合，但很多叶子节点的分裂增益较低，没必要进行更进一步的分裂，这就带来了不必要的开销；LightGBM采用leaf-wise生长策略，每次从当前叶子中选择增益最大的叶子进行分裂，如此循环，但会生长出更深的决策树，产生过拟合，因此 LightGBM 在leaf-wise之上增加了一个最大深度的限制，在保证高效率的同时防止过拟合）。另一个比较巧妙的优化是 histogram 做差加速。一个容易观察到的现象：一个叶子的直方图可以由它的父亲节点的直方图与它兄弟的直方图做差得到。</p>
+<h2 id="4-结合策略"><a href="#4-结合策略" class="headerlink" title="4 结合策略"></a>4 结合策略</h2><p>不同的结合策略也会影响集成模型性能，主要分为平均法、投票法和学习法，我们这里重点介绍学习法Stacking</p>
+<h3 id="4-1-平均法"><a href="#4-1-平均法" class="headerlink" title="4.1 平均法"></a>4.1 平均法</h3><ul>
+<li>简单平均法</li>
+<li>加权平均法</li>
+</ul>
+<h3 id="4-2-投票法"><a href="#4-2-投票法" class="headerlink" title="4.2 投票法"></a>4.2 投票法</h3><ul>
+<li>绝对多数投票法</li>
+<li>相对多数投票法</li>
+<li>加权投票法</li>
+</ul>
+<h3 id="4-3-学习法"><a href="#4-3-学习法" class="headerlink" title="4.3 学习法"></a>4.3 学习法</h3><p>当训练数据很多时，一种更为强大的结合策略是使用“学习法”，即通过另一个学习器来进行结合.Stacking是学习法的经典代表，这里我们吧个体学习器称为初级学习器，用于结合的学习器称为刺激学习器或元学习器。</p>
+<p><img src="https://note.youdao.com/yws/api/personal/file/119ABC7D390F428F8A036B925FD7C6E8?method=download&shareKey=85e6961c6b845acd5fab61326ede0493" alt></p>
+<p>次级学习器的输入属性表示和次级学习算法对Stacking集成的泛化性能有很大影响。研究表明，将初级学习器的输出类概率作为次级学习器的输入属性，用多响应线性回归（Multi-response Linear Regression，MLR）作为次级学算法效果较好。</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/" rel="tag"># 机器学习</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2020/07/24/xingce4/" rel="prev" title="行测笔记：判断推理（四）逻辑判断">
+      <i class="fa fa-chevron-left"></i> 行测笔记：判断推理（四）逻辑判断
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    <div class="comments" id="valine-comments"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-概述"><span class="nav-text">1 概述</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-Bagging"><span class="nav-text">2 Bagging</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#2-1-随机森林（Random-Forest-RF）"><span class="nav-text">2.1 随机森林（Random Forest, RF）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-2-重要参数"><span class="nav-text">2.2 重要参数</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-2-1-控制基评估器的参数"><span class="nav-text">2.2.1 控制基评估器的参数</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-2-2-n-estimators"><span class="nav-text">2.2.2 n_estimators</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-2-3-random-state"><span class="nav-text">2.2.3 random_state</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-2-4-bootstrap-amp-oob-score"><span class="nav-text">2.2.4 bootstrap &amp; oob_score</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-boosting"><span class="nav-text">3 boosting</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#3-1-Adaboost"><span class="nav-text">3.1 Adaboost</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#3-1-1-Adaboost原理"><span class="nav-text">3.1.1 Adaboost原理</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-1-2-Adaboost优缺点"><span class="nav-text">3.1.2 Adaboost优缺点</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#优点"><span class="nav-text">优点</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#缺点"><span class="nav-text">缺点</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-2-GBDT（Gradient-Boosting-Decision-Tree，梯度提升树）"><span class="nav-text">3.2 GBDT（Gradient Boosting Decision Tree，梯度提升树）</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#3-2-1-GBDT原理"><span class="nav-text">3.2.1 GBDT原理</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-3-XGboost"><span class="nav-text">3.3 XGboost</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#3-3-1-目标函数"><span class="nav-text">3.3.1 目标函数</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-3-2-求解XGB的目标函数"><span class="nav-text">3.3.2 求解XGB的目标函数</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-3-3-参数化决策树-f-k-x"><span class="nav-text">3.3.3 参数化决策树$f_k(x)$</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-3-4-寻找最佳树结构：求解-w-与-T"><span class="nav-text">3.3.4 寻找最佳树结构：求解$w$与$T$</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-3-5-寻找最佳分枝：结构分数之差"><span class="nav-text">3.3.5 寻找最佳分枝：结构分数之差</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-3-6-让树停止生长：重要参数gamma"><span class="nav-text">3.3.6 让树停止生长：重要参数gamma</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-4-Lightgbm"><span class="nav-text">3.4 Lightgbm</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#3-4-1-GOSS算法"><span class="nav-text">3.4.1 GOSS算法</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-4-2-EFB算法"><span class="nav-text">3.4.2 EFB算法</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-4-3-合并互斥特征"><span class="nav-text">3.4.3 合并互斥特征</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-5-Boosting算法优缺点对比"><span class="nav-text">3.5 Boosting算法优缺点对比</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#3-5-1-XGBoost-vs-GBDT"><span class="nav-text">3.5.1 XGBoost vs GBDT</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-5-2-XGboost-vs-LightGBM"><span class="nav-text">3.5.2 XGboost vs LightGBM</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-结合策略"><span class="nav-text">4 结合策略</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#4-1-平均法"><span class="nav-text">4.1 平均法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-2-投票法"><span class="nav-text">4.2 投票法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-3-学习法"><span class="nav-text">4.3 学习法</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="LiAnG"
+      src="/images/timg.jpg">
+  <p class="site-author-name" itemprop="name">LiAnG</p>
+  <div class="site-description" itemprop="description">Stay hungry, stay foolish</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">11</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/LiAnGGGGGG" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;LiAnGGGGGG" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:1318457129@qq.com" title="E-Mail → mailto:1318457129@qq.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="/atom.xml" title="rss → &#x2F;atom.xml"><i class="fa fa-rss fa-fw"></i>rss</a>
+      </span>
+  </div>
+  <div class="cc-license motion-element" itemprop="license">
+    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" class="cc-opacity" rel="noopener" target="_blank"><img src="/images/cc-by-nc-sa.svg" alt="Creative Commons"></a>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        <script
+  async
+  src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"
+></script>
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">LiAnG</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-area"></i>
+    </span>
+      <span class="post-meta-item-text">站点总字数：</span>
+    <span title="站点总字数">106k</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+      <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
+    <span title="站点阅读时长">1:36</span>
+</div>
+<!-- 网站运行时间的设置 -->
+<span id="timeDate">载入天数...</span>
+<span id="times">载入时分秒...</span>
+<script>
+    var now = new Date();
+    function createtime() {
+        var grt= new Date("05/30/2020 13:14:21");//此处修改你的建站时间或者网站上线时间
+        now.setTime(now.getTime()+250);
+        days = (now - grt ) / 1000 / 60 / 60 / 24; dnum = Math.floor(days);
+        hours = (now - grt ) / 1000 / 60 / 60 - (24 * dnum); hnum = Math.floor(hours);
+        if(String(hnum).length ==1 ){hnum = "0" + hnum;} minutes = (now - grt ) / 1000 /60 - (24 * 60 * dnum) - (60 * hnum);
+        mnum = Math.floor(minutes); if(String(mnum).length ==1 ){mnum = "0" + mnum;}
+        seconds = (now - grt ) / 1000 - (24 * 60 * 60 * dnum) - (60 * 60 * hnum) - (60 * mnum);
+        snum = Math.round(seconds); if(String(snum).length ==1 ){snum = "0" + snum;}
+        document.getElementById("timeDate").innerHTML = "本站已安全运行 "+dnum+" 天 ";
+        document.getElementById("times").innerHTML = hnum + " 小时 " + mnum + " 分 " + snum + " 秒";
+    }
+setInterval("createtime()",250);
+</script>
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+      
+
+<script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      loader: {
+        source: {
+          '[tex]/amsCd': '[tex]/amscd',
+          '[tex]/AMScd': '[tex]/amscd'
+        }
+      },
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              let target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    (function () {
+      var script = document.createElement('script');
+      script.src = '//cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';
+      script.defer = true;
+      document.head.appendChild(script);
+    })();
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
+
+  
+
+  
+  <script src="/js/src/wobblewindow.js"></script>
+  <script>
+    //只在桌面版网页启用特效
+    if (window.innerWidth > 768) {
+      $(document).ready(function () {
+        
+        // 根据类名获取，而不是id
+        $('.header').wobbleWindow({
+          radius: 50,
+          movementTop: false,
+          movementLeft: false,
+          movementRight: false,
+          debug: false,
+        });
+        
+
+        
+         // 根据类名获取，而不是id
+        $('.sidebar').wobbleWindow({
+          radius: 50,
+          movementLeft: false,
+          movementTop: false,
+          movementBottom: false,
+          position: 'fixed',
+          debug: false,
+        });
+        
+
+        
+         // 根据类名获取，而不是id
+        $('.footer').wobbleWindow({
+          radius: 50,
+          movementBottom: false,
+          movementLeft: false,
+          movementRight: false,
+          
+          position: 'absolute',
+          debug: false,
+        });
+        
+      });
+    }
+  </script>
+
+
+ 
+<script>
+  var OriginTitile = document.title;
+  var titleTime;
+  document.addEventListener("visibilitychange", function() {
+    if (document.hidden) {
+      document.title = "(つェ⊂)我藏好了哦~" + OriginTitile;
+      clearTimeout(titleTime);
+    } else {
+      document.title = "(*´∇｀*) 被你发现啦~" + OriginTitile;
+      titleTime = setTimeout(function() {
+        document.title = OriginTitile;
+      }, 2000);
+    }
+  });
+</script>
+
+
+
+
+
+
+  <script async src="/js/cursor/fireworks.js"></script>
+
+
+
+<script>
+NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
+  NexT.utils.getScript('//unpkg.com/valine/dist/Valine.min.js', () => {
+    var GUEST = ['nick', 'mail', 'link'];
+    var guest = 'nick,mail,link';
+    guest = guest.split(',').filter(item => {
+      return GUEST.includes(item);
+    });
+    new Valine({
+      el         : '#valine-comments',
+      verify     : false,
+      notify     : false,
+      appId      : 'rueYojQYHpaShC9b3zwCTcgt-gzGzoHsz',
+      appKey     : 'SuFkJxmzL9eehU2FBrkopQlJ',
+      placeholder: "Just go go",
+      avatar     : 'mm',
+      meta       : guest,
+      pageSize   : '10' || 10,
+      visitor    : false,
+      lang       : '' || 'zh-cn',
+      path       : location.pathname,
+      recordIP   : false,
+      serverURLs : ''
+    });
+  }, window.Valine);
+});
+</script>
+
+
+</body>
+</html>
