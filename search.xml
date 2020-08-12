@@ -1,44 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
-    <title>机器学习笔记（六）朴素贝叶斯</title>
-    <url>/2020/08/03/Bayes/</url>
-    <content><![CDATA[<h2 id="1-朴素贝叶斯原理"><a href="#1-朴素贝叶斯原理" class="headerlink" title="1 朴素贝叶斯原理"></a>1 朴素贝叶斯原理</h2><p>朴素贝叶斯是一种直接衡量标签和特征之间的概率关系的有监督学习算法，是一种专注分类的算法</p>
-<p>贝叶斯理论等式：</p>
-<p>$$P(Y|X)=\frac{P(X|Y) * P(Y)}{P(X)}$$</p>
-<p>我们可以把特征$X$当成是我们的条件事件，而我们要求解的标签Y当成是我们被满足条件后会被影响的结果，而两者之间的概率关系就是$P(Y|X)$，这个概率在机器学习中，被称为是标签的后验概率。而标签Y被写作$P(Y)$，被称为标签的先验概率</p>
-<a id="more"></a>
-
-<p>假设我们只有两个特征$X_1,X_2$，由联合概率公式</p>
-<p>$$P(X_1,X_2|Y=1)=\frac{X_1,X_2,Y=1}{P(Y=1)}$$<br>$$=\frac{P(X_1,X_2,Y=1)}{P(X_2,Y=1)} * \frac{P(X_2,Y=1)}{P(Y=1)}$$<br>$$=P(X_1|X_2,Y=1) * P(X_2|Y=1)$$</p>
-<p><strong>将(X_2,Y=1)看成一个条件</strong></p>
-<p><strong>当X_1,X_2是独立时$$P(X_1|X_2,Y=1)等于P(X_1|Y=1)$$</strong><br>$$=P(X_1|Y=1) * P(X_2|Y=1)$$</p>
-<p>推广到n个$X$，则有：</p>
-<p>$$P(X|Y=1)=\prod_{i=1}^{n}P(X_i=x_i|Y=1)$$</p>
-<p><strong>假设特征之间是有条件独立的，可以解决众多问题，也简化了很多计算过程，这是朴素贝叶斯被称为“朴素”的理由</strong></p>
-<p>因此，贝叶斯在特征之间有较多相关性的数据集上表现不佳。</p>
-<p>分母的求解可以根据全概率公式<br>$$P(X)=\sum_{i=1}^mP(y_i) * P(X|Y_i)$$</p>
-<p>其中m代表标签的种类，对于二分类：<br>$$P(X)=P(Y=1) * P(X|Y=1)+P(Y=0) * P(X|Y=0)$$</p>
-<h2 id="2-不同分布下的贝叶斯"><a href="#2-不同分布下的贝叶斯" class="headerlink" title="2 不同分布下的贝叶斯"></a>2 不同分布下的贝叶斯</h2><h3 id="2-1-高斯朴素贝叶斯GaussianNB"><a href="#2-1-高斯朴素贝叶斯GaussianNB" class="headerlink" title="2.1 高斯朴素贝叶斯GaussianNB"></a>2.1 高斯朴素贝叶斯GaussianNB</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">class sklearn.naive_bayes.GaussianNB (priors&#x3D;None, var_smoothing&#x3D;1e-09)</span><br></pre></td></tr></table></figure>
-
-<p>高斯朴素贝叶斯，通过假设$P(x_i|Y)$是服从高斯分布</p>
-<p>$$P(x_i|Y)=f(x_i;\mu,\sigma) * \epsilon$$<br>$$=\frac{1}{\sqrt{2\pi \sigma_y^2}}exp(-\frac{(x_i-\mu_y)^2}{2\sigma_y^2})$$</p>
-<h3 id="2-2-多项式朴素贝叶斯MultinomialNB"><a href="#2-2-多项式朴素贝叶斯MultinomialNB" class="headerlink" title="2.2 多项式朴素贝叶斯MultinomialNB"></a>2.2 多项式朴素贝叶斯MultinomialNB</h3><p>假设概率分布是服从一个简单多项式分布，具体可解释为：实验包括n次重复实验，每项实验都有不同的可能结果，在任何给定的实验中，特定结果发生的概率是不变的。</p>
-<ol>
-<li>多项式分布擅长的是分类型变量，在其原理假设中的概率是离散的，并且不同下的相互独立，互不影响。虽然sklearn中的多项式分布也可以处理连续型变量，但现实中，如果我们真的想要处理连续型变量，使用高斯朴素贝叶斯。</li>
-<li>多项式实验中的实验结果都很具体，它所涉及的特征往往是次数，频率，计数，出现与否这样的概念，这些概念都是离散的正整数，因此sklearn中的多项式朴素贝叶斯不接受负值的输入。</li>
-</ol>
-<h3 id="2-3-伯努利朴素贝叶斯BernoulliNB"><a href="#2-3-伯努利朴素贝叶斯BernoulliNB" class="headerlink" title="2.3 伯努利朴素贝叶斯BernoulliNB"></a>2.3 伯努利朴素贝叶斯BernoulliNB</h3><p>多项式朴素贝叶斯可同时处理二项分布（抛硬币）和多项分布（掷骰子），其中二项分布又叫做伯努利分布，它是一种现实中常见，并且拥有很多优越数学性质的分布。因此，既然有着多项式朴素贝叶斯，我们自然也就又专门用来处理二项分布的朴素贝叶斯：伯努利朴素贝叶斯。</p>
-<h3 id="2-4-改进多项式朴素贝叶斯：补集朴素贝叶斯ComplementNB"><a href="#2-4-改进多项式朴素贝叶斯：补集朴素贝叶斯ComplementNB" class="headerlink" title="2.4 改进多项式朴素贝叶斯：补集朴素贝叶斯ComplementNB"></a>2.4 改进多项式朴素贝叶斯：补集朴素贝叶斯ComplementNB</h3><p>补集朴素贝叶斯（complement naive Bayes，CNB）算法是标准多项式朴素贝叶斯算法的改进。CNB的发明小组创造出CNB的初衷是为了解决贝叶斯中的“朴素”假设带来的各种问题，他们希望能够创造出数学方法以逃避朴素贝叶斯中的朴素假设，让算法能够不去关心所有特征之间是否是条件独立的。以此为基础，他们创造出了能够解决样本不平衡问题，并且能够一定程度上忽略朴素假设的补集朴素贝叶斯。在实验中，CNB的参数估计已经被证明比普通多项式朴素贝叶斯更稳定，并且它特别适合于样本不平衡的数据集。有时候，CNB在文本分类任务上的表现有时能够优于多项式朴素贝叶斯，因此现在补集朴素贝叶斯也开始逐渐流行。</p>
-]]></content>
-      <categories>
-        <category>机器学习</category>
-      </categories>
-      <tags>
-        <tag>机器学习</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>数据结构总结（一）：线性表</title>
     <url>/2020/08/11/Data%20Structure/</url>
     <content><![CDATA[<h1 id="1-线性表"><a href="#1-线性表" class="headerlink" title="1 线性表"></a>1 线性表</h1><h2 id="1-1-线性表的定义和基本操作"><a href="#1-1-线性表的定义和基本操作" class="headerlink" title="1.1 线性表的定义和基本操作"></a>1.1 线性表的定义和基本操作</h2><p>1.线性结构的特点是：在数据元素的非空有限集中</p>
@@ -235,209 +197,6 @@
       </categories>
       <tags>
         <tag>机器学习</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>机器学习笔记（八）数据预处理与特征工程</title>
-    <url>/2020/08/09/Feat/</url>
-    <content><![CDATA[<h2 id="数据预处理和特征工程"><a href="#数据预处理和特征工程" class="headerlink" title="数据预处理和特征工程"></a>数据预处理和特征工程</h2><h3 id="1-数据预处理"><a href="#1-数据预处理" class="headerlink" title="1 数据预处理"></a>1 数据预处理</h3><h4 id="1-1-数据无量纲化"><a href="#1-1-数据无量纲化" class="headerlink" title="1.1 数据无量纲化"></a>1.1 数据无量纲化</h4><ul>
-<li>preprocessing.MinMaxScaler：归一化</li>
-</ul>
-<p>$$x^{*} = \frac{x-min(x)}{max(x)-min(x)}$$</p>
-<ul>
-<li>preprocessing.StandardScaler：标准化</li>
-</ul>
-<p>$$x^{*}=\frac{x-\mu}{\sigma}$$</p>
-<ul>
-<li>StandardScaler和MinMaxScaler选哪个</li>
-</ul>
-<p>大多数机器选择算法会选择StandardScaler进行放缩，因为MinMaxScaler对异常值非常敏感</p>
-<a id="more"></a>
-
-<h4 id="1-2-缺失值"><a href="#1-2-缺失值" class="headerlink" title="1.2 缺失值"></a>1.2 缺失值</h4><ul>
-<li>填充固定值</li>
-<li>填充均值</li>
-<li>填充中位数</li>
-<li>填充众数</li>
-<li>填充上下跳的数据</li>
-<li>填充插值得到的数据</li>
-<li>填充KNN数据</li>
-<li>填充模型预测的值</li>
-</ul>
-<h4 id="1-3-处理分类型特征：编码与哑变量"><a href="#1-3-处理分类型特征：编码与哑变量" class="headerlink" title="1.3 处理分类型特征：编码与哑变量"></a>1.3 处理分类型特征：编码与哑变量</h4><ul>
-<li><p>preprocessing.LabelEncoder：标签专用，能够将分类转换为分类数值</p>
-</li>
-<li><p>preprocessing.OrdinalEncoder：特征专用，能够将分类特征转化为分类数值</p>
-</li>
-<li><p>preprocessing.OneHotEncoder:独热编码，创建哑变量</p>
-</li>
-</ul>
-<p><img src="https://note.youdao.com/yws/api/personal/file/671DF765B3D84C68A1C2E1038494B94C?method=download&shareKey=5c723470f1cc5eaed7f35061d1aac324" alt></p>
-<p><img src="https://note.youdao.com/yws/api/personal/file/DAC20B5C378C4A4485B373870AAF5971?method=download&shareKey=8ba1b6bb9905782ae7951e742ae79fd0" alt></p>
-<p>但是在独热编码后，增加了特征的维数。如果类别有很多种的话可能特征矩阵非常稀疏</p>
-<h4 id="1-4-处理连续特征：二值化与分段"><a href="#1-4-处理连续特征：二值化与分段" class="headerlink" title="1.4 处理连续特征：二值化与分段"></a>1.4 处理连续特征：二值化与分段</h4><ul>
-<li>sklearn.preprocessing.Binarizer</li>
-</ul>
-<p>根据阈值将数据二值化，用于处理连续型变量。大于阈值的值映射为1，而小于或等于阈值的值射为0。二值化常用于文本计数数据</p>
-<ul>
-<li>preprocessing.KBinsDiscretizer</li>
-</ul>
-<p>将连续型变量划分为分类变量的类，能够将连续型变量排序后按顺序分分箱后编码</p>
-<table>
-<thead>
-<tr>
-<th align="left">参数</th>
-<th align="left">含义&amp;输入</th>
-</tr>
-</thead>
-<tbody><tr>
-<td align="left">n_bins</td>
-<td align="left">每个特征中分箱的个数，默认5，一次会被运用到所有导入的特征</td>
-</tr>
-<tr>
-<td align="left">encode</td>
-<td align="left">编码的方 式，默 认 “onehot”：做哑变量，之后返回一个稀疏矩阵，每一列是一个特征中的一个类别，含有该类别的样本表示为 1， 不含的表示为0</td>
-</tr>
-<tr>
-<td align="left"></td>
-<td align="left">“ordinal”：每个特征的每个箱都被编码为一个整数，返回每一列是一个特征，每个特征下含有不同整数编码的箱的矩阵</td>
-</tr>
-<tr>
-<td align="left"></td>
-<td align="left">“onehot-dense”：做哑变量，之后返回一个密集数组。</td>
-</tr>
-<tr>
-<td align="left">strategy</td>
-<td align="left">用来定义箱宽的方式，默认”quantile”</td>
-</tr>
-<tr>
-<td align="left"></td>
-<td align="left">“uniform”：表示等宽分箱，即每个特征中的每个箱的最大值之间的差为（$特征.max()-特征.min()/n_bins$）</td>
-</tr>
-<tr>
-<td align="left"></td>
-<td align="left">“quantile”：表示等位分箱，即每个特征中的每个箱内的样本数量都相同</td>
-</tr>
-<tr>
-<td align="left"></td>
-<td align="left">“kmeans”：表示按聚类分箱，每个箱中的值到最近的一维k均值聚类的簇心得距离都相同</td>
-</tr>
-</tbody></table>
-<h3 id="2-特征选择"><a href="#2-特征选择" class="headerlink" title="2 特征选择"></a>2 特征选择</h3><p>我们有四种方法可以用来选择特征：过滤法、嵌入法、包装法、降维算法</p>
-<h4 id="2-1-Filter过滤法"><a href="#2-1-Filter过滤法" class="headerlink" title="2.1 Filter过滤法"></a>2.1 Filter过滤法</h4><p>它是根据各种统计检验中的分数以及相关性的各向指标来选择特征</p>
-<h5 id="2-1-1-方差过滤"><a href="#2-1-1-方差过滤" class="headerlink" title="2.1.1 方差过滤"></a>2.1.1 方差过滤</h5><ul>
-<li>VarianceThreshold</li>
-</ul>
-<p>通过特征本身的方差来筛选特征的类。如果一个特征本身的方差很小，就表示这个特征基本没有差异，那这个特征对于样本区分没有什么作用。</p>
-<h5 id="2-1-2-相关性过滤"><a href="#2-1-2-相关性过滤" class="headerlink" title="2.1.2 相关性过滤"></a>2.1.2 相关性过滤</h5><p>我们希望选出与标签相关且有意义的特征，这样的特征能够为我们提供大量的信息。</p>
-<p><img src="https://note.youdao.com/yws/api/personal/file/6A85336AB79345C18D14A5F3F3D1B4B9?method=download&shareKey=a1bc337ffcb61ce727aa8d9300b45809" alt></p>
-<ul>
-<li>卡方过滤</li>
-</ul>
-<p>卡方过滤是专门针对离散型标签的相关性过滤，通过卡方检验类feature_selection.chi2结合feature_selection.SelectKBest来选出前K个分数最高的特征类</p>
-<ul>
-<li>F检验</li>
-</ul>
-<p>用来捕捉每个特征与标签之间的线性关系的过滤方法，即可以做回归也可以做分类。</p>
-<ul>
-<li>互信息法</li>
-</ul>
-<p>互信息法是用来捕捉每个特征与标签之间的任意关系（包括线性和非线性）的过滤方法，也可以做回归和分类。</p>
-<h4 id="2-2-Embedded嵌入法"><a href="#2-2-Embedded嵌入法" class="headerlink" title="2.2 Embedded嵌入法"></a>2.2 Embedded嵌入法</h4><p>嵌入法是一种让算法自己决定使用哪些特征的方法，即特征选择和算法训练同时进行。</p>
-<p><img src="https://note.youdao.com/yws/api/personal/file/B20CE443F91E421FA086F0D7B773F940?method=download&shareKey=329d8ddf018f6e52198b696aafc99c1a" alt></p>
-<ul>
-<li>feature_selection.SelectFromModel</li>
-</ul>
-<p>SelectFromModel是一个元变换器，可以与任何在拟合后具有coef_,feature_impoortances_属性或参数中可选惩罚项的评估器一起使用</p>
-<table>
-<thead>
-<tr>
-<th align="left">参数</th>
-<th align="left">说明</th>
-</tr>
-</thead>
-<tbody><tr>
-<td align="left">estimator</td>
-<td align="left">使用的模型评估器，只要是带feature_importances_或者coef_属性，或带有$l_1$和$l_2$惩罚项的模型都可以使用</td>
-</tr>
-<tr>
-<td align="left">threshold</td>
-<td align="left">特征重要性的阈值，重要性低于这个阈值的特征都将被删除</td>
-</tr>
-<tr>
-<td align="left">preﬁt</td>
-<td align="left">默认False，判断是否将实例化后的模型直接传递给构造函数。如果为True，则必须直接调用ﬁt和transform，不能使用ﬁt_transform，并且SelectFromModel不能与cross_val_score，GridSearchCV和克隆估计器的类似实用程序一起使用。</td>
-</tr>
-<tr>
-<td align="left">norm_order</td>
-<td align="left">k可输入非零整数，正无穷，负无穷，默认值为1在评估器的coef_属性高于一维的情况下，用于过滤低于阈值的系数的向量的范数的阶数。</td>
-</tr>
-<tr>
-<td align="left">max_features</td>
-<td align="left">在阈值设定下，要选择的最大特征数。要禁用阈值并仅根据max_features选择，请设置threshold = -np.inf</td>
-</tr>
-</tbody></table>
-<h4 id="3-3-Wrapper包装法"><a href="#3-3-Wrapper包装法" class="headerlink" title="3.3 Wrapper包装法"></a>3.3 Wrapper包装法</h4><p>包装法也是一个特征选择和算法训练同时记性的方法，与嵌入法十分相似，但不同的是，我们往往使用一个目标函数作为黑盒来帮助我们选取特征，而不是自己输入某个评估指标或统计量的阈值。</p>
-<p><img src="https://note.youdao.com/yws/api/personal/file/2210DFBFBE614558A58D1F7F7C3A207F?method=download&shareKey=a4ee875d7e0cf4e62258f04f111375e1" alt></p>
-<ul>
-<li>feature_selection.RFE<br>最典型的目标函数是递归特征消除法（Recursive feature elimination, RFE）</li>
-</ul>
-]]></content>
-      <categories>
-        <category>机器学习</category>
-      </categories>
-      <tags>
-        <tag>机器学习</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>计算机网络总结（一）：计算机网络体系结构</title>
-    <url>/2020/08/11/computer%20network/</url>
-    <content><![CDATA[<h1 id="1-计算机网络概述"><a href="#1-计算机网络概述" class="headerlink" title="1 计算机网络概述"></a>1 计算机网络概述</h1><h2 id="1-1-计算机网络的概念、组成与功能"><a href="#1-1-计算机网络的概念、组成与功能" class="headerlink" title="1.1 计算机网络的概念、组成与功能"></a>1.1 计算机网络的概念、组成与功能</h2><p>互联网的拓扑结构虽然非常复杂，并且在地理上覆盖了全球，但从其工作方式上看，可以划分为以下两大块：<br>（1）边缘部分    由所有连接在互联网上的主机组成。这部分是用户直接使用的，用来进行通信（传送数据、音频或视频）和资源共享。<br>（2）核心部分    由大量网络和连接这些网络的路由器组成。这部分是为边缘部分提供服务的（提供连通性和交换）</p>
-<a id="more"></a>
-
-<h2 id="1-2-计算机网络的分类"><a href="#1-2-计算机网络的分类" class="headerlink" title="1.2 计算机网络的分类"></a>1.2 计算机网络的分类</h2><p>计算机网络有多种类别，下面进行简单的介绍。<br>1.按照网络的作用范围进行分类<br>（1）广域网 WAN（Wide Area Network）<br>广域网的作用范围通常为几十到几千公里。广域网是互联网的核心部分，其任务是通过长距离（例如，跨越不同的国家）运送主机所发送的数据。连接广域网各结点交换机的链路一般都是高速链路，具有较大的通信容量。<br>（2）城域网 MAN（Metropolitan Area Network）<br>城域网的作用范围一般是一个城市，可跨越几个街区甚至整个城市。城域网可以为一个或几个单位所拥有，但也可以是一种公用设施，用来将多个局域网进行互连。目前很多城域网采用的是以太网技术，因此有时也常并入局域网的范围进行讨论。<br>（3）局域网 LAN（Local Area Network）<br>局域网一般用微型计算机或工作站通过高速通信线路相连（速率通常在 10 Mbit/s 以上），但地理上则局限在较小的范围（如 1 km 左右）。<br>（4）个人区域网 PAN（Personal Area Network）<br>个人区域网就是在个人工作的地方把属于个人使用的电子设备（如便携式电脑等）用无线技术连接起来的网络，因此也常称为无线个人区域网 WPAN（WirelessPAN），其范围很小，大约在 10 m 左右。<br>2.按照网络的使用者进行分类<br>（5）公用网（publiCnetwork）这是指电信公司（国有或私有）出资建造的大型网络。”公用”的意思就是所有愿意按电信公司的规定交纳费用的人都可以使用这种网络。因此公用网也可称为公众网。<br>（6）专用网（private network）这是某个部门为满足本单位的特殊业务工作的需要而建造的网络。这种网络不向本单位以外的人提供服务。例如，军队、铁路、银行、电力等系统均有本系统的专用网。</p>
-<p>公用网和专用网都可以提供多种服务。如传送的是计算机数据，则分别是公用计算机网络和专用计算机网络。</p>
-<h1 id="2-计算机网络体系结构与参考模型"><a href="#2-计算机网络体系结构与参考模型" class="headerlink" title="2 计算机网络体系结构与参考模型"></a>2 计算机网络体系结构与参考模型</h1><h2 id="2-1-计算机网络协议、接口、服务等概念"><a href="#2-1-计算机网络协议、接口、服务等概念" class="headerlink" title="2.1 计算机网络协议、接口、服务等概念"></a>2.1 计算机网络协议、接口、服务等概念</h2><p>1.协议<br>主要由以下三要素组成</p>
-<ul>
-<li>语法，即数据与控制信息的结构或格式：</li>
-<li>语义，即需要发出何种控制信息，完成何种动作以及做出何种响应：</li>
-<li>同步，即事件实现顺序的详细说明。</li>
-</ul>
-<p>2.接口（服务访问点）<br>同一系统中相邻两层的实体进行交互的地方。</p>
-<p>3.服务（service）<br>为保证上层对等体之间能相互通信，下层向上层提供的功能。</p>
-<h2 id="2-2-ISO-OSI参考模型和TCP-IP模型"><a href="#2-2-ISO-OSI参考模型和TCP-IP模型" class="headerlink" title="2.2 ISO/OSI参考模型和TCP/IP模型"></a>2.2 ISO/OSI参考模型和TCP/IP模型</h2><p>1.ISO/OSI参考模型</p>
-<p><img src="https://note.youdao.com/yws/api/personal/file/9AA9B51F88884CCE88B4E887CBD0F540?method=download&shareKey=3fad92c71278a5fdcac6d459d65c99d2" alt></p>
-<p>(1) 物理层<br>物理层是 OSI 参考模型的最低一层，也是在同级层之间直接进行信息交换的唯一一层。物理层负责传输二进制位流，也就是透明的传输比特，它的任务就是为上层（数据链路层）提供一个物理连接，以便在相邻节点之间无差错地传送二进制位流。有一点应该注意的是，传送二进制位流的传输介质，如双绞线、同轴电缆以及光纤等并不属于物理层要考虑的问题。实际上传输介质并不在 OSI的7个层次之内。<br>(2) 数据链路层<br>数据链路层负责在两个相邻节点之间，无差错地传送以 “ 帧 ” 为单位的数据。每一帧包括一定数量的数据和若干控制信息。数据链路的任务首先要负责建立、维持和释放数据链路的连接。在传送数据时，如果接收节点发现数据有错，要通知发送方重发这一帧，直到这一帧正确无误地送到为止。这样，数据链路层就把一条可能出错的链路，转变成让网络层看起来就像是一条不出错的理想链路。<br>(3) 网络层<br>网络层的主要功能是为处在不同网络系统中的两个节点设备通信提供一条逻辑通路。其基本任务包括路由选择、拥塞控制与网络互联等功能。<br>(4) 传输层<br>传输层的主要任务是向用户提供可靠的端到端（end-to-end ）服务，透明地传送报文。它向高层屏蔽了下层数据通信的细节，因而是计算机通信体系结构中最关键的一层。该层关心的主要问题包括建立、维护和中断虚电路、传输差错校验和恢复以及信息流量控制机制等。<br>(5) 会话层<br>负责通讯的双方在正式开始传输前的沟通，目的在于建立传输时所遵循的规则，使传输更顺畅、有效率。沟通的议题包括：使用全双工模式或半双式模式？如何发起传输？如何结束传输？如何设置传输参数就像两国元首在见面会晤之前，总会先派人谈好议事规则，正式谈判时就根据这套规则进行一样。<br>(6) 表示层<br>表示层处理两个应用实体之间进行数据交换的语法问题，解决数据交换中存在的数据格式不一致以及数据表示方法不同等问题。例如，IBM 系统的用户使用 EBCD 编码，而其它用户使用 ASCII 编码。表示层必须提供这两编码的转换服务。数据加密与解密、数据压缩与恢复等也都是表示层提供的服务。<br>(7) 应用层<br>应用层是 OSI 参考模型中最靠近用户的一层，它直接提供文件传输、电子邮件、网页浏览等服务给用户。</p>
-<p>2.TCP/IP模型</p>
-<p><img src="https://note.youdao.com/yws/api/personal/file/612A9DB2F78D400882E6E63B5039B5D7?method=download&shareKey=34d2de9a289a9eab74e01f3de190d316" alt></p>
-<p>TCP/IP 是一个四层的体系结构，它包含应用层、传输层、网际层和网络接口层（用网际层这个名字 是强调这一层是为了解决不同网络的互连问题）。不过从实质上讲，TCP/IP 只有最上面的三层，因为最下面的网络接口层并没有什么具体内容。<br>(1) 网络接口层（network interface layeR）</p>
-<p>在 TCP/IP 分层体系结构中，最底层是网络接口层，它 负责通过网络发送和接收 IP 数据报 。TCP/IP 体系结构并未对网络接口层使用权的协议做出强硬的规定，它允许主机连入网络时使用多种现成的和流行的协议，例如局域网协议或其他一些协议。</p>
-<p>(2) 网络层（internet layeR）也就是网际层</p>
-<p>网络层是 TCP/IP 体系结构的第二层，它实现的功能相当于 OSI 参考模型网络层的无连接网络服务。互联层负责将源主机的报文分组发送到目的的主机，源主机与目的主机可以在一个网上，也可以在不同的网上。</p>
-<ol>
-<li>处理来自传输层的分组发送请求。在收到分组发送请求之后，将分组装入 IP 数据报，填充报头，选择发送路径，然后将数据报发送到相应的网络输出线。</li>
-<li>处理接收的数据报。在接收到其他主机发送的数据报之后，检查目的地址，如需要转发，则选择发送路径，转发出去；如目的地址为本节点 IP 地址，则除去报头，将分组送交给传输层处理。</li>
-<li>处理互联的路径、流控与拥塞问题。</li>
-</ol>
-<p>(3) 传输层（transport layeR）<br>网络层之上是传输层，它的主要功能是负责应用进程之间的 端 - 端（Host-to-host ）通信。在 TCP/IP 体系结构中，设计传输层的主要目的是在互联网中源主机与目的主机的对等实体之间建立用于会话的端- 端连接 。因此，它与 OSI 参考模型的传输层功能相似。</p>
-<p>TCP/IP 体系结构的传输层定义了 传输控制协议（TCP，transportControlProtocol ）和 用户数据报协（UDP,useRdatagramProtocol ）两种协议。<br>TCP 协议是一种可靠的面向连接的协议，它允许将一台主机的字节流（byte stream ）无差错地传送到目的主机。<br>UDP 协议是一种不可靠的无连接协议，它主要用于不要求分组顺序到达的传输中，分组传输顺序检查与排序由应用层完成。</p>
-<p>(4) 应用层（application layeR）<br>在 TCP/IP 体系结构中，应用层是最靠近用户的一层。它包括了所有的高层协议，并且总是不断有新的协议加入。其主要协议包括：</p>
-<ol>
-<li>文件传输协议（FTP ,file transfeRprotocol ），用于实现互联网中交互式文件传输功能；</li>
-<li>简单邮件传输协议（SMTP simple mail transfeRprotocol ），用于实现互联网中邮件传送功能；</li>
-<li>域名系统（DNS, domain name system ），用于实现互联网设备名字到 IP 地址映射的网络服务；</li>
-<li>超文本传输协议（HTTP, bypeRtext transfeRprotocol ），用于目前广泛使用的 Web 服务；</li>
-<li>路由信息协议（RIP,Routing informationProtocol ），用于网络设备之间交换路由信息；</li>
-</ol>
-<p>在学习计算机网络的原理时往往采取折中的办法，即综合 OSI 和 TCP/IP 的优点，采用一种只有五层协议的体系结构，这样既简洁又能将概念阐述清楚。</p>
-<p><img src="https://note.youdao.com/yws/api/personal/file/7AF501D78232488DA7EF5B4DAD0A6487?method=download&shareKey=29133d1298976bc40cf97fb451b81b45" alt></p>
-]]></content>
-      <categories>
-        <category>计算机基础知识</category>
-      </categories>
-      <tags>
-        <tag>计算机基础知识</tag>
       </tags>
   </entry>
   <entry>
@@ -1655,6 +1414,197 @@ print(&apos;runtime:&apos;, time.time() - start_t)</code></pre>]]></content>
       </tags>
   </entry>
   <entry>
+    <title>机器学习笔记（六）朴素贝叶斯</title>
+    <url>/2020/08/03/Bayes/</url>
+    <content><![CDATA[<h2 id="1-朴素贝叶斯原理"><a href="#1-朴素贝叶斯原理" class="headerlink" title="1 朴素贝叶斯原理"></a>1 朴素贝叶斯原理</h2><p>朴素贝叶斯是一种直接衡量标签和特征之间的概率关系的有监督学习算法，是一种专注分类的算法</p>
+<p>贝叶斯理论等式：</p>
+<p>$$P(Y|X)=\frac{P(X|Y) * P(Y)}{P(X)}$$</p>
+<p>我们可以把特征$X$当成是我们的条件事件，而我们要求解的标签Y当成是我们被满足条件后会被影响的结果，而两者之间的概率关系就是$P(Y|X)$，这个概率在机器学习中，被称为是标签的后验概率。而标签Y被写作$P(Y)$，被称为标签的先验概率</p>
+<a id="more"></a>
+
+<p>假设我们只有两个特征$X_1,X_2$，由联合概率公式</p>
+<p>$$P(X_1,X_2|Y=1)=\frac{X_1,X_2,Y=1}{P(Y=1)}$$<br>$$=\frac{P(X_1,X_2,Y=1)}{P(X_2,Y=1)} * \frac{P(X_2,Y=1)}{P(Y=1)}$$<br>$$=P(X_1|X_2,Y=1) * P(X_2|Y=1)$$</p>
+<p><strong>将(X_2,Y=1)看成一个条件</strong></p>
+<p><strong>当X_1,X_2是独立时$$P(X_1|X_2,Y=1)等于P(X_1|Y=1)$$</strong><br>$$=P(X_1|Y=1) * P(X_2|Y=1)$$</p>
+<p>推广到n个$X$，则有：</p>
+<p>$$P(X|Y=1)=\prod_{i=1}^{n}P(X_i=x_i|Y=1)$$</p>
+<p><strong>假设特征之间是有条件独立的，可以解决众多问题，也简化了很多计算过程，这是朴素贝叶斯被称为“朴素”的理由</strong></p>
+<p>因此，贝叶斯在特征之间有较多相关性的数据集上表现不佳。</p>
+<p>分母的求解可以根据全概率公式<br>$$P(X)=\sum_{i=1}^mP(y_i) * P(X|Y_i)$$</p>
+<p>其中m代表标签的种类，对于二分类：<br>$$P(X)=P(Y=1) * P(X|Y=1)+P(Y=0) * P(X|Y=0)$$</p>
+<h2 id="2-不同分布下的贝叶斯"><a href="#2-不同分布下的贝叶斯" class="headerlink" title="2 不同分布下的贝叶斯"></a>2 不同分布下的贝叶斯</h2><h3 id="2-1-高斯朴素贝叶斯GaussianNB"><a href="#2-1-高斯朴素贝叶斯GaussianNB" class="headerlink" title="2.1 高斯朴素贝叶斯GaussianNB"></a>2.1 高斯朴素贝叶斯GaussianNB</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">class sklearn.naive_bayes.GaussianNB (priors&#x3D;None, var_smoothing&#x3D;1e-09)</span><br></pre></td></tr></table></figure>
+
+<p>高斯朴素贝叶斯，通过假设$P(x_i|Y)$是服从高斯分布</p>
+<p>$$P(x_i|Y)=f(x_i;\mu,\sigma) * \epsilon$$<br>$$=\frac{1}{\sqrt{2\pi \sigma_y^2}}exp(-\frac{(x_i-\mu_y)^2}{2\sigma_y^2})$$</p>
+<h3 id="2-2-多项式朴素贝叶斯MultinomialNB"><a href="#2-2-多项式朴素贝叶斯MultinomialNB" class="headerlink" title="2.2 多项式朴素贝叶斯MultinomialNB"></a>2.2 多项式朴素贝叶斯MultinomialNB</h3><p>假设概率分布是服从一个简单多项式分布，具体可解释为：实验包括n次重复实验，每项实验都有不同的可能结果，在任何给定的实验中，特定结果发生的概率是不变的。</p>
+<ol>
+<li>多项式分布擅长的是分类型变量，在其原理假设中的概率是离散的，并且不同下的相互独立，互不影响。虽然sklearn中的多项式分布也可以处理连续型变量，但现实中，如果我们真的想要处理连续型变量，使用高斯朴素贝叶斯。</li>
+<li>多项式实验中的实验结果都很具体，它所涉及的特征往往是次数，频率，计数，出现与否这样的概念，这些概念都是离散的正整数，因此sklearn中的多项式朴素贝叶斯不接受负值的输入。</li>
+</ol>
+<h3 id="2-3-伯努利朴素贝叶斯BernoulliNB"><a href="#2-3-伯努利朴素贝叶斯BernoulliNB" class="headerlink" title="2.3 伯努利朴素贝叶斯BernoulliNB"></a>2.3 伯努利朴素贝叶斯BernoulliNB</h3><p>多项式朴素贝叶斯可同时处理二项分布（抛硬币）和多项分布（掷骰子），其中二项分布又叫做伯努利分布，它是一种现实中常见，并且拥有很多优越数学性质的分布。因此，既然有着多项式朴素贝叶斯，我们自然也就又专门用来处理二项分布的朴素贝叶斯：伯努利朴素贝叶斯。</p>
+<h3 id="2-4-改进多项式朴素贝叶斯：补集朴素贝叶斯ComplementNB"><a href="#2-4-改进多项式朴素贝叶斯：补集朴素贝叶斯ComplementNB" class="headerlink" title="2.4 改进多项式朴素贝叶斯：补集朴素贝叶斯ComplementNB"></a>2.4 改进多项式朴素贝叶斯：补集朴素贝叶斯ComplementNB</h3><p>补集朴素贝叶斯（complement naive Bayes，CNB）算法是标准多项式朴素贝叶斯算法的改进。CNB的发明小组创造出CNB的初衷是为了解决贝叶斯中的“朴素”假设带来的各种问题，他们希望能够创造出数学方法以逃避朴素贝叶斯中的朴素假设，让算法能够不去关心所有特征之间是否是条件独立的。以此为基础，他们创造出了能够解决样本不平衡问题，并且能够一定程度上忽略朴素假设的补集朴素贝叶斯。在实验中，CNB的参数估计已经被证明比普通多项式朴素贝叶斯更稳定，并且它特别适合于样本不平衡的数据集。有时候，CNB在文本分类任务上的表现有时能够优于多项式朴素贝叶斯，因此现在补集朴素贝叶斯也开始逐渐流行。</p>
+]]></content>
+      <categories>
+        <category>机器学习</category>
+      </categories>
+      <tags>
+        <tag>机器学习</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>机器学习笔记（八）数据预处理与特征工程</title>
+    <url>/2020/08/09/Feat/</url>
+    <content><![CDATA[<h2 id="数据预处理和特征工程"><a href="#数据预处理和特征工程" class="headerlink" title="数据预处理和特征工程"></a>数据预处理和特征工程</h2><h3 id="1-数据预处理"><a href="#1-数据预处理" class="headerlink" title="1 数据预处理"></a>1 数据预处理</h3><h4 id="1-1-数据无量纲化"><a href="#1-1-数据无量纲化" class="headerlink" title="1.1 数据无量纲化"></a>1.1 数据无量纲化</h4><ul>
+<li>preprocessing.MinMaxScaler：归一化</li>
+</ul>
+<p>$$x^{*} = \frac{x-min(x)}{max(x)-min(x)}$$</p>
+<ul>
+<li>preprocessing.StandardScaler：标准化</li>
+</ul>
+<p>$$x^{*}=\frac{x-\mu}{\sigma}$$</p>
+<ul>
+<li>StandardScaler和MinMaxScaler选哪个</li>
+</ul>
+<p>大多数机器选择算法会选择StandardScaler进行放缩，因为MinMaxScaler对异常值非常敏感</p>
+<a id="more"></a>
+
+<h4 id="1-2-缺失值"><a href="#1-2-缺失值" class="headerlink" title="1.2 缺失值"></a>1.2 缺失值</h4><ul>
+<li>填充固定值</li>
+<li>填充均值</li>
+<li>填充中位数</li>
+<li>填充众数</li>
+<li>填充上下跳的数据</li>
+<li>填充插值得到的数据</li>
+<li>填充KNN数据</li>
+<li>填充模型预测的值</li>
+</ul>
+<h4 id="1-3-处理分类型特征：编码与哑变量"><a href="#1-3-处理分类型特征：编码与哑变量" class="headerlink" title="1.3 处理分类型特征：编码与哑变量"></a>1.3 处理分类型特征：编码与哑变量</h4><ul>
+<li><p>preprocessing.LabelEncoder：标签专用，能够将分类转换为分类数值</p>
+</li>
+<li><p>preprocessing.OrdinalEncoder：特征专用，能够将分类特征转化为分类数值</p>
+</li>
+<li><p>preprocessing.OneHotEncoder:独热编码，创建哑变量</p>
+</li>
+</ul>
+<p><img src="https://note.youdao.com/yws/api/personal/file/671DF765B3D84C68A1C2E1038494B94C?method=download&shareKey=5c723470f1cc5eaed7f35061d1aac324" alt></p>
+<p><img src="https://note.youdao.com/yws/api/personal/file/DAC20B5C378C4A4485B373870AAF5971?method=download&shareKey=8ba1b6bb9905782ae7951e742ae79fd0" alt></p>
+<p>但是在独热编码后，增加了特征的维数。如果类别有很多种的话可能特征矩阵非常稀疏</p>
+<h4 id="1-4-处理连续特征：二值化与分段"><a href="#1-4-处理连续特征：二值化与分段" class="headerlink" title="1.4 处理连续特征：二值化与分段"></a>1.4 处理连续特征：二值化与分段</h4><ul>
+<li>sklearn.preprocessing.Binarizer</li>
+</ul>
+<p>根据阈值将数据二值化，用于处理连续型变量。大于阈值的值映射为1，而小于或等于阈值的值射为0。二值化常用于文本计数数据</p>
+<ul>
+<li>preprocessing.KBinsDiscretizer</li>
+</ul>
+<p>将连续型变量划分为分类变量的类，能够将连续型变量排序后按顺序分分箱后编码</p>
+<table>
+<thead>
+<tr>
+<th align="left">参数</th>
+<th align="left">含义&amp;输入</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">n_bins</td>
+<td align="left">每个特征中分箱的个数，默认5，一次会被运用到所有导入的特征</td>
+</tr>
+<tr>
+<td align="left">encode</td>
+<td align="left">编码的方 式，默 认 “onehot”：做哑变量，之后返回一个稀疏矩阵，每一列是一个特征中的一个类别，含有该类别的样本表示为 1， 不含的表示为0</td>
+</tr>
+<tr>
+<td align="left"></td>
+<td align="left">“ordinal”：每个特征的每个箱都被编码为一个整数，返回每一列是一个特征，每个特征下含有不同整数编码的箱的矩阵</td>
+</tr>
+<tr>
+<td align="left"></td>
+<td align="left">“onehot-dense”：做哑变量，之后返回一个密集数组。</td>
+</tr>
+<tr>
+<td align="left">strategy</td>
+<td align="left">用来定义箱宽的方式，默认”quantile”</td>
+</tr>
+<tr>
+<td align="left"></td>
+<td align="left">“uniform”：表示等宽分箱，即每个特征中的每个箱的最大值之间的差为（$特征.max()-特征.min()/n_bins$）</td>
+</tr>
+<tr>
+<td align="left"></td>
+<td align="left">“quantile”：表示等位分箱，即每个特征中的每个箱内的样本数量都相同</td>
+</tr>
+<tr>
+<td align="left"></td>
+<td align="left">“kmeans”：表示按聚类分箱，每个箱中的值到最近的一维k均值聚类的簇心得距离都相同</td>
+</tr>
+</tbody></table>
+<h3 id="2-特征选择"><a href="#2-特征选择" class="headerlink" title="2 特征选择"></a>2 特征选择</h3><p>我们有四种方法可以用来选择特征：过滤法、嵌入法、包装法、降维算法</p>
+<h4 id="2-1-Filter过滤法"><a href="#2-1-Filter过滤法" class="headerlink" title="2.1 Filter过滤法"></a>2.1 Filter过滤法</h4><p>它是根据各种统计检验中的分数以及相关性的各向指标来选择特征</p>
+<h5 id="2-1-1-方差过滤"><a href="#2-1-1-方差过滤" class="headerlink" title="2.1.1 方差过滤"></a>2.1.1 方差过滤</h5><ul>
+<li>VarianceThreshold</li>
+</ul>
+<p>通过特征本身的方差来筛选特征的类。如果一个特征本身的方差很小，就表示这个特征基本没有差异，那这个特征对于样本区分没有什么作用。</p>
+<h5 id="2-1-2-相关性过滤"><a href="#2-1-2-相关性过滤" class="headerlink" title="2.1.2 相关性过滤"></a>2.1.2 相关性过滤</h5><p>我们希望选出与标签相关且有意义的特征，这样的特征能够为我们提供大量的信息。</p>
+<p><img src="https://note.youdao.com/yws/api/personal/file/6A85336AB79345C18D14A5F3F3D1B4B9?method=download&shareKey=a1bc337ffcb61ce727aa8d9300b45809" alt></p>
+<ul>
+<li>卡方过滤</li>
+</ul>
+<p>卡方过滤是专门针对离散型标签的相关性过滤，通过卡方检验类feature_selection.chi2结合feature_selection.SelectKBest来选出前K个分数最高的特征类</p>
+<ul>
+<li>F检验</li>
+</ul>
+<p>用来捕捉每个特征与标签之间的线性关系的过滤方法，即可以做回归也可以做分类。</p>
+<ul>
+<li>互信息法</li>
+</ul>
+<p>互信息法是用来捕捉每个特征与标签之间的任意关系（包括线性和非线性）的过滤方法，也可以做回归和分类。</p>
+<h4 id="2-2-Embedded嵌入法"><a href="#2-2-Embedded嵌入法" class="headerlink" title="2.2 Embedded嵌入法"></a>2.2 Embedded嵌入法</h4><p>嵌入法是一种让算法自己决定使用哪些特征的方法，即特征选择和算法训练同时进行。</p>
+<p><img src="https://note.youdao.com/yws/api/personal/file/B20CE443F91E421FA086F0D7B773F940?method=download&shareKey=329d8ddf018f6e52198b696aafc99c1a" alt></p>
+<ul>
+<li>feature_selection.SelectFromModel</li>
+</ul>
+<p>SelectFromModel是一个元变换器，可以与任何在拟合后具有coef_,feature_impoortances_属性或参数中可选惩罚项的评估器一起使用</p>
+<table>
+<thead>
+<tr>
+<th align="left">参数</th>
+<th align="left">说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">estimator</td>
+<td align="left">使用的模型评估器，只要是带feature_importances_或者coef_属性，或带有$l_1$和$l_2$惩罚项的模型都可以使用</td>
+</tr>
+<tr>
+<td align="left">threshold</td>
+<td align="left">特征重要性的阈值，重要性低于这个阈值的特征都将被删除</td>
+</tr>
+<tr>
+<td align="left">preﬁt</td>
+<td align="left">默认False，判断是否将实例化后的模型直接传递给构造函数。如果为True，则必须直接调用ﬁt和transform，不能使用ﬁt_transform，并且SelectFromModel不能与cross_val_score，GridSearchCV和克隆估计器的类似实用程序一起使用。</td>
+</tr>
+<tr>
+<td align="left">norm_order</td>
+<td align="left">k可输入非零整数，正无穷，负无穷，默认值为1在评估器的coef_属性高于一维的情况下，用于过滤低于阈值的系数的向量的范数的阶数。</td>
+</tr>
+<tr>
+<td align="left">max_features</td>
+<td align="left">在阈值设定下，要选择的最大特征数。要禁用阈值并仅根据max_features选择，请设置threshold = -np.inf</td>
+</tr>
+</tbody></table>
+<h4 id="3-3-Wrapper包装法"><a href="#3-3-Wrapper包装法" class="headerlink" title="3.3 Wrapper包装法"></a>3.3 Wrapper包装法</h4><p>包装法也是一个特征选择和算法训练同时记性的方法，与嵌入法十分相似，但不同的是，我们往往使用一个目标函数作为黑盒来帮助我们选取特征，而不是自己输入某个评估指标或统计量的阈值。</p>
+<p><img src="https://note.youdao.com/yws/api/personal/file/2210DFBFBE614558A58D1F7F7C3A207F?method=download&shareKey=a4ee875d7e0cf4e62258f04f111375e1" alt></p>
+<ul>
+<li>feature_selection.RFE<br>最典型的目标函数是递归特征消除法（Recursive feature elimination, RFE）</li>
+</ul>
+]]></content>
+      <categories>
+        <category>机器学习</category>
+      </categories>
+      <tags>
+        <tag>机器学习</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>LeetCode学习笔记</title>
     <url>/2020/08/11/leetcode/</url>
     <content><![CDATA[<h1 id="Problem-1-数组中重复的数字"><a href="#Problem-1-数组中重复的数字" class="headerlink" title="Problem 1 数组中重复的数字"></a>Problem 1 数组中重复的数字</h1><p>找出数组中重复的数字。</p>
@@ -1673,6 +1623,63 @@ print(&apos;runtime:&apos;, time.time() - start_t)</code></pre>]]></content>
 <li>若flag&lt;target, 则target一定在flag所在列的右方，即flag所在列可被消除</li>
 </ol>
 <figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">class Solution:</span><br><span class="line">    def findNumberIn2DArray(self, matrix: List[List[int]], target: int) -&gt; bool:</span><br><span class="line">        i, j &#x3D; len(matrix) - 1, 0</span><br><span class="line">        while i &gt;&#x3D; 0 and j &lt; len(matrix[0]):</span><br><span class="line">            if matrix[i][j] &gt; target: i -&#x3D; 1</span><br><span class="line">            elif matrix[i][j] &lt; target: j +&#x3D; 1</span><br><span class="line">            else: return True</span><br><span class="line">        return False</span><br></pre></td></tr></table></figure>
+<hr>
+<h1 id="Problem-3-删除排序数组中的重复项"><a href="#Problem-3-删除排序数组中的重复项" class="headerlink" title="Problem 3 删除排序数组中的重复项"></a>Problem 3 删除排序数组中的重复项</h1><p>给定一个排序数组，你需要在 原地 删除重复出现的元素，使得每个元素只出现一次，返回移除后数组的新长度。</p>
+<p>不要使用额外的数组空间，你必须在 原地 修改输入数组 并在使用 O(1) 额外空间的条件下完成。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">给定 nums &#x3D; [0,0,1,1,1,2,2,3,3,4],</span><br><span class="line"></span><br><span class="line">函数应该返回新的长度 5, 并且原数组 nums 的前五个元素被修改为 0, 1, 2, 3, 4。</span><br><span class="line"></span><br><span class="line">你不需要考虑数组中超出新长度后面的元素</span><br></pre></td></tr></table></figure>
+
+<h2 id="方法一：使用双指针"><a href="#方法一：使用双指针" class="headerlink" title="方法一：使用双指针"></a>方法一：使用双指针</h2><ol>
+<li>慢指针i从0开始,快指针j从1开始，两个指针每次移动一步</li>
+<li>当指针i与j所指数字不同时，i后移一步，把j的值复制给i，j后移一步</li>
+<li>当i与j所指数字相同，i不动，j后移一步</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">class Solution:</span><br><span class="line">    def removeDuplicates(self, nums: List[int]) -&gt; int:</span><br><span class="line">        i &#x3D; 0</span><br><span class="line">        j &#x3D; 1</span><br><span class="line">        while j &lt; len(nums):</span><br><span class="line">            if nums[i] &#x3D;&#x3D; nums[j]:</span><br><span class="line">                j+&#x3D;1</span><br><span class="line">            else:</span><br><span class="line">                i+&#x3D;1</span><br><span class="line">                nums[i]&#x3D;nums[j]</span><br><span class="line">        return i+1</span><br></pre></td></tr></table></figure>
+<hr>
+<h1 id="Problem-4"><a href="#Problem-4" class="headerlink" title="Problem 4"></a>Problem 4</h1><h2 id="方法一：每一天做一次清算"><a href="#方法一：每一天做一次清算" class="headerlink" title="方法一：每一天做一次清算"></a>方法一：每一天做一次清算</h2><ol>
+<li>设 tmp 为第 i-1 日买入与第 i 日卖出赚取的利润，即 tmp = prices[i] - prices[i - 1] ；</li>
+<li>当该天利润为正 tmp &gt; 0，则将利润加入总利润 profit；当利润为 00 或为负，则直接跳过；</li>
+<li>遍历完成后，返回总利润 profit。</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">class Solution:</span><br><span class="line">    def maxProfit(self, prices: List[int]) -&gt; int:</span><br><span class="line">        profit &#x3D; 0</span><br><span class="line">        for i in range(1,len(prices)):</span><br><span class="line">            if prices[i] &gt; prices[i-1]:</span><br><span class="line">                profit +&#x3D; prices[i] - prices[i-1]</span><br><span class="line">        return profit</span><br></pre></td></tr></table></figure>
+<hr>
+<h1 id="Problem-5"><a href="#Problem-5" class="headerlink" title="Problem 5"></a>Problem 5</h1><p>给定一个数组，将数组中的元素向右移动 k 个位置，其中 k 是非负数。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">输入: [1,2,3,4,5,6,7] 和 k &#x3D; 3</span><br><span class="line">输出: [5,6,7,1,2,3,4]</span><br><span class="line">解释:</span><br><span class="line">向右旋转 1 步: [7,1,2,3,4,5,6]</span><br><span class="line">向右旋转 2 步: [6,7,1,2,3,4,5]</span><br><span class="line">向右旋转 3 步: [5,6,7,1,2,3,4]</span><br></pre></td></tr></table></figure>
+<h2 id="方法一：-数组移动使用三次反转"><a href="#方法一：-数组移动使用三次反转" class="headerlink" title="方法一： 数组移动使用三次反转"></a>方法一： 数组移动使用三次反转</h2><p>三次反转</p>
+<p>对于[1,2,3,4,5,6,7]，根据k = k%n，数组分为两段：</p>
+<ul>
+<li>第一段，对应数组下标[0,n-k-1],即[1,2,3,4]</li>
+<li>第二段，对应数组下标[n-k, n-1],即[5,6,7]</li>
+</ul>
+<p>分为三步:</p>
+<ol>
+<li>反转第一段[4,3,2,1,5,6,7]</li>
+<li>反转第二段[4,3,2,1,7,6,5]</li>
+<li>反转整体[5,6,7,1,2,3,4]</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">class Solution:</span><br><span class="line">    def rotate(self, nums: List[int], k: int) -&gt; None:</span><br><span class="line">        &quot;&quot;&quot;</span><br><span class="line">        Do not return anything, modify nums in-place instead.</span><br><span class="line">        &quot;&quot;&quot;</span><br><span class="line">        n&#x3D;len(nums)</span><br><span class="line">        k&#x3D;k%n</span><br><span class="line">        def swap(l,r):</span><br><span class="line">            while(l&lt;r):</span><br><span class="line">                nums[l],nums[r]&#x3D;nums[r],nums[l]</span><br><span class="line">                l&#x3D;l+1</span><br><span class="line">                r&#x3D;r-1</span><br><span class="line">        swap(0,n-k-1)</span><br><span class="line">        swap(n-k,n-1)</span><br><span class="line">        swap(0,n-1)</span><br></pre></td></tr></table></figure>
+<hr>
+<h1 id="Problem-6-只出现一次的数字"><a href="#Problem-6-只出现一次的数字" class="headerlink" title="Problem 6 只出现一次的数字"></a>Problem 6 只出现一次的数字</h1><p>给定一个非空整数数组，除了某个元素只出现一次以外，其余每个元素均出现两次。找出那个只出现了一次的元素。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">输入: [2,2,1]</span><br><span class="line">输出: 1</span><br></pre></td></tr></table></figure>
+<h2 id="方法一：位运算"><a href="#方法一：位运算" class="headerlink" title="方法一：位运算"></a>方法一：位运算</h2><p>使用异或的性质</p>
+<ol>
+<li>任何数和本身异或则为0</li>
+<li>任何数和0异或是本身</li>
+<li>异或运算满足交换律</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">class Solution:</span><br><span class="line">    def singleNumber(self, nums: List[int]) -&gt; int:</span><br><span class="line">        single_number &#x3D; 0</span><br><span class="line">        for num in nums:</span><br><span class="line">            single_number ^&#x3D; num</span><br><span class="line">        return single_number</span><br></pre></td></tr></table></figure>
+<hr>
+<h1 id="Problem-7-两个数组的交集-II"><a href="#Problem-7-两个数组的交集-II" class="headerlink" title="Problem 7 两个数组的交集 II"></a>Problem 7 两个数组的交集 II</h1><p>给定两个数组，编写一个函数来计算它们的交集。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">输入：nums1 &#x3D; [1,2,2,1], nums2 &#x3D; [2,2]</span><br><span class="line">输出：[2,2]</span><br></pre></td></tr></table></figure>
+
+<h2 id="方法一：-哈希表"><a href="#方法一：-哈希表" class="headerlink" title="方法一： 哈希表"></a>方法一： 哈希表</h2><ul>
+<li>collections.Counter()利用哈希表对元素进行计数<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">class Solution:</span><br><span class="line">    def intersect(self, nums1: List[int], nums2: List[int]) -&gt; List[int]:</span><br><span class="line">        num1 &#x3D; collections.Counter(nums1)</span><br><span class="line">        num2 &#x3D; collections.Counter(nums2)</span><br><span class="line">		# 取与计算交集，返还哈希表字典元素</span><br><span class="line">        num &#x3D; num1 &amp; num2</span><br><span class="line">        return num.elements()</span><br></pre></td></tr></table></figure>
+
+</li>
+</ul>
+<h2 id="方法二：排序"><a href="#方法二：排序" class="headerlink" title="方法二：排序"></a>方法二：排序</h2><p>如果两个数组是有序的，则可以便捷地计算两个数组的交集。</p>
+<p>首先对两个数组进行排序，然后使用两个指针遍历两个数组。</p>
+<p>初始时，两个指针分别指向两个数组的头部。每次比较两个指针指向的两个数组中的数字，如果两个数字不相等，则将指向较小数字的指针右移一位，如果两个数字相等，将该数字添加到答案，并将两个指针都右移一位。当至少有一个指针超出数组范围时，遍历结束。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">class Solution:</span><br><span class="line">    def intersect(self, nums1: List[int], nums2: List[int]) -&gt; List[int]:</span><br><span class="line">        nums1.sort()</span><br><span class="line">        nums2.sort()</span><br><span class="line"></span><br><span class="line">        length1, length2 &#x3D; len(nums1), len(nums2)</span><br><span class="line">        intersection &#x3D; list()</span><br><span class="line">        index1 &#x3D; index2 &#x3D; 0</span><br><span class="line">        while index1 &lt; length1 and index2 &lt; length2:</span><br><span class="line">            if nums1[index1] &lt; nums2[index2]:</span><br><span class="line">                index1 +&#x3D; 1</span><br><span class="line">            elif nums1[index1] &gt; nums2[index2]:</span><br><span class="line">                index2 +&#x3D; 1</span><br><span class="line">            else:</span><br><span class="line">                intersection.append(nums1[index1])</span><br><span class="line">                index1 +&#x3D; 1</span><br><span class="line">                index2 +&#x3D; 1</span><br><span class="line">        </span><br><span class="line">        return intersection</span><br></pre></td></tr></table></figure>
 <hr>
 ]]></content>
       <categories>
@@ -1826,6 +1833,118 @@ print(&apos;runtime:&apos;, time.time() - start_t)</code></pre>]]></content>
 <ol start="2">
 <li>注意到PCA仅仅使用了我们SVD的左奇异矩阵，没有使用到右奇异值矩阵，那么右奇异值矩阵有什么用呢？假设我们的样本是$m * n$的矩阵X，如果我们通过SVD找到了矩阵$X^TX$最大的k个特征向量组成的$k * n$的矩阵$V^T$,可以得到一个$m * k$的矩阵$X^{‘}$,这个矩阵和我们原来$m * n$的矩阵X相比，列数从n减到了K,可见对列数进行了压缩，也就是说，左奇异矩阵可以用于对行数的压缩；右奇异矩阵可以用于对列（即特征维度）的压缩。这就是我们用SVD分解协方差矩阵实现PCA可以得到两个方向的PCA降维（即行和列两个方向）</li>
 </ol>
+]]></content>
+      <categories>
+        <category>机器学习</category>
+      </categories>
+      <tags>
+        <tag>机器学习</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>机器学习笔记（三）线性回归</title>
+    <url>/2020/07/22/LinearRegression/</url>
+    <content><![CDATA[<h1 id="1-多元线性回归LinearRegression"><a href="#1-多元线性回归LinearRegression" class="headerlink" title="1 多元线性回归LinearRegression"></a>1 多元线性回归LinearRegression</h1><h2 id="1-1-多元线性回归的基本原理"><a href="#1-1-多元线性回归的基本原理" class="headerlink" title="1.1 多元线性回归的基本原理"></a>1.1 多元线性回归的基本原理</h2><p>对于一个$n$个特征的样本$i$而言，回归方程为：<br>$$\hat y_i = w_0 +w_1x_{i1}+w_2x_{i2}+\dots+w_nx_{in}$$</p>
+<p>$w_0$被称为截距，$w_1 \sim w_n$被称为回归系数，$w_{i1} \sim x_{in}$是样本$i$上的不同特征，如果考虑我们有m个样本，则回归可以被写作：<br>$$\hat y = w_0 +w_1x_{1}+w_2x_{2}+\dots+w_nx_{n}$$</p>
+<a id="more"></a>
+
+<p>其中$y$是包含了m个全部样本回归的列向量，$w$可以被看作是结构为$(n+1,1)$的列矩阵，$X$是一个结构为$(m,n+1)$的特征矩阵，则有：</p>
+<p>$$\begin{bmatrix}<br>\hat y_1 \\<br>\hat y_2\\<br>\hat y_3\\<br>\dots\\<br>\hat y_m\\<br>\end{bmatrix}=\begin{bmatrix}<br>1&amp; x_{11} &amp; x_{12} &amp; x_{13} &amp; \dots &amp; x_{1n} \\<br>1&amp; x_{21} &amp; x_{22} &amp; x_{23} &amp; \dots &amp; x_{2n}\\<br>1&amp; x_{31} &amp; x_{32} &amp; x_{33} &amp; \dots &amp; x_{3n}\\<br>\dots\\<br>1&amp; x_{m1} &amp; x_{m2} &amp; x_{m3} &amp; \dots &amp; x_{mn}\\<br>\end{bmatrix} * \begin{bmatrix}<br>w_0 \\<br>w_1 \\<br>w_2 \\<br>\dots\\<br>w_n \\<br>\end{bmatrix}$$</p>
+<p>$$\hat y = Xw$$</p>
+<p>在多元线性回归中，定义损失函数如下：</p>
+<p>$$\sum_{i=1}^m(y_i-\hat y_i)^2=\sum_{i=1}^m(y_i-X_iw)^2$$</p>
+<p>其中$y_i$是样本$i$对应的真实标签，$\hat y_i$，也就是$X_iw$样本$i$在一组参数$w$下的预测标签。</p>
+<p>因此，最小化损失，将求解目标转化为：<br>$$\min_w||y-Xw||^2_2$$</p>
+<p>我们称这个式子为SEE(Sum of Sqaured Error, 误差平方和)或者RSS(Residual Sum of Squares 残差平方和)</p>
+<h2 id="1-2-最小二乘法求解多元线性回归的参数"><a href="#1-2-最小二乘法求解多元线性回归的参数" class="headerlink" title="1.2 最小二乘法求解多元线性回归的参数"></a>1.2 最小二乘法求解多元线性回归的参数</h2><p>首先，我们对$w$求导：<br>$$<br>\begin{equation}\begin{split}<br>\frac{\partial RSS}{\partial w}&amp;=\frac{\partial ||y-Xw||^2_2}{\partial w} \\<br>&amp; =\frac{\partial (y-Xw)^T(y-Xw)}{\partial w}<br>\end{split}\end{equation}<br>$$<br>$$\because (A-B)^T = A^T-B^T 并且(AB)^T=B^T*A^T$$<br>$$\therefore =\frac{\partial (y^T-w^TX^T)(y-Xw)}{\partial w}$$<br>$$=\frac{\partial(y^Ty-w^TX^Ty-y^TXw+w^TX^TXw)}{\partial w}$$</p>
+<p>$\because$ 矩阵求导中，$a$为常数，有如下规则：<br>$$\frac{\partial a}{\partial A}=0,\frac{\partial A^TB^TC}{\partial A}=B^TC,\frac{\partial C^TBA}{\partial A}=B^TC,\frac{\partial A^TBA}{\partial A}=(B+B^T)A$$</p>
+<p>$$=0-X^Ty-X^Ty+2X^TXw$$<br>$$=X^TXw-X^Ty$$</p>
+<p>然后让一阶导数为0：<br>$$X^TXw-X^Ty=0$$<br>$$X^TXw=X^Ty$$<br>左乘一个$(X^TX)^{-1}$则有：<br>$$w=(X^TX)^{-1}X^Ty$$</p>
+<p>在这里，逆矩阵的充分必要条件是特征矩阵不存在多重共线性。并且在统计学中，使用最小二乘法求解线性回归方程式一种“无偏估计”的方法，也就是标签的分布必须服从正太分布。</p>
+<h2 id="1-3-linear-model-LinearRegression"><a href="#1-3-linear-model-LinearRegression" class="headerlink" title="1.3 linear_model.LinearRegression"></a>1.3 linear_model.LinearRegression</h2><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">class sklearn.linear_model.LinearRegression (ﬁt_intercept&#x3D;True, normalize&#x3D;False, copy_X&#x3D;True, n_jobs&#x3D;None)</span><br></pre></td></tr></table></figure>
+
+<table>
+<thead>
+<tr>
+<th align="left">参数</th>
+<th align="left">含义</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">ﬁt_intercept</td>
+<td align="left">布尔值，可不填，默认为True是否计算此模型的截距。如果设置为False，则不会计算截距</td>
+</tr>
+<tr>
+<td align="left">normalize</td>
+<td align="left">布尔值，可不填，默认为False当ﬁt_intercept设置为False时，将忽略此参数。如果为True，则特征矩阵X在进入回归之前将会被减去均值（中心化）并除以L2范式（缩放）。如果你希望进行标准化，请在ﬁt数据之前   使用preprocessing模块中的标准化专用类StandardScaler</td>
+</tr>
+<tr>
+<td align="left">copy_X</td>
+<td align="left">布尔值，可不填，默认为True如果为真，将在X.copy()上进行操作，否则的话原本的特征矩阵X可能被线性回归影响并覆盖</td>
+</tr>
+<tr>
+<td align="left">n_jobs</td>
+<td align="left">整数或者None，可不填，默认为None用于计算的作业数。只在多标签的回归和数据量足够大的时候才生效。除非None在joblib.parallel_backend上下文中，否则None统一表示为1。如果输入 -1，则表示使用全部的CPU来进行计算。</td>
+</tr>
+</tbody></table>
+<h1 id="2-多重共线性：岭回归与Lasso"><a href="#2-多重共线性：岭回归与Lasso" class="headerlink" title="2 多重共线性：岭回归与Lasso"></a>2 多重共线性：岭回归与Lasso</h1><h2 id="2-1-多重共线性"><a href="#2-1-多重共线性" class="headerlink" title="2.1 多重共线性"></a>2.1 多重共线性</h2><p><img src="https://note.youdao.com/yws/api/personal/file/A616BDB61AA6498B98A1A83048F5B23F?method=download&shareKey=8d479565cbc667165d0e688acf357ea0" alt></p>
+<ul>
+<li>多重共线性与相关性</li>
+</ul>
+<p>多重共线性如果存在，则线性回归就无法使用最小二乘法求解，但是不代表不能存在相关性——机器学习不要求特征之间必须独立，只要不是高度相关就好。</p>
+<h2 id="2-2-岭回归"><a href="#2-2-岭回归" class="headerlink" title="2.2 岭回归"></a>2.2 岭回归</h2><h3 id="2-2-1-岭回归解决多重共线性问题"><a href="#2-2-1-岭回归解决多重共线性问题" class="headerlink" title="2.2.1 岭回归解决多重共线性问题"></a>2.2.1 岭回归解决多重共线性问题</h3><p>岭回归在多元线性回归的损失函数上加了正则项，表达为系数$w$的$L_2$范式乘以正则化系数$\alpha$，岭回归的损失函数的完整表达式写作：<br>$$\min_w||Xw-y||^2_2+\alpha||w||_2^2$$</p>
+<p>现在对$w$进行求导：<br>$$\frac{\partial(RSS+\alpha||w||^2_2)}{\partial w}=\frac{\partial(||y-Xw||^2_2+\alpha||w||^2_2)}{\partial w}$$<br>$$=\frac{\partial(y-Xw)^T(y-Xw)}{\partial w}+\frac{\partial \alpha||w||^2_2}{\partial w}$$<br>$$=0-2X^Ty+2X^TXw+2\alpha$$<br>将含有$w$的项合并，其中$\alpha$为常数<br>为了实现矩阵相加，乘以一个结构为$n*n$的单位矩阵$I$:<br>$$=(X^TX+\alpha I)w-X^Ty$$<br>$$(X^TX+\alpha I)w=X^Ty$$</p>
+<p>现在，只要$(X^TX+\alpha I)$存在逆矩阵，就可以解出$w$。一个矩阵存在逆举证的充分必要条件是这个矩阵的行列式不为0.</p>
+<p>假设原本的特征矩阵$X^TX$不满秩：</p>
+<p>$$X^TX=\begin{vmatrix}<br>\alpha_{11} &amp; \alpha_{12} &amp;\alpha_{13}&amp;\dots &amp;\alpha_{1n} \\<br>0 &amp; \alpha_{22} &amp;\alpha_{23}&amp;\dots &amp;\alpha_{2n} \\<br>0 &amp; 0 &amp;\alpha_{33}&amp;\dots &amp;\alpha_{3n} \\<br>&amp; &amp; \dots &amp;\\<br>0 &amp; 0 &amp;0&amp;\dots &amp;0 \\<br>\end{vmatrix}$$</p>
+<p>然而，加上了$\alpha I$后：</p>
+<p>$$X^TX+\alpha I=\begin{vmatrix}<br>\alpha_{11}+\alpha &amp; \alpha_{12} &amp;\alpha_{13}&amp;\dots &amp;\alpha_{1n} \\<br>0 &amp; \alpha_{22} &amp;\alpha_{23}+\alpha&amp;\dots &amp;\alpha_{2n} \\<br>0 &amp; 0 &amp;\alpha_{33}&amp;\dots &amp;\alpha_{3n}+\alpha \\<br>&amp; &amp; \dots &amp;\\<br>0 &amp; 0 &amp;0&amp;\dots &amp;\alpha \\<br>\end{vmatrix}$$</p>
+<p>现在，这个行列式不存在全0行或者全0列了，除非：</p>
+<ol>
+<li>$\alpha=0$</li>
+<li>原本矩阵$X^TX$存在对角线上元素为$-\alpha$，其他元素都为0的行或者列</li>
+</ol>
+<p>因此，$w$就可以写作：<br>$$w=(X^TX+\alpha I)^{-1}X^Ty$$</p>
+<h3 id="2-2-2-linear-model-Ridge"><a href="#2-2-2-linear-model-Ridge" class="headerlink" title="2.2.2 linear_model.Ridge"></a>2.2.2 linear_model.Ridge</h3><p>在sklearn中，岭回归由线性模型库中的Ridge类来调用：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">class sklearn.linear_model.Ridge (alpha&#x3D;1.0, ﬁt_intercept&#x3D;True, normalize&#x3D;False, copy_X&#x3D;True, max_iter&#x3D;None, tol&#x3D;0.001, solver&#x3D;’auto’, random_state&#x3D;None)</span><br></pre></td></tr></table></figure>
+
+<h2 id="2-3-Lasso"><a href="#2-3-Lasso" class="headerlink" title="2.3 Lasso"></a>2.3 Lasso</h2><h3 id="2-3-1-Lasso与多重共线性"><a href="#2-3-1-Lasso与多重共线性" class="headerlink" title="2.3.1 Lasso与多重共线性"></a>2.3.1 Lasso与多重共线性</h3><p>Lasso使用的是系数$w$的$L_1$范式乘以正则化系数$\alpha$，因此Lasso的损失函数表达式为：<br>$$\min_w||Xw-y||^2_2+\alpha||w||_1$$</p>
+<p>对损失函数进行求导：</p>
+<p>$$\frac{\partial(RSS+||w||_1)}{\partial w}=\frac{\partial(||y-Xw||^2_2)+\alpha||w||_1}{\partial w}$$<br>$$=\frac{\partial(y-Xw)^T(y-Xw)}{\partial w}+\frac{\partial \alpha||w||_1}{\partial w}$$<br>$$=0-2X^Ty+2X^TXw+\alpha$$<br>将含有$w$的项合并，其中$\alpha$为常数</p>
+<p>为实现矩阵相加，乘以一个结构为$n*n$的单位矩阵$I:$<br>$$=X^TXw-X^Ty+\frac{\alpha I}{2}$$<br>$$X^TXw=X^Ty-\frac{\alpha I}{2}$$</p>
+<p>而$L_1$范式所带的正则项$\alpha$在求导之后并不带有$w$这个项，因此<strong>Lasso无法解决特征之间“精确相关”的问题</strong></p>
+<p>假设方阵$X^TX$的逆是一定存在的，那我们可以有：<br>$$w=(X^TX)^{-1}(X^Ty-\frac{\alpha I}{2})$$</p>
+<p>通过增大$\alpha$，可以为$w$的计算增肌按一个负项，从而限制参数估计中$w$的大小，而防止多重共线性引起的失准问题。因此<strong>Lasso不是从根本上解决多重共线性问题，而是限制多重共线性带来的影响</strong></p>
+<p>$L_1,L_2$正则化一个核心差异就是他们对系数$w$的影响：两个正则化都会压缩系数$w$的大小，对标签贡献更少的特征系数会更小，也会更容易被压缩，不过$L_2$正则化只会将系数压缩到尽可能接近0，但$L_1$正则化主导稀疏性，会将系数压缩到0，这个性质让Lasso称为了线性模型中的特征选择工具首选。</p>
+<h3 id="2-3-2-Lasso的核心作用：特征选择"><a href="#2-3-2-Lasso的核心作用：特征选择" class="headerlink" title="2.3.2 Lasso的核心作用：特征选择"></a>2.3.2 Lasso的核心作用：特征选择</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">class sklearn.linear_model.Lasso (alpha&#x3D;1.0, ﬁt_intercept&#x3D;True, normalize&#x3D;False, precompute&#x3D;False, copy_X&#x3D;True, max_iter&#x3D;1000, tol&#x3D;0.0001, warm_start&#x3D;False, positive&#x3D;False, random_state&#x3D;None, selection&#x3D;’cyclic’)</span><br></pre></td></tr></table></figure>
+
+
+<h1 id="3-非线性问题：多项式回归"><a href="#3-非线性问题：多项式回归" class="headerlink" title="3 非线性问题：多项式回归"></a>3 非线性问题：多项式回归</h1><h2 id="3-1-“线性”概念"><a href="#3-1-“线性”概念" class="headerlink" title="3.1 “线性”概念"></a>3.1 “线性”概念</h2><h3 id="3-1-1-变量之间的线性关系"><a href="#3-1-1-变量之间的线性关系" class="headerlink" title="3.1.1 变量之间的线性关系"></a>3.1.1 变量之间的线性关系</h3><p>两个变量之间的关系可以展示为一条直线</p>
+<p><img src="https://note.youdao.com/yws/api/personal/file/97AE26C1073A4E8F862543C4AD9A3223?method=download&shareKey=e4b169f42f176d2c0e21bfa46b06d126" alt></p>
+<h3 id="3-1-2-数据的线性与非线性"><a href="#3-1-2-数据的线性与非线性" class="headerlink" title="3.1.2 数据的线性与非线性"></a>3.1.2 数据的线性与非线性</h3><p>一组数据由多个特征和标签组成。当这些特征分别与标签存在线性关系的时候，我们就说这一组数据是线性数据。当需要用三角函数，指数函数等来定义，则说这种数据叫作“非线性数据”</p>
+<p><img src="https://note.youdao.com/yws/api/personal/file/D4B139AFD9FA4DF19C2C2E9CA44526FC?method=download&shareKey=f750e469a64f7fe5ed9af4c120d7772c" alt></p>
+<h3 id="3-1-3-线性模型和非线性模型"><a href="#3-1-3-线性模型和非线性模型" class="headerlink" title="3.1.3 线性模型和非线性模型"></a>3.1.3 线性模型和非线性模型</h3><p>线性回归方程中，其自变量都是一次项，线性模型可以用来拟合非线性数据，而非线性模型也可以用来拟合线性数据，有的模型既可以使线性也可以使非线性模型。</p>
+<ul>
+<li>非线性模型拟合线性数据</li>
+</ul>
+<p>非线性模型几乎都可以在线性可分数据上有不逊于线性模型的表现<br><img src="https://note.youdao.com/yws/api/personal/file/1D70B4CDFF03423E97ABC37F0C1B8733?method=download&shareKey=f3b9556697932b23dedc04c06ae3a3cd" alt></p>
+<ul>
+<li>线性模型拟合非线性数据</li>
+</ul>
+<p>但是相反的，线性模型用来拟合非线性数据，通常表现糟糕。改善线性模型在非线性数据上的效果的方法之一是进行分箱，甚至可以搞过一些非线性模型。</p>
+<p><img src="https://note.youdao.com/yws/api/personal/file/A2F08F0D7A8D4761B16B779877453614?method=download&shareKey=36e49e3e63725e9534077264653e4574" alt></p>
+<ul>
+<li>即是线性，也是非线性的模型</li>
+</ul>
+<p>有一些模型，即可以处理线性数据又可以处理非线性数据，比如支持向量机。这个模型的线性和非线性取决于它的核函数。</p>
+<p><img src="https://note.youdao.com/yws/api/personal/file/19A7E95570314268BD269B76FF89ED2E?method=download&shareKey=5c1d7a4c6fd76e78ffad5e1fb8a91204" alt></p>
+<h2 id="3-2-使用分箱处理非线性问题"><a href="#3-2-使用分箱处理非线性问题" class="headerlink" title="3.2 使用分箱处理非线性问题"></a>3.2 使用分箱处理非线性问题</h2><p>让线性回归在非线性数据上表现提升的核心方法之一是对数据进行分箱，也就是离散化。</p>
+<p>在工业中，大量离散化变量与线性模型连用的实例很多，在深度学习出现之前，这种模式甚至一度统治一些工业中的机器学习应用场景，可见效果优秀，应用广泛。对于现在的很多工业场景而言，大量离散化特征的情况可能已经不是那么多了，不过大家依然需要对“分箱能够解决线性模型无法处理非线性数据的问题”有所了解。</p>
+<h2 id="3-3-多项式回归PolynomialFeatures"><a href="#3-3-多项式回归PolynomialFeatures" class="headerlink" title="3.3 多项式回归PolynomialFeatures"></a>3.3 多项式回归PolynomialFeatures</h2><h3 id="3-3-1-多项式对数据做了什么"><a href="#3-3-1-多项式对数据做了什么" class="headerlink" title="3.3.1 多项式对数据做了什么"></a>3.3.1 多项式对数据做了什么</h3><p>除了分箱之外，另一种更普遍的用于解决”线性回归只能处理线性数据“问题的手段，就是使用多项式回归对线性回归进行改进。这样的手法是机器学习研究者们从支持向量机中获得的：支持向量机通过升维可以将非线性可分数据转化为线性可分，然后使用核函数在低维空间中进行计算，这是一种“高维呈现，低维解释”的思维。那我们为什么不能让线性回归使用类似于升维的转换，将数据由非线性转换为线性，从而为线性回归赋予处理非线性数据的能力呢？当然可以。<br><img src="https://note.youdao.com/yws/api/personal/file/176FBDF502BB4D36ADAB608843183733?method=download&shareKey=0326e48215aac4f9a94d6ef3365e2d11" alt></p>
+<p>接下来，我们就来看看线性模型中的升维工具：多项式变化。这是一种通过增加自变量上的次数，而将数据映射到高维空间的方法，只要我们设定一个自变量上的次数（大于1），就可以相应地获得数据投影在高次方的空间中的结果。这种方法可以非常容易地通过sklearn中的类PolynomialFeatures来实现。我们先来简单看看这个类是如何使用的。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">class sklearn.preprocessing.PolyinomialFeatures(degree&#x3D;2, interaction_only&#x3D;False,include_bias&#x3D;True)</span><br></pre></td></tr></table></figure>
+
+<h3 id="3-3-2-多项式回归的可解释性"><a href="#3-3-2-多项式回归的可解释性" class="headerlink" title="3.3.2 多项式回归的可解释性"></a>3.3.2 多项式回归的可解释性</h3><p>多项式回归的可解释性还存在，并且我们可以通过这样的手段做特征工程——特征创造。多项式帮助我们进行了一些列特征之间相乘的结合，若讷讷够找出组合起来后对标签贡献巨大的特征，那我们就是创造了新的有效特征，对任何学科而言发现新特征都是非常有价值的。</p>
 ]]></content>
       <categories>
         <category>机器学习</category>
@@ -2065,115 +2184,53 @@ print(&apos;runtime:&apos;, time.time() - start_t)</code></pre>]]></content>
       </tags>
   </entry>
   <entry>
-    <title>机器学习笔记（三）线性回归</title>
-    <url>/2020/07/22/LinearRegression/</url>
-    <content><![CDATA[<h1 id="1-多元线性回归LinearRegression"><a href="#1-多元线性回归LinearRegression" class="headerlink" title="1 多元线性回归LinearRegression"></a>1 多元线性回归LinearRegression</h1><h2 id="1-1-多元线性回归的基本原理"><a href="#1-1-多元线性回归的基本原理" class="headerlink" title="1.1 多元线性回归的基本原理"></a>1.1 多元线性回归的基本原理</h2><p>对于一个$n$个特征的样本$i$而言，回归方程为：<br>$$\hat y_i = w_0 +w_1x_{i1}+w_2x_{i2}+\dots+w_nx_{in}$$</p>
-<p>$w_0$被称为截距，$w_1 \sim w_n$被称为回归系数，$w_{i1} \sim x_{in}$是样本$i$上的不同特征，如果考虑我们有m个样本，则回归可以被写作：<br>$$\hat y = w_0 +w_1x_{1}+w_2x_{2}+\dots+w_nx_{n}$$</p>
+    <title>计算机网络总结（一）：计算机网络体系结构</title>
+    <url>/2020/08/11/computer%20network/</url>
+    <content><![CDATA[<h1 id="1-计算机网络概述"><a href="#1-计算机网络概述" class="headerlink" title="1 计算机网络概述"></a>1 计算机网络概述</h1><h2 id="1-1-计算机网络的概念、组成与功能"><a href="#1-1-计算机网络的概念、组成与功能" class="headerlink" title="1.1 计算机网络的概念、组成与功能"></a>1.1 计算机网络的概念、组成与功能</h2><p>互联网的拓扑结构虽然非常复杂，并且在地理上覆盖了全球，但从其工作方式上看，可以划分为以下两大块：<br>（1）边缘部分    由所有连接在互联网上的主机组成。这部分是用户直接使用的，用来进行通信（传送数据、音频或视频）和资源共享。<br>（2）核心部分    由大量网络和连接这些网络的路由器组成。这部分是为边缘部分提供服务的（提供连通性和交换）</p>
 <a id="more"></a>
 
-<p>其中$y$是包含了m个全部样本回归的列向量，$w$可以被看作是结构为$(n+1,1)$的列矩阵，$X$是一个结构为$(m,n+1)$的特征矩阵，则有：</p>
-<p>$$\begin{bmatrix}<br>\hat y_1 \\<br>\hat y_2\\<br>\hat y_3\\<br>\dots\\<br>\hat y_m\\<br>\end{bmatrix}=\begin{bmatrix}<br>1&amp; x_{11} &amp; x_{12} &amp; x_{13} &amp; \dots &amp; x_{1n} \\<br>1&amp; x_{21} &amp; x_{22} &amp; x_{23} &amp; \dots &amp; x_{2n}\\<br>1&amp; x_{31} &amp; x_{32} &amp; x_{33} &amp; \dots &amp; x_{3n}\\<br>\dots\\<br>1&amp; x_{m1} &amp; x_{m2} &amp; x_{m3} &amp; \dots &amp; x_{mn}\\<br>\end{bmatrix} * \begin{bmatrix}<br>w_0 \\<br>w_1 \\<br>w_2 \\<br>\dots\\<br>w_n \\<br>\end{bmatrix}$$</p>
-<p>$$\hat y = Xw$$</p>
-<p>在多元线性回归中，定义损失函数如下：</p>
-<p>$$\sum_{i=1}^m(y_i-\hat y_i)^2=\sum_{i=1}^m(y_i-X_iw)^2$$</p>
-<p>其中$y_i$是样本$i$对应的真实标签，$\hat y_i$，也就是$X_iw$样本$i$在一组参数$w$下的预测标签。</p>
-<p>因此，最小化损失，将求解目标转化为：<br>$$\min_w||y-Xw||^2_2$$</p>
-<p>我们称这个式子为SEE(Sum of Sqaured Error, 误差平方和)或者RSS(Residual Sum of Squares 残差平方和)</p>
-<h2 id="1-2-最小二乘法求解多元线性回归的参数"><a href="#1-2-最小二乘法求解多元线性回归的参数" class="headerlink" title="1.2 最小二乘法求解多元线性回归的参数"></a>1.2 最小二乘法求解多元线性回归的参数</h2><p>首先，我们对$w$求导：<br>$$<br>\begin{equation}\begin{split}<br>\frac{\partial RSS}{\partial w}&amp;=\frac{\partial ||y-Xw||^2_2}{\partial w} \\<br>&amp; =\frac{\partial (y-Xw)^T(y-Xw)}{\partial w}<br>\end{split}\end{equation}<br>$$<br>$$\because (A-B)^T = A^T-B^T 并且(AB)^T=B^T*A^T$$<br>$$\therefore =\frac{\partial (y^T-w^TX^T)(y-Xw)}{\partial w}$$<br>$$=\frac{\partial(y^Ty-w^TX^Ty-y^TXw+w^TX^TXw)}{\partial w}$$</p>
-<p>$\because$ 矩阵求导中，$a$为常数，有如下规则：<br>$$\frac{\partial a}{\partial A}=0,\frac{\partial A^TB^TC}{\partial A}=B^TC,\frac{\partial C^TBA}{\partial A}=B^TC,\frac{\partial A^TBA}{\partial A}=(B+B^T)A$$</p>
-<p>$$=0-X^Ty-X^Ty+2X^TXw$$<br>$$=X^TXw-X^Ty$$</p>
-<p>然后让一阶导数为0：<br>$$X^TXw-X^Ty=0$$<br>$$X^TXw=X^Ty$$<br>左乘一个$(X^TX)^{-1}$则有：<br>$$w=(X^TX)^{-1}X^Ty$$</p>
-<p>在这里，逆矩阵的充分必要条件是特征矩阵不存在多重共线性。并且在统计学中，使用最小二乘法求解线性回归方程式一种“无偏估计”的方法，也就是标签的分布必须服从正太分布。</p>
-<h2 id="1-3-linear-model-LinearRegression"><a href="#1-3-linear-model-LinearRegression" class="headerlink" title="1.3 linear_model.LinearRegression"></a>1.3 linear_model.LinearRegression</h2><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">class sklearn.linear_model.LinearRegression (ﬁt_intercept&#x3D;True, normalize&#x3D;False, copy_X&#x3D;True, n_jobs&#x3D;None)</span><br></pre></td></tr></table></figure>
-
-<table>
-<thead>
-<tr>
-<th align="left">参数</th>
-<th align="left">含义</th>
-</tr>
-</thead>
-<tbody><tr>
-<td align="left">ﬁt_intercept</td>
-<td align="left">布尔值，可不填，默认为True是否计算此模型的截距。如果设置为False，则不会计算截距</td>
-</tr>
-<tr>
-<td align="left">normalize</td>
-<td align="left">布尔值，可不填，默认为False当ﬁt_intercept设置为False时，将忽略此参数。如果为True，则特征矩阵X在进入回归之前将会被减去均值（中心化）并除以L2范式（缩放）。如果你希望进行标准化，请在ﬁt数据之前   使用preprocessing模块中的标准化专用类StandardScaler</td>
-</tr>
-<tr>
-<td align="left">copy_X</td>
-<td align="left">布尔值，可不填，默认为True如果为真，将在X.copy()上进行操作，否则的话原本的特征矩阵X可能被线性回归影响并覆盖</td>
-</tr>
-<tr>
-<td align="left">n_jobs</td>
-<td align="left">整数或者None，可不填，默认为None用于计算的作业数。只在多标签的回归和数据量足够大的时候才生效。除非None在joblib.parallel_backend上下文中，否则None统一表示为1。如果输入 -1，则表示使用全部的CPU来进行计算。</td>
-</tr>
-</tbody></table>
-<h1 id="2-多重共线性：岭回归与Lasso"><a href="#2-多重共线性：岭回归与Lasso" class="headerlink" title="2 多重共线性：岭回归与Lasso"></a>2 多重共线性：岭回归与Lasso</h1><h2 id="2-1-多重共线性"><a href="#2-1-多重共线性" class="headerlink" title="2.1 多重共线性"></a>2.1 多重共线性</h2><p><img src="https://note.youdao.com/yws/api/personal/file/A616BDB61AA6498B98A1A83048F5B23F?method=download&shareKey=8d479565cbc667165d0e688acf357ea0" alt></p>
+<h2 id="1-2-计算机网络的分类"><a href="#1-2-计算机网络的分类" class="headerlink" title="1.2 计算机网络的分类"></a>1.2 计算机网络的分类</h2><p>计算机网络有多种类别，下面进行简单的介绍。<br>1.按照网络的作用范围进行分类<br>（1）广域网 WAN（Wide Area Network）<br>广域网的作用范围通常为几十到几千公里。广域网是互联网的核心部分，其任务是通过长距离（例如，跨越不同的国家）运送主机所发送的数据。连接广域网各结点交换机的链路一般都是高速链路，具有较大的通信容量。<br>（2）城域网 MAN（Metropolitan Area Network）<br>城域网的作用范围一般是一个城市，可跨越几个街区甚至整个城市。城域网可以为一个或几个单位所拥有，但也可以是一种公用设施，用来将多个局域网进行互连。目前很多城域网采用的是以太网技术，因此有时也常并入局域网的范围进行讨论。<br>（3）局域网 LAN（Local Area Network）<br>局域网一般用微型计算机或工作站通过高速通信线路相连（速率通常在 10 Mbit/s 以上），但地理上则局限在较小的范围（如 1 km 左右）。<br>（4）个人区域网 PAN（Personal Area Network）<br>个人区域网就是在个人工作的地方把属于个人使用的电子设备（如便携式电脑等）用无线技术连接起来的网络，因此也常称为无线个人区域网 WPAN（WirelessPAN），其范围很小，大约在 10 m 左右。<br>2.按照网络的使用者进行分类<br>（5）公用网（publiCnetwork）这是指电信公司（国有或私有）出资建造的大型网络。”公用”的意思就是所有愿意按电信公司的规定交纳费用的人都可以使用这种网络。因此公用网也可称为公众网。<br>（6）专用网（private network）这是某个部门为满足本单位的特殊业务工作的需要而建造的网络。这种网络不向本单位以外的人提供服务。例如，军队、铁路、银行、电力等系统均有本系统的专用网。</p>
+<p>公用网和专用网都可以提供多种服务。如传送的是计算机数据，则分别是公用计算机网络和专用计算机网络。</p>
+<h1 id="2-计算机网络体系结构与参考模型"><a href="#2-计算机网络体系结构与参考模型" class="headerlink" title="2 计算机网络体系结构与参考模型"></a>2 计算机网络体系结构与参考模型</h1><h2 id="2-1-计算机网络协议、接口、服务等概念"><a href="#2-1-计算机网络协议、接口、服务等概念" class="headerlink" title="2.1 计算机网络协议、接口、服务等概念"></a>2.1 计算机网络协议、接口、服务等概念</h2><p>1.协议<br>主要由以下三要素组成</p>
 <ul>
-<li>多重共线性与相关性</li>
+<li>语法，即数据与控制信息的结构或格式：</li>
+<li>语义，即需要发出何种控制信息，完成何种动作以及做出何种响应：</li>
+<li>同步，即事件实现顺序的详细说明。</li>
 </ul>
-<p>多重共线性如果存在，则线性回归就无法使用最小二乘法求解，但是不代表不能存在相关性——机器学习不要求特征之间必须独立，只要不是高度相关就好。</p>
-<h2 id="2-2-岭回归"><a href="#2-2-岭回归" class="headerlink" title="2.2 岭回归"></a>2.2 岭回归</h2><h3 id="2-2-1-岭回归解决多重共线性问题"><a href="#2-2-1-岭回归解决多重共线性问题" class="headerlink" title="2.2.1 岭回归解决多重共线性问题"></a>2.2.1 岭回归解决多重共线性问题</h3><p>岭回归在多元线性回归的损失函数上加了正则项，表达为系数$w$的$L_2$范式乘以正则化系数$\alpha$，岭回归的损失函数的完整表达式写作：<br>$$\min_w||Xw-y||^2_2+\alpha||w||_2^2$$</p>
-<p>现在对$w$进行求导：<br>$$\frac{\partial(RSS+\alpha||w||^2_2)}{\partial w}=\frac{\partial(||y-Xw||^2_2+\alpha||w||^2_2)}{\partial w}$$<br>$$=\frac{\partial(y-Xw)^T(y-Xw)}{\partial w}+\frac{\partial \alpha||w||^2_2}{\partial w}$$<br>$$=0-2X^Ty+2X^TXw+2\alpha$$<br>将含有$w$的项合并，其中$\alpha$为常数<br>为了实现矩阵相加，乘以一个结构为$n*n$的单位矩阵$I$:<br>$$=(X^TX+\alpha I)w-X^Ty$$<br>$$(X^TX+\alpha I)w=X^Ty$$</p>
-<p>现在，只要$(X^TX+\alpha I)$存在逆矩阵，就可以解出$w$。一个矩阵存在逆举证的充分必要条件是这个矩阵的行列式不为0.</p>
-<p>假设原本的特征矩阵$X^TX$不满秩：</p>
-<p>$$X^TX=\begin{vmatrix}<br>\alpha_{11} &amp; \alpha_{12} &amp;\alpha_{13}&amp;\dots &amp;\alpha_{1n} \\<br>0 &amp; \alpha_{22} &amp;\alpha_{23}&amp;\dots &amp;\alpha_{2n} \\<br>0 &amp; 0 &amp;\alpha_{33}&amp;\dots &amp;\alpha_{3n} \\<br>&amp; &amp; \dots &amp;\\<br>0 &amp; 0 &amp;0&amp;\dots &amp;0 \\<br>\end{vmatrix}$$</p>
-<p>然而，加上了$\alpha I$后：</p>
-<p>$$X^TX+\alpha I=\begin{vmatrix}<br>\alpha_{11}+\alpha &amp; \alpha_{12} &amp;\alpha_{13}&amp;\dots &amp;\alpha_{1n} \\<br>0 &amp; \alpha_{22} &amp;\alpha_{23}+\alpha&amp;\dots &amp;\alpha_{2n} \\<br>0 &amp; 0 &amp;\alpha_{33}&amp;\dots &amp;\alpha_{3n}+\alpha \\<br>&amp; &amp; \dots &amp;\\<br>0 &amp; 0 &amp;0&amp;\dots &amp;\alpha \\<br>\end{vmatrix}$$</p>
-<p>现在，这个行列式不存在全0行或者全0列了，除非：</p>
+<p>2.接口（服务访问点）<br>同一系统中相邻两层的实体进行交互的地方。</p>
+<p>3.服务（service）<br>为保证上层对等体之间能相互通信，下层向上层提供的功能。</p>
+<h2 id="2-2-ISO-OSI参考模型和TCP-IP模型"><a href="#2-2-ISO-OSI参考模型和TCP-IP模型" class="headerlink" title="2.2 ISO/OSI参考模型和TCP/IP模型"></a>2.2 ISO/OSI参考模型和TCP/IP模型</h2><p>1.ISO/OSI参考模型</p>
+<p><img src="https://note.youdao.com/yws/api/personal/file/9AA9B51F88884CCE88B4E887CBD0F540?method=download&shareKey=3fad92c71278a5fdcac6d459d65c99d2" alt></p>
+<p>(1) 物理层<br>物理层是 OSI 参考模型的最低一层，也是在同级层之间直接进行信息交换的唯一一层。物理层负责传输二进制位流，也就是透明的传输比特，它的任务就是为上层（数据链路层）提供一个物理连接，以便在相邻节点之间无差错地传送二进制位流。有一点应该注意的是，传送二进制位流的传输介质，如双绞线、同轴电缆以及光纤等并不属于物理层要考虑的问题。实际上传输介质并不在 OSI的7个层次之内。<br>(2) 数据链路层<br>数据链路层负责在两个相邻节点之间，无差错地传送以 “ 帧 ” 为单位的数据。每一帧包括一定数量的数据和若干控制信息。数据链路的任务首先要负责建立、维持和释放数据链路的连接。在传送数据时，如果接收节点发现数据有错，要通知发送方重发这一帧，直到这一帧正确无误地送到为止。这样，数据链路层就把一条可能出错的链路，转变成让网络层看起来就像是一条不出错的理想链路。<br>(3) 网络层<br>网络层的主要功能是为处在不同网络系统中的两个节点设备通信提供一条逻辑通路。其基本任务包括路由选择、拥塞控制与网络互联等功能。<br>(4) 传输层<br>传输层的主要任务是向用户提供可靠的端到端（end-to-end ）服务，透明地传送报文。它向高层屏蔽了下层数据通信的细节，因而是计算机通信体系结构中最关键的一层。该层关心的主要问题包括建立、维护和中断虚电路、传输差错校验和恢复以及信息流量控制机制等。<br>(5) 会话层<br>负责通讯的双方在正式开始传输前的沟通，目的在于建立传输时所遵循的规则，使传输更顺畅、有效率。沟通的议题包括：使用全双工模式或半双式模式？如何发起传输？如何结束传输？如何设置传输参数就像两国元首在见面会晤之前，总会先派人谈好议事规则，正式谈判时就根据这套规则进行一样。<br>(6) 表示层<br>表示层处理两个应用实体之间进行数据交换的语法问题，解决数据交换中存在的数据格式不一致以及数据表示方法不同等问题。例如，IBM 系统的用户使用 EBCD 编码，而其它用户使用 ASCII 编码。表示层必须提供这两编码的转换服务。数据加密与解密、数据压缩与恢复等也都是表示层提供的服务。<br>(7) 应用层<br>应用层是 OSI 参考模型中最靠近用户的一层，它直接提供文件传输、电子邮件、网页浏览等服务给用户。</p>
+<p>2.TCP/IP模型</p>
+<p><img src="https://note.youdao.com/yws/api/personal/file/612A9DB2F78D400882E6E63B5039B5D7?method=download&shareKey=34d2de9a289a9eab74e01f3de190d316" alt></p>
+<p>TCP/IP 是一个四层的体系结构，它包含应用层、传输层、网际层和网络接口层（用网际层这个名字 是强调这一层是为了解决不同网络的互连问题）。不过从实质上讲，TCP/IP 只有最上面的三层，因为最下面的网络接口层并没有什么具体内容。<br>(1) 网络接口层（network interface layeR）</p>
+<p>在 TCP/IP 分层体系结构中，最底层是网络接口层，它 负责通过网络发送和接收 IP 数据报 。TCP/IP 体系结构并未对网络接口层使用权的协议做出强硬的规定，它允许主机连入网络时使用多种现成的和流行的协议，例如局域网协议或其他一些协议。</p>
+<p>(2) 网络层（internet layeR）也就是网际层</p>
+<p>网络层是 TCP/IP 体系结构的第二层，它实现的功能相当于 OSI 参考模型网络层的无连接网络服务。互联层负责将源主机的报文分组发送到目的的主机，源主机与目的主机可以在一个网上，也可以在不同的网上。</p>
 <ol>
-<li>$\alpha=0$</li>
-<li>原本矩阵$X^TX$存在对角线上元素为$-\alpha$，其他元素都为0的行或者列</li>
+<li>处理来自传输层的分组发送请求。在收到分组发送请求之后，将分组装入 IP 数据报，填充报头，选择发送路径，然后将数据报发送到相应的网络输出线。</li>
+<li>处理接收的数据报。在接收到其他主机发送的数据报之后，检查目的地址，如需要转发，则选择发送路径，转发出去；如目的地址为本节点 IP 地址，则除去报头，将分组送交给传输层处理。</li>
+<li>处理互联的路径、流控与拥塞问题。</li>
 </ol>
-<p>因此，$w$就可以写作：<br>$$w=(X^TX+\alpha I)^{-1}X^Ty$$</p>
-<h3 id="2-2-2-linear-model-Ridge"><a href="#2-2-2-linear-model-Ridge" class="headerlink" title="2.2.2 linear_model.Ridge"></a>2.2.2 linear_model.Ridge</h3><p>在sklearn中，岭回归由线性模型库中的Ridge类来调用：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">class sklearn.linear_model.Ridge (alpha&#x3D;1.0, ﬁt_intercept&#x3D;True, normalize&#x3D;False, copy_X&#x3D;True, max_iter&#x3D;None, tol&#x3D;0.001, solver&#x3D;’auto’, random_state&#x3D;None)</span><br></pre></td></tr></table></figure>
-
-<h2 id="2-3-Lasso"><a href="#2-3-Lasso" class="headerlink" title="2.3 Lasso"></a>2.3 Lasso</h2><h3 id="2-3-1-Lasso与多重共线性"><a href="#2-3-1-Lasso与多重共线性" class="headerlink" title="2.3.1 Lasso与多重共线性"></a>2.3.1 Lasso与多重共线性</h3><p>Lasso使用的是系数$w$的$L_1$范式乘以正则化系数$\alpha$，因此Lasso的损失函数表达式为：<br>$$\min_w||Xw-y||^2_2+\alpha||w||_1$$</p>
-<p>对损失函数进行求导：</p>
-<p>$$\frac{\partial(RSS+||w||_1)}{\partial w}=\frac{\partial(||y-Xw||^2_2)+\alpha||w||_1}{\partial w}$$<br>$$=\frac{\partial(y-Xw)^T(y-Xw)}{\partial w}+\frac{\partial \alpha||w||_1}{\partial w}$$<br>$$=0-2X^Ty+2X^TXw+\alpha$$<br>将含有$w$的项合并，其中$\alpha$为常数</p>
-<p>为实现矩阵相加，乘以一个结构为$n*n$的单位矩阵$I:$<br>$$=X^TXw-X^Ty+\frac{\alpha I}{2}$$<br>$$X^TXw=X^Ty-\frac{\alpha I}{2}$$</p>
-<p>而$L_1$范式所带的正则项$\alpha$在求导之后并不带有$w$这个项，因此<strong>Lasso无法解决特征之间“精确相关”的问题</strong></p>
-<p>假设方阵$X^TX$的逆是一定存在的，那我们可以有：<br>$$w=(X^TX)^{-1}(X^Ty-\frac{\alpha I}{2})$$</p>
-<p>通过增大$\alpha$，可以为$w$的计算增肌按一个负项，从而限制参数估计中$w$的大小，而防止多重共线性引起的失准问题。因此<strong>Lasso不是从根本上解决多重共线性问题，而是限制多重共线性带来的影响</strong></p>
-<p>$L_1,L_2$正则化一个核心差异就是他们对系数$w$的影响：两个正则化都会压缩系数$w$的大小，对标签贡献更少的特征系数会更小，也会更容易被压缩，不过$L_2$正则化只会将系数压缩到尽可能接近0，但$L_1$正则化主导稀疏性，会将系数压缩到0，这个性质让Lasso称为了线性模型中的特征选择工具首选。</p>
-<h3 id="2-3-2-Lasso的核心作用：特征选择"><a href="#2-3-2-Lasso的核心作用：特征选择" class="headerlink" title="2.3.2 Lasso的核心作用：特征选择"></a>2.3.2 Lasso的核心作用：特征选择</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">class sklearn.linear_model.Lasso (alpha&#x3D;1.0, ﬁt_intercept&#x3D;True, normalize&#x3D;False, precompute&#x3D;False, copy_X&#x3D;True, max_iter&#x3D;1000, tol&#x3D;0.0001, warm_start&#x3D;False, positive&#x3D;False, random_state&#x3D;None, selection&#x3D;’cyclic’)</span><br></pre></td></tr></table></figure>
-
-
-<h1 id="3-非线性问题：多项式回归"><a href="#3-非线性问题：多项式回归" class="headerlink" title="3 非线性问题：多项式回归"></a>3 非线性问题：多项式回归</h1><h2 id="3-1-“线性”概念"><a href="#3-1-“线性”概念" class="headerlink" title="3.1 “线性”概念"></a>3.1 “线性”概念</h2><h3 id="3-1-1-变量之间的线性关系"><a href="#3-1-1-变量之间的线性关系" class="headerlink" title="3.1.1 变量之间的线性关系"></a>3.1.1 变量之间的线性关系</h3><p>两个变量之间的关系可以展示为一条直线</p>
-<p><img src="https://note.youdao.com/yws/api/personal/file/97AE26C1073A4E8F862543C4AD9A3223?method=download&shareKey=e4b169f42f176d2c0e21bfa46b06d126" alt></p>
-<h3 id="3-1-2-数据的线性与非线性"><a href="#3-1-2-数据的线性与非线性" class="headerlink" title="3.1.2 数据的线性与非线性"></a>3.1.2 数据的线性与非线性</h3><p>一组数据由多个特征和标签组成。当这些特征分别与标签存在线性关系的时候，我们就说这一组数据是线性数据。当需要用三角函数，指数函数等来定义，则说这种数据叫作“非线性数据”</p>
-<p><img src="https://note.youdao.com/yws/api/personal/file/D4B139AFD9FA4DF19C2C2E9CA44526FC?method=download&shareKey=f750e469a64f7fe5ed9af4c120d7772c" alt></p>
-<h3 id="3-1-3-线性模型和非线性模型"><a href="#3-1-3-线性模型和非线性模型" class="headerlink" title="3.1.3 线性模型和非线性模型"></a>3.1.3 线性模型和非线性模型</h3><p>线性回归方程中，其自变量都是一次项，线性模型可以用来拟合非线性数据，而非线性模型也可以用来拟合线性数据，有的模型既可以使线性也可以使非线性模型。</p>
-<ul>
-<li>非线性模型拟合线性数据</li>
-</ul>
-<p>非线性模型几乎都可以在线性可分数据上有不逊于线性模型的表现<br><img src="https://note.youdao.com/yws/api/personal/file/1D70B4CDFF03423E97ABC37F0C1B8733?method=download&shareKey=f3b9556697932b23dedc04c06ae3a3cd" alt></p>
-<ul>
-<li>线性模型拟合非线性数据</li>
-</ul>
-<p>但是相反的，线性模型用来拟合非线性数据，通常表现糟糕。改善线性模型在非线性数据上的效果的方法之一是进行分箱，甚至可以搞过一些非线性模型。</p>
-<p><img src="https://note.youdao.com/yws/api/personal/file/A2F08F0D7A8D4761B16B779877453614?method=download&shareKey=36e49e3e63725e9534077264653e4574" alt></p>
-<ul>
-<li>即是线性，也是非线性的模型</li>
-</ul>
-<p>有一些模型，即可以处理线性数据又可以处理非线性数据，比如支持向量机。这个模型的线性和非线性取决于它的核函数。</p>
-<p><img src="https://note.youdao.com/yws/api/personal/file/19A7E95570314268BD269B76FF89ED2E?method=download&shareKey=5c1d7a4c6fd76e78ffad5e1fb8a91204" alt></p>
-<h2 id="3-2-使用分箱处理非线性问题"><a href="#3-2-使用分箱处理非线性问题" class="headerlink" title="3.2 使用分箱处理非线性问题"></a>3.2 使用分箱处理非线性问题</h2><p>让线性回归在非线性数据上表现提升的核心方法之一是对数据进行分箱，也就是离散化。</p>
-<p>在工业中，大量离散化变量与线性模型连用的实例很多，在深度学习出现之前，这种模式甚至一度统治一些工业中的机器学习应用场景，可见效果优秀，应用广泛。对于现在的很多工业场景而言，大量离散化特征的情况可能已经不是那么多了，不过大家依然需要对“分箱能够解决线性模型无法处理非线性数据的问题”有所了解。</p>
-<h2 id="3-3-多项式回归PolynomialFeatures"><a href="#3-3-多项式回归PolynomialFeatures" class="headerlink" title="3.3 多项式回归PolynomialFeatures"></a>3.3 多项式回归PolynomialFeatures</h2><h3 id="3-3-1-多项式对数据做了什么"><a href="#3-3-1-多项式对数据做了什么" class="headerlink" title="3.3.1 多项式对数据做了什么"></a>3.3.1 多项式对数据做了什么</h3><p>除了分箱之外，另一种更普遍的用于解决”线性回归只能处理线性数据“问题的手段，就是使用多项式回归对线性回归进行改进。这样的手法是机器学习研究者们从支持向量机中获得的：支持向量机通过升维可以将非线性可分数据转化为线性可分，然后使用核函数在低维空间中进行计算，这是一种“高维呈现，低维解释”的思维。那我们为什么不能让线性回归使用类似于升维的转换，将数据由非线性转换为线性，从而为线性回归赋予处理非线性数据的能力呢？当然可以。<br><img src="https://note.youdao.com/yws/api/personal/file/176FBDF502BB4D36ADAB608843183733?method=download&shareKey=0326e48215aac4f9a94d6ef3365e2d11" alt></p>
-<p>接下来，我们就来看看线性模型中的升维工具：多项式变化。这是一种通过增加自变量上的次数，而将数据映射到高维空间的方法，只要我们设定一个自变量上的次数（大于1），就可以相应地获得数据投影在高次方的空间中的结果。这种方法可以非常容易地通过sklearn中的类PolynomialFeatures来实现。我们先来简单看看这个类是如何使用的。</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">class sklearn.preprocessing.PolyinomialFeatures(degree&#x3D;2, interaction_only&#x3D;False,include_bias&#x3D;True)</span><br></pre></td></tr></table></figure>
-
-<h3 id="3-3-2-多项式回归的可解释性"><a href="#3-3-2-多项式回归的可解释性" class="headerlink" title="3.3.2 多项式回归的可解释性"></a>3.3.2 多项式回归的可解释性</h3><p>多项式回归的可解释性还存在，并且我们可以通过这样的手段做特征工程——特征创造。多项式帮助我们进行了一些列特征之间相乘的结合，若讷讷够找出组合起来后对标签贡献巨大的特征，那我们就是创造了新的有效特征，对任何学科而言发现新特征都是非常有价值的。</p>
+<p>(3) 传输层（transport layeR）<br>网络层之上是传输层，它的主要功能是负责应用进程之间的 端 - 端（Host-to-host ）通信。在 TCP/IP 体系结构中，设计传输层的主要目的是在互联网中源主机与目的主机的对等实体之间建立用于会话的端- 端连接 。因此，它与 OSI 参考模型的传输层功能相似。</p>
+<p>TCP/IP 体系结构的传输层定义了 传输控制协议（TCP，transportControlProtocol ）和 用户数据报协（UDP,useRdatagramProtocol ）两种协议。<br>TCP 协议是一种可靠的面向连接的协议，它允许将一台主机的字节流（byte stream ）无差错地传送到目的主机。<br>UDP 协议是一种不可靠的无连接协议，它主要用于不要求分组顺序到达的传输中，分组传输顺序检查与排序由应用层完成。</p>
+<p>(4) 应用层（application layeR）<br>在 TCP/IP 体系结构中，应用层是最靠近用户的一层。它包括了所有的高层协议，并且总是不断有新的协议加入。其主要协议包括：</p>
+<ol>
+<li>文件传输协议（FTP ,file transfeRprotocol ），用于实现互联网中交互式文件传输功能；</li>
+<li>简单邮件传输协议（SMTP simple mail transfeRprotocol ），用于实现互联网中邮件传送功能；</li>
+<li>域名系统（DNS, domain name system ），用于实现互联网设备名字到 IP 地址映射的网络服务；</li>
+<li>超文本传输协议（HTTP, bypeRtext transfeRprotocol ），用于目前广泛使用的 Web 服务；</li>
+<li>路由信息协议（RIP,Routing informationProtocol ），用于网络设备之间交换路由信息；</li>
+</ol>
+<p>在学习计算机网络的原理时往往采取折中的办法，即综合 OSI 和 TCP/IP 的优点，采用一种只有五层协议的体系结构，这样既简洁又能将概念阐述清楚。</p>
+<p><img src="https://note.youdao.com/yws/api/personal/file/7AF501D78232488DA7EF5B4DAD0A6487?method=download&shareKey=29133d1298976bc40cf97fb451b81b45" alt></p>
 ]]></content>
       <categories>
-        <category>机器学习</category>
+        <category>计算机基础知识</category>
       </categories>
       <tags>
-        <tag>机器学习</tag>
+        <tag>计算机基础知识</tag>
       </tags>
   </entry>
   <entry>
@@ -2409,105 +2466,6 @@ print(&apos;runtime:&apos;, time.time() - start_t)</code></pre>]]></content>
       </categories>
       <tags>
         <tag>机器学习</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>行测笔记：判断推理（二）类比推理</title>
-    <url>/2020/07/22/xingce2/</url>
-    <content><![CDATA[<h2 id="一、语义关系"><a href="#一、语义关系" class="headerlink" title="一、语义关系"></a>一、语义关系</h2><h3 id="（1）近义关系、反义关系"><a href="#（1）近义关系、反义关系" class="headerlink" title="（1）近义关系、反义关系"></a>（1）近义关系、反义关系</h3><p>如果一级关系（近反义关系）选不出答案——进行二级辨析</p>
-<p>常见的二级辨析：感情色彩（褒义、贬义、中性）</p>
-<a id="more"></a>
-
-<h3 id="（2）比喻义、象征义"><a href="#（2）比喻义、象征义" class="headerlink" title="（2）比喻义、象征义"></a>（2）比喻义、象征义</h3><h2 id="二、逻辑关系"><a href="#二、逻辑关系" class="headerlink" title="二、逻辑关系"></a>二、逻辑关系</h2><h3 id="（1）全同关系"><a href="#（1）全同关系" class="headerlink" title="（1）全同关系"></a>（1）全同关系</h3><h3 id="（2）并列关系"><a href="#（2）并列关系" class="headerlink" title="（2）并列关系"></a>（2）并列关系</h3><ol>
-<li>矛盾关系（只有两者）</li>
-<li>反对关系（有第三者）</li>
-</ol>
-<p><strong>并列的细分考点：并列关系+功能相同</strong></p>
-<h3 id="（3）包容关系"><a href="#（3）包容关系" class="headerlink" title="（3）包容关系"></a>（3）包容关系</h3><ol>
-<li>种属关系</li>
-<li>组成关系</li>
-</ol>
-<p><strong>区分：能用“谁是谁”造句的就是种属关系</strong></p>
-<h3 id="（4）交叉关系"><a href="#（4）交叉关系" class="headerlink" title="（4）交叉关系"></a>（4）交叉关系</h3><h3 id="（5）对应关系"><a href="#（5）对应关系" class="headerlink" title="（5）对应关系"></a>（5）对应关系</h3><ol>
-<li>材料</li>
-<li>工艺</li>
-<li>属性</li>
-<li>功能（二级辨析：主要功能、次要功能）</li>
-<li>时间顺序：多个行为同时出现</li>
-</ol>
-<p><strong>当出现多个选项符合时间顺序时，考虑动作主体</strong><br>6. 因果关系（方式目的）</p>
-<h2 id="三、语法关系"><a href="#三、语法关系" class="headerlink" title="三、语法关系"></a>三、语法关系</h2><h3 id="（1）主谓关系"><a href="#（1）主谓关系" class="headerlink" title="（1）主谓关系"></a>（1）主谓关系</h3><h3 id="（2）动宾关系"><a href="#（2）动宾关系" class="headerlink" title="（2）动宾关系"></a>（2）动宾关系</h3><h3 id="（3）主宾关系"><a href="#（3）主宾关系" class="headerlink" title="（3）主宾关系"></a>（3）主宾关系</h3><h2 id="四、词语拆分"><a href="#四、词语拆分" class="headerlink" title="四、词语拆分"></a>四、词语拆分</h2><h3 id="（1）单字拆分"><a href="#（1）单字拆分" class="headerlink" title="（1）单字拆分"></a>（1）单字拆分</h3><h3 id="（2）成语被拆分"><a href="#（2）成语被拆分" class="headerlink" title="（2）成语被拆分"></a>（2）成语被拆分</h3><h3 id="（3）两组词语之间没有明显逻辑关系"><a href="#（3）两组词语之间没有明显逻辑关系" class="headerlink" title="（3）两组词语之间没有明显逻辑关系"></a>（3）两组词语之间没有明显逻辑关系</h3><hr>
-<h2 id="五、词语、成语积累："><a href="#五、词语、成语积累：" class="headerlink" title="五、词语、成语积累："></a>五、词语、成语积累：</h2><ol>
-<li>马放南山：天下太平，不再用兵</li>
-<li>拾人牙慧：窃取别人的语言和文字</li>
-<li>如火如荼：军容之盛，形容大规模的行动气势旺盛</li>
-<li>犬牙交错：比喻交界线曲折，像狗牙参差不齐，也比喻情况复杂</li>
-<li>纷乱如麻：交错杂乱像一团乱麻，一般形容心情</li>
-<li>燕归巢：比喻客居在外的游子喜归故里</li>
-<li>睁眼瞎：比喻没有文化，不识字的人，缺乏知识的人</li>
-<li>得陇望蜀：比喻得寸进尺，贪心不知足</li>
-<li>纲举目张：比喻条理分明</li>
-<li>惩前毖后：批判以前所犯的错误，吸取教训，使以后谨慎些，不致再犯</li>
-</ol>
-]]></content>
-      <categories>
-        <category>行测笔试</category>
-      </categories>
-      <tags>
-        <tag>行测笔试</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>行测笔记：判断推理（三）定义判断</title>
-    <url>/2020/07/23/xingce3/</url>
-    <content><![CDATA[<h2 id="解题思维："><a href="#解题思维：" class="headerlink" title="解题思维："></a>解题思维：</h2><ol>
-<li>看提问——看清“属于/符合”,“不属于/不符合”定义等</li>
-<li>看题干——识别有效信息：找准关键词、关键句</li>
-<li>看选项——纠结时选项对比择优<a id="more"></a>
-
-</li>
-</ol>
-<h2 id="一、快速识别有效信息"><a href="#一、快速识别有效信息" class="headerlink" title="一、快速识别有效信息"></a>一、快速识别有效信息</h2><h3 id="（1）关键词——主体、客体"><a href="#（1）关键词——主体、客体" class="headerlink" title="（1）关键词——主体、客体"></a>（1）关键词——主体、客体</h3><ol>
-<li>主体——行为、活动的出发者</li>
-<li>客体——行为、活动作用的对象</li>
-</ol>
-<ul>
-<li>不是每题一定都有主题和客体，但是出现了要重点看</li>
-<li>主客体不符合的选项一定不符合定义</li>
-<li>范围越小、越明确的主/客体，越容易成为考点</li>
-</ul>
-<p><strong>常考主客体：</strong></p>
-<ol>
-<li>行政机关</li>
-<li>全力机关</li>
-<li>司法机关</li>
-<li>事业单位</li>
-<li>社会组织 </li>
-</ol>
-<h3 id="（2）句式引导词——引导的内容重点看"><a href="#（2）句式引导词——引导的内容重点看" class="headerlink" title="（2）句式引导词——引导的内容重点看"></a>（2）句式引导词——引导的内容重点看</h3><ol>
-<li>方式：通过/利用…</li>
-<li>目的：以/以达到…</li>
-<li>原因：因为/由于…</li>
-<li>结果：导致/从而/使得…</li>
-<li>时间：当…时/在…情况下</li>
-</ol>
-<h3 id="（3）优先看到定义所在的那句话的句号和补充说明"><a href="#（3）优先看到定义所在的那句话的句号和补充说明" class="headerlink" title="（3）优先看到定义所在的那句话的句号和补充说明"></a>（3）优先看到定义所在的那句话的句号和补充说明</h3><h3 id="（4）多定义：做题方法与单定义题目一致"><a href="#（4）多定义：做题方法与单定义题目一致" class="headerlink" title="（4）多定义：做题方法与单定义题目一致"></a>（4）多定义：做题方法与单定义题目一致</h3><ol>
-<li>问啥看啥：看清题干问的是哪个定义，重点看目标定义</li>
-<li>比较定义：纠结两个选项时，再与其他定义比较</li>
-</ol>
-<h2 id="二、小技巧"><a href="#二、小技巧" class="headerlink" title="二、小技巧"></a>二、小技巧</h2><h3 id="（1）拆词"><a href="#（1）拆词" class="headerlink" title="（1）拆词"></a>（1）拆词</h3><p>从定义本身找信息，如果定义名称有明确的限定语并简单易懂，可利用定义词快速破题</p>
-<h3 id="（2）同构选项排除法"><a href="#（2）同构选项排除法" class="headerlink" title="（2）同构选项排除法"></a>（2）同构选项排除法</h3><p>意思相似、结构相似的选项排除</p>
-<ol>
-<li>题干或下选项能够读不懂</li>
-<li>同构选项出现，可以一起排除</li>
-<li>同构有风险，使用需谨慎…</li>
-</ol>
-]]></content>
-      <categories>
-        <category>行测笔试</category>
-      </categories>
-      <tags>
-        <tag>行测笔试</tag>
       </tags>
   </entry>
   <entry>
@@ -2819,11 +2777,45 @@ print(&apos;runtime:&apos;, time.time() - start_t)</code></pre>]]></content>
 <ol start="3">
 <li>画表格（4个及以上信息）<br>先填入确定信息</li>
 </ol>
-<h2 id="三、特殊题型——材料题"><a href="#三、特殊题型——材料题" class="headerlink" title="三、特殊题型——材料题"></a>三、特殊题型——材料题</h2><ol>
+<h3 id="3-特殊题型——材料题"><a href="#3-特殊题型——材料题" class="headerlink" title="(3) 特殊题型——材料题"></a>(3) 特殊题型——材料题</h3><ol>
 <li>与非材料题解题方式一致——一则材料、多种技巧</li>
 <li>通过材料直接推出来的结论可以直接应用于所有题目</li>
 </ol>
 <p>当且仅当表示充要条件，即A$\rightarrow$B，且B$\rightarrow$A</p>
+<h2 id="三、逻辑论证"><a href="#三、逻辑论证" class="headerlink" title="三、逻辑论证"></a>三、逻辑论证</h2><h3 id="（1）削弱之否定论点"><a href="#（1）削弱之否定论点" class="headerlink" title="（1）削弱之否定论点"></a>（1）削弱之否定论点</h3><p>选题特征：与论点表述意思相反</p>
+<p>文段特征：</p>
+<ol>
+<li>文段只有论点，无论据</li>
+<li>文段的论点和论据话题一致</li>
+</ol>
+<h3 id="（2）削弱之拆桥"><a href="#（2）削弱之拆桥" class="headerlink" title="（2）削弱之拆桥"></a>（2）削弱之拆桥</h3><p>论点与论据之间没有必然联系</p>
+<p>题型特质：</p>
+<ol>
+<li>论点和论据的话题不一致</li>
+<li>提问方式为“削弱论证”</li>
+<li>没有否论点的选项</li>
+</ol>
+<h3 id="（3）削弱之否定论据"><a href="#（3）削弱之否定论据" class="headerlink" title="（3）削弱之否定论据"></a>（3）削弱之否定论据</h3><p>题型特征：</p>
+<ol>
+<li>题干中支持方，反对方观点相反</li>
+<li>题干中存在论点、论据，但无否论点和拆桥选项</li>
+</ol>
+<p>选项特征：与论据表述的意思相反</p>
+<h3 id="（4）削弱之因果倒置和他因削弱"><a href="#（4）削弱之因果倒置和他因削弱" class="headerlink" title="（4）削弱之因果倒置和他因削弱"></a>（4）削弱之因果倒置和他因削弱</h3><p>题干特征：论点具有因果关系<br>选项特征：</p>
+<ol>
+<li>因果倒置：将论点中的因果关系顺序颠倒</li>
+<li>他因削弱：在原来1的基础上，选项增加另一个同时存在的原因2也能导致相同的结果，削弱的是原来原因的重要性或唯一性</li>
+</ol>
+<h3 id="（5）加强之补充论据"><a href="#（5）加强之补充论据" class="headerlink" title="（5）加强之补充论据"></a>（5）加强之补充论据</h3><ol>
+<li>解释原因：说明论点成立的原因</li>
+<li>举例支持：证明论点成立的例子</li>
+</ol>
+<h3 id="（6）加强之搭桥"><a href="#（6）加强之搭桥" class="headerlink" title="（6）加强之搭桥"></a>（6）加强之搭桥</h3><p>题型特征：</p>
+<ol>
+<li>论点论据话题不一致</li>
+<li>提问方式为前提、假设、必要条件、论证，优先考虑搭桥 </li>
+</ol>
+<h3 id="（7）加强之必要条件"><a href="#（7）加强之必要条件" class="headerlink" title="（7）加强之必要条件"></a>（7）加强之必要条件</h3><p>必要条件：选项为论点成立的必要条件</p>
 ]]></content>
       <categories>
         <category>行测笔试</category>
@@ -3427,6 +3419,105 @@ print(&apos;runtime:&apos;, time.time() - start_t)</code></pre>]]></content>
       </categories>
       <tags>
         <tag>机器学习</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>行测笔记：判断推理（三）定义判断</title>
+    <url>/2020/07/23/xingce3/</url>
+    <content><![CDATA[<h2 id="解题思维："><a href="#解题思维：" class="headerlink" title="解题思维："></a>解题思维：</h2><ol>
+<li>看提问——看清“属于/符合”,“不属于/不符合”定义等</li>
+<li>看题干——识别有效信息：找准关键词、关键句</li>
+<li>看选项——纠结时选项对比择优<a id="more"></a>
+
+</li>
+</ol>
+<h2 id="一、快速识别有效信息"><a href="#一、快速识别有效信息" class="headerlink" title="一、快速识别有效信息"></a>一、快速识别有效信息</h2><h3 id="（1）关键词——主体、客体"><a href="#（1）关键词——主体、客体" class="headerlink" title="（1）关键词——主体、客体"></a>（1）关键词——主体、客体</h3><ol>
+<li>主体——行为、活动的出发者</li>
+<li>客体——行为、活动作用的对象</li>
+</ol>
+<ul>
+<li>不是每题一定都有主题和客体，但是出现了要重点看</li>
+<li>主客体不符合的选项一定不符合定义</li>
+<li>范围越小、越明确的主/客体，越容易成为考点</li>
+</ul>
+<p><strong>常考主客体：</strong></p>
+<ol>
+<li>行政机关</li>
+<li>全力机关</li>
+<li>司法机关</li>
+<li>事业单位</li>
+<li>社会组织 </li>
+</ol>
+<h3 id="（2）句式引导词——引导的内容重点看"><a href="#（2）句式引导词——引导的内容重点看" class="headerlink" title="（2）句式引导词——引导的内容重点看"></a>（2）句式引导词——引导的内容重点看</h3><ol>
+<li>方式：通过/利用…</li>
+<li>目的：以/以达到…</li>
+<li>原因：因为/由于…</li>
+<li>结果：导致/从而/使得…</li>
+<li>时间：当…时/在…情况下</li>
+</ol>
+<h3 id="（3）优先看到定义所在的那句话的句号和补充说明"><a href="#（3）优先看到定义所在的那句话的句号和补充说明" class="headerlink" title="（3）优先看到定义所在的那句话的句号和补充说明"></a>（3）优先看到定义所在的那句话的句号和补充说明</h3><h3 id="（4）多定义：做题方法与单定义题目一致"><a href="#（4）多定义：做题方法与单定义题目一致" class="headerlink" title="（4）多定义：做题方法与单定义题目一致"></a>（4）多定义：做题方法与单定义题目一致</h3><ol>
+<li>问啥看啥：看清题干问的是哪个定义，重点看目标定义</li>
+<li>比较定义：纠结两个选项时，再与其他定义比较</li>
+</ol>
+<h2 id="二、小技巧"><a href="#二、小技巧" class="headerlink" title="二、小技巧"></a>二、小技巧</h2><h3 id="（1）拆词"><a href="#（1）拆词" class="headerlink" title="（1）拆词"></a>（1）拆词</h3><p>从定义本身找信息，如果定义名称有明确的限定语并简单易懂，可利用定义词快速破题</p>
+<h3 id="（2）同构选项排除法"><a href="#（2）同构选项排除法" class="headerlink" title="（2）同构选项排除法"></a>（2）同构选项排除法</h3><p>意思相似、结构相似的选项排除</p>
+<ol>
+<li>题干或下选项能够读不懂</li>
+<li>同构选项出现，可以一起排除</li>
+<li>同构有风险，使用需谨慎…</li>
+</ol>
+]]></content>
+      <categories>
+        <category>行测笔试</category>
+      </categories>
+      <tags>
+        <tag>行测笔试</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>行测笔记：判断推理（二）类比推理</title>
+    <url>/2020/07/22/xingce2/</url>
+    <content><![CDATA[<h2 id="一、语义关系"><a href="#一、语义关系" class="headerlink" title="一、语义关系"></a>一、语义关系</h2><h3 id="（1）近义关系、反义关系"><a href="#（1）近义关系、反义关系" class="headerlink" title="（1）近义关系、反义关系"></a>（1）近义关系、反义关系</h3><p>如果一级关系（近反义关系）选不出答案——进行二级辨析</p>
+<p>常见的二级辨析：感情色彩（褒义、贬义、中性）</p>
+<a id="more"></a>
+
+<h3 id="（2）比喻义、象征义"><a href="#（2）比喻义、象征义" class="headerlink" title="（2）比喻义、象征义"></a>（2）比喻义、象征义</h3><h2 id="二、逻辑关系"><a href="#二、逻辑关系" class="headerlink" title="二、逻辑关系"></a>二、逻辑关系</h2><h3 id="（1）全同关系"><a href="#（1）全同关系" class="headerlink" title="（1）全同关系"></a>（1）全同关系</h3><h3 id="（2）并列关系"><a href="#（2）并列关系" class="headerlink" title="（2）并列关系"></a>（2）并列关系</h3><ol>
+<li>矛盾关系（只有两者）</li>
+<li>反对关系（有第三者）</li>
+</ol>
+<p><strong>并列的细分考点：并列关系+功能相同</strong></p>
+<h3 id="（3）包容关系"><a href="#（3）包容关系" class="headerlink" title="（3）包容关系"></a>（3）包容关系</h3><ol>
+<li>种属关系</li>
+<li>组成关系</li>
+</ol>
+<p><strong>区分：能用“谁是谁”造句的就是种属关系</strong></p>
+<h3 id="（4）交叉关系"><a href="#（4）交叉关系" class="headerlink" title="（4）交叉关系"></a>（4）交叉关系</h3><h3 id="（5）对应关系"><a href="#（5）对应关系" class="headerlink" title="（5）对应关系"></a>（5）对应关系</h3><ol>
+<li>材料</li>
+<li>工艺</li>
+<li>属性</li>
+<li>功能（二级辨析：主要功能、次要功能）</li>
+<li>时间顺序：多个行为同时出现</li>
+</ol>
+<p><strong>当出现多个选项符合时间顺序时，考虑动作主体</strong><br>6. 因果关系（方式目的）</p>
+<h2 id="三、语法关系"><a href="#三、语法关系" class="headerlink" title="三、语法关系"></a>三、语法关系</h2><h3 id="（1）主谓关系"><a href="#（1）主谓关系" class="headerlink" title="（1）主谓关系"></a>（1）主谓关系</h3><h3 id="（2）动宾关系"><a href="#（2）动宾关系" class="headerlink" title="（2）动宾关系"></a>（2）动宾关系</h3><h3 id="（3）主宾关系"><a href="#（3）主宾关系" class="headerlink" title="（3）主宾关系"></a>（3）主宾关系</h3><h2 id="四、词语拆分"><a href="#四、词语拆分" class="headerlink" title="四、词语拆分"></a>四、词语拆分</h2><h3 id="（1）单字拆分"><a href="#（1）单字拆分" class="headerlink" title="（1）单字拆分"></a>（1）单字拆分</h3><h3 id="（2）成语被拆分"><a href="#（2）成语被拆分" class="headerlink" title="（2）成语被拆分"></a>（2）成语被拆分</h3><h3 id="（3）两组词语之间没有明显逻辑关系"><a href="#（3）两组词语之间没有明显逻辑关系" class="headerlink" title="（3）两组词语之间没有明显逻辑关系"></a>（3）两组词语之间没有明显逻辑关系</h3><hr>
+<h2 id="五、词语、成语积累："><a href="#五、词语、成语积累：" class="headerlink" title="五、词语、成语积累："></a>五、词语、成语积累：</h2><ol>
+<li>马放南山：天下太平，不再用兵</li>
+<li>拾人牙慧：窃取别人的语言和文字</li>
+<li>如火如荼：军容之盛，形容大规模的行动气势旺盛</li>
+<li>犬牙交错：比喻交界线曲折，像狗牙参差不齐，也比喻情况复杂</li>
+<li>纷乱如麻：交错杂乱像一团乱麻，一般形容心情</li>
+<li>燕归巢：比喻客居在外的游子喜归故里</li>
+<li>睁眼瞎：比喻没有文化，不识字的人，缺乏知识的人</li>
+<li>得陇望蜀：比喻得寸进尺，贪心不知足</li>
+<li>纲举目张：比喻条理分明</li>
+<li>惩前毖后：批判以前所犯的错误，吸取教训，使以后谨慎些，不致再犯</li>
+</ol>
+]]></content>
+      <categories>
+        <category>行测笔试</category>
+      </categories>
+      <tags>
+        <tag>行测笔试</tag>
       </tags>
   </entry>
 </search>
