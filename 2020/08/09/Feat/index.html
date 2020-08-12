@@ -20,20 +20,26 @@
     var CONFIG = {"hostname":"liangggggg.github.io","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
   </script>
 
-  <meta name="description" content="解题思维： 看提问——看清“属于&#x2F;符合”,“不属于&#x2F;不符合”定义等 看题干——识别有效信息：找准关键词、关键句 看选项——纠结时选项对比择优">
+  <meta name="description" content="数据预处理和特征工程1 数据预处理1.1 数据无量纲化 preprocessing.MinMaxScaler：归一化  $$x^{*} &#x3D; \frac{x-min(x)}{max(x)-min(x)}$$  preprocessing.StandardScaler：标准化  $$x^{*}&#x3D;\frac{x-\mu}{\sigma}$$  StandardScaler和MinMaxScaler选哪个">
 <meta property="og:type" content="article">
-<meta property="og:title" content="行测笔记：判断推理（三）定义判断">
-<meta property="og:url" content="https://liangggggg.github.io/2020/07/23/xingce3/index.html">
+<meta property="og:title" content="机器学习笔记（八）数据预处理与特征工程">
+<meta property="og:url" content="https://liangggggg.github.io/2020/08/09/Feat/index.html">
 <meta property="og:site_name" content="LiAnG&#39;s Blog">
-<meta property="og:description" content="解题思维： 看提问——看清“属于&#x2F;符合”,“不属于&#x2F;不符合”定义等 看题干——识别有效信息：找准关键词、关键句 看选项——纠结时选项对比择优">
+<meta property="og:description" content="数据预处理和特征工程1 数据预处理1.1 数据无量纲化 preprocessing.MinMaxScaler：归一化  $$x^{*} &#x3D; \frac{x-min(x)}{max(x)-min(x)}$$  preprocessing.StandardScaler：标准化  $$x^{*}&#x3D;\frac{x-\mu}{\sigma}$$  StandardScaler和MinMaxScaler选哪个">
 <meta property="og:locale" content="zh_CN">
-<meta property="article:published_time" content="2020-07-23T07:57:25.000Z">
-<meta property="article:modified_time" content="2020-07-23T14:06:29.982Z">
+<meta property="og:image" content="https://note.youdao.com/yws/api/personal/file/671DF765B3D84C68A1C2E1038494B94C?method=download&shareKey=5c723470f1cc5eaed7f35061d1aac324">
+<meta property="og:image" content="https://note.youdao.com/yws/api/personal/file/DAC20B5C378C4A4485B373870AAF5971?method=download&shareKey=8ba1b6bb9905782ae7951e742ae79fd0">
+<meta property="og:image" content="https://note.youdao.com/yws/api/personal/file/6A85336AB79345C18D14A5F3F3D1B4B9?method=download&shareKey=a1bc337ffcb61ce727aa8d9300b45809">
+<meta property="og:image" content="https://note.youdao.com/yws/api/personal/file/B20CE443F91E421FA086F0D7B773F940?method=download&shareKey=329d8ddf018f6e52198b696aafc99c1a">
+<meta property="og:image" content="https://note.youdao.com/yws/api/personal/file/2210DFBFBE614558A58D1F7F7C3A207F?method=download&shareKey=a4ee875d7e0cf4e62258f04f111375e1">
+<meta property="article:published_time" content="2020-08-09T01:47:42.000Z">
+<meta property="article:modified_time" content="2020-08-11T07:15:18.866Z">
 <meta property="article:author" content="LiAnG">
-<meta property="article:tag" content="行测笔试">
+<meta property="article:tag" content="机器学习">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://note.youdao.com/yws/api/personal/file/671DF765B3D84C68A1C2E1038494B94C?method=download&shareKey=5c723470f1cc5eaed7f35061d1aac324">
 
-<link rel="canonical" href="https://liangggggg.github.io/2020/07/23/xingce3/">
+<link rel="canonical" href="https://liangggggg.github.io/2020/08/09/Feat/">
 
 
 <script id="page-configurations">
@@ -46,7 +52,7 @@
   };
 </script>
 
-  <title>行测笔记：判断推理（三）定义判断 | LiAnG's Blog</title>
+  <title>机器学习笔记（八）数据预处理与特征工程 | LiAnG's Blog</title>
   
 
 
@@ -196,7 +202,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://liangggggg.github.io/2020/07/23/xingce3/">
+    <link itemprop="mainEntityOfPage" href="https://liangggggg.github.io/2020/08/09/Feat/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/timg.jpg">
@@ -209,7 +215,7 @@
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
-          行测笔记：判断推理（三）定义判断
+          机器学习笔记（八）数据预处理与特征工程
         </h1>
 
         <div class="post-meta">
@@ -218,17 +224,23 @@
                 <i class="far fa-calendar"></i>
               </span>
               <span class="post-meta-item-text">发表于</span>
-              
 
-              <time title="创建时间：2020-07-23 15:57:25 / 修改时间：22:06:29" itemprop="dateCreated datePublished" datetime="2020-07-23T15:57:25+08:00">2020-07-23</time>
+              <time title="创建时间：2020-08-09 09:47:42" itemprop="dateCreated datePublished" datetime="2020-08-09T09:47:42+08:00">2020-08-09</time>
             </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-08-11 15:15:18" itemprop="dateModified" datetime="2020-08-11T15:15:18+08:00">2020-08-11</time>
+              </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
                 <i class="far fa-folder"></i>
               </span>
               <span class="post-meta-item-text">分类于</span>
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E8%A1%8C%E6%B5%8B%E7%AC%94%E8%AF%95/" itemprop="url" rel="index"><span itemprop="name">行测笔试</span></a>
+                  <a href="/categories/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/" itemprop="url" rel="index"><span itemprop="name">机器学习</span></a>
                 </span>
             </span>
 
@@ -248,8 +260,8 @@
       </span>
       <span class="post-meta-item-text">Valine：</span>
     
-    <a title="valine" href="/2020/07/23/xingce3/#valine-comments" itemprop="discussionUrl">
-      <span class="post-comments-count valine-comment-count" data-xid="/2020/07/23/xingce3/" itemprop="commentCount"></span>
+    <a title="valine" href="/2020/08/09/Feat/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2020/08/09/Feat/" itemprop="commentCount"></span>
     </a>
   </span>
   
@@ -259,14 +271,14 @@
                 <i class="far fa-file-word"></i>
               </span>
                 <span class="post-meta-item-text">本文字数：</span>
-              <span>467</span>
+              <span>2.2k</span>
             </span>
             <span class="post-meta-item" title="阅读时长">
               <span class="post-meta-item-icon">
                 <i class="far fa-clock"></i>
               </span>
                 <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>1 分钟</span>
+              <span>2 分钟</span>
             </span>
 
         </div>
@@ -278,48 +290,148 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <h2 id="解题思维："><a href="#解题思维：" class="headerlink" title="解题思维："></a>解题思维：</h2><ol>
-<li>看提问——看清“属于/符合”,“不属于/不符合”定义等</li>
-<li>看题干——识别有效信息：找准关键词、关键句</li>
-<li>看选项——纠结时选项对比择优<a id="more"></a>
-
-</li>
-</ol>
-<h2 id="一、快速识别有效信息"><a href="#一、快速识别有效信息" class="headerlink" title="一、快速识别有效信息"></a>一、快速识别有效信息</h2><h3 id="（1）关键词——主体、客体"><a href="#（1）关键词——主体、客体" class="headerlink" title="（1）关键词——主体、客体"></a>（1）关键词——主体、客体</h3><ol>
-<li>主体——行为、活动的出发者</li>
-<li>客体——行为、活动作用的对象</li>
-</ol>
-<ul>
-<li>不是每题一定都有主题和客体，但是出现了要重点看</li>
-<li>主客体不符合的选项一定不符合定义</li>
-<li>范围越小、越明确的主/客体，越容易成为考点</li>
+        <h2 id="数据预处理和特征工程"><a href="#数据预处理和特征工程" class="headerlink" title="数据预处理和特征工程"></a>数据预处理和特征工程</h2><h3 id="1-数据预处理"><a href="#1-数据预处理" class="headerlink" title="1 数据预处理"></a>1 数据预处理</h3><h4 id="1-1-数据无量纲化"><a href="#1-1-数据无量纲化" class="headerlink" title="1.1 数据无量纲化"></a>1.1 数据无量纲化</h4><ul>
+<li>preprocessing.MinMaxScaler：归一化</li>
 </ul>
-<p><strong>常考主客体：</strong></p>
-<ol>
-<li>行政机关</li>
-<li>全力机关</li>
-<li>司法机关</li>
-<li>事业单位</li>
-<li>社会组织 </li>
-</ol>
-<h3 id="（2）句式引导词——引导的内容重点看"><a href="#（2）句式引导词——引导的内容重点看" class="headerlink" title="（2）句式引导词——引导的内容重点看"></a>（2）句式引导词——引导的内容重点看</h3><ol>
-<li>方式：通过/利用…</li>
-<li>目的：以/以达到…</li>
-<li>原因：因为/由于…</li>
-<li>结果：导致/从而/使得…</li>
-<li>时间：当…时/在…情况下</li>
-</ol>
-<h3 id="（3）优先看到定义所在的那句话的句号和补充说明"><a href="#（3）优先看到定义所在的那句话的句号和补充说明" class="headerlink" title="（3）优先看到定义所在的那句话的句号和补充说明"></a>（3）优先看到定义所在的那句话的句号和补充说明</h3><h3 id="（4）多定义：做题方法与单定义题目一致"><a href="#（4）多定义：做题方法与单定义题目一致" class="headerlink" title="（4）多定义：做题方法与单定义题目一致"></a>（4）多定义：做题方法与单定义题目一致</h3><ol>
-<li>问啥看啥：看清题干问的是哪个定义，重点看目标定义</li>
-<li>比较定义：纠结两个选项时，再与其他定义比较</li>
-</ol>
-<h2 id="二、小技巧"><a href="#二、小技巧" class="headerlink" title="二、小技巧"></a>二、小技巧</h2><h3 id="（1）拆词"><a href="#（1）拆词" class="headerlink" title="（1）拆词"></a>（1）拆词</h3><p>从定义本身找信息，如果定义名称有明确的限定语并简单易懂，可利用定义词快速破题</p>
-<h3 id="（2）同构选项排除法"><a href="#（2）同构选项排除法" class="headerlink" title="（2）同构选项排除法"></a>（2）同构选项排除法</h3><p>意思相似、结构相似的选项排除</p>
-<ol>
-<li>题干或下选项能够读不懂</li>
-<li>同构选项出现，可以一起排除</li>
-<li>同构有风险，使用需谨慎…</li>
-</ol>
+<p>$$x^{*} = \frac{x-min(x)}{max(x)-min(x)}$$</p>
+<ul>
+<li>preprocessing.StandardScaler：标准化</li>
+</ul>
+<p>$$x^{*}=\frac{x-\mu}{\sigma}$$</p>
+<ul>
+<li>StandardScaler和MinMaxScaler选哪个</li>
+</ul>
+<p>大多数机器选择算法会选择StandardScaler进行放缩，因为MinMaxScaler对异常值非常敏感</p>
+<a id="more"></a>
+
+<h4 id="1-2-缺失值"><a href="#1-2-缺失值" class="headerlink" title="1.2 缺失值"></a>1.2 缺失值</h4><ul>
+<li>填充固定值</li>
+<li>填充均值</li>
+<li>填充中位数</li>
+<li>填充众数</li>
+<li>填充上下跳的数据</li>
+<li>填充插值得到的数据</li>
+<li>填充KNN数据</li>
+<li>填充模型预测的值</li>
+</ul>
+<h4 id="1-3-处理分类型特征：编码与哑变量"><a href="#1-3-处理分类型特征：编码与哑变量" class="headerlink" title="1.3 处理分类型特征：编码与哑变量"></a>1.3 处理分类型特征：编码与哑变量</h4><ul>
+<li><p>preprocessing.LabelEncoder：标签专用，能够将分类转换为分类数值</p>
+</li>
+<li><p>preprocessing.OrdinalEncoder：特征专用，能够将分类特征转化为分类数值</p>
+</li>
+<li><p>preprocessing.OneHotEncoder:独热编码，创建哑变量</p>
+</li>
+</ul>
+<p><img src="https://note.youdao.com/yws/api/personal/file/671DF765B3D84C68A1C2E1038494B94C?method=download&shareKey=5c723470f1cc5eaed7f35061d1aac324" alt></p>
+<p><img src="https://note.youdao.com/yws/api/personal/file/DAC20B5C378C4A4485B373870AAF5971?method=download&shareKey=8ba1b6bb9905782ae7951e742ae79fd0" alt></p>
+<p>但是在独热编码后，增加了特征的维数。如果类别有很多种的话可能特征矩阵非常稀疏</p>
+<h4 id="1-4-处理连续特征：二值化与分段"><a href="#1-4-处理连续特征：二值化与分段" class="headerlink" title="1.4 处理连续特征：二值化与分段"></a>1.4 处理连续特征：二值化与分段</h4><ul>
+<li>sklearn.preprocessing.Binarizer</li>
+</ul>
+<p>根据阈值将数据二值化，用于处理连续型变量。大于阈值的值映射为1，而小于或等于阈值的值射为0。二值化常用于文本计数数据</p>
+<ul>
+<li>preprocessing.KBinsDiscretizer</li>
+</ul>
+<p>将连续型变量划分为分类变量的类，能够将连续型变量排序后按顺序分分箱后编码</p>
+<table>
+<thead>
+<tr>
+<th align="left">参数</th>
+<th align="left">含义&amp;输入</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">n_bins</td>
+<td align="left">每个特征中分箱的个数，默认5，一次会被运用到所有导入的特征</td>
+</tr>
+<tr>
+<td align="left">encode</td>
+<td align="left">编码的方 式，默 认 “onehot”：做哑变量，之后返回一个稀疏矩阵，每一列是一个特征中的一个类别，含有该类别的样本表示为 1， 不含的表示为0</td>
+</tr>
+<tr>
+<td align="left"></td>
+<td align="left">“ordinal”：每个特征的每个箱都被编码为一个整数，返回每一列是一个特征，每个特征下含有不同整数编码的箱的矩阵</td>
+</tr>
+<tr>
+<td align="left"></td>
+<td align="left">“onehot-dense”：做哑变量，之后返回一个密集数组。</td>
+</tr>
+<tr>
+<td align="left">strategy</td>
+<td align="left">用来定义箱宽的方式，默认”quantile”</td>
+</tr>
+<tr>
+<td align="left"></td>
+<td align="left">“uniform”：表示等宽分箱，即每个特征中的每个箱的最大值之间的差为（$特征.max()-特征.min()/n_bins$）</td>
+</tr>
+<tr>
+<td align="left"></td>
+<td align="left">“quantile”：表示等位分箱，即每个特征中的每个箱内的样本数量都相同</td>
+</tr>
+<tr>
+<td align="left"></td>
+<td align="left">“kmeans”：表示按聚类分箱，每个箱中的值到最近的一维k均值聚类的簇心得距离都相同</td>
+</tr>
+</tbody></table>
+<h3 id="2-特征选择"><a href="#2-特征选择" class="headerlink" title="2 特征选择"></a>2 特征选择</h3><p>我们有四种方法可以用来选择特征：过滤法、嵌入法、包装法、降维算法</p>
+<h4 id="2-1-Filter过滤法"><a href="#2-1-Filter过滤法" class="headerlink" title="2.1 Filter过滤法"></a>2.1 Filter过滤法</h4><p>它是根据各种统计检验中的分数以及相关性的各向指标来选择特征</p>
+<h5 id="2-1-1-方差过滤"><a href="#2-1-1-方差过滤" class="headerlink" title="2.1.1 方差过滤"></a>2.1.1 方差过滤</h5><ul>
+<li>VarianceThreshold</li>
+</ul>
+<p>通过特征本身的方差来筛选特征的类。如果一个特征本身的方差很小，就表示这个特征基本没有差异，那这个特征对于样本区分没有什么作用。</p>
+<h5 id="2-1-2-相关性过滤"><a href="#2-1-2-相关性过滤" class="headerlink" title="2.1.2 相关性过滤"></a>2.1.2 相关性过滤</h5><p>我们希望选出与标签相关且有意义的特征，这样的特征能够为我们提供大量的信息。</p>
+<p><img src="https://note.youdao.com/yws/api/personal/file/6A85336AB79345C18D14A5F3F3D1B4B9?method=download&shareKey=a1bc337ffcb61ce727aa8d9300b45809" alt></p>
+<ul>
+<li>卡方过滤</li>
+</ul>
+<p>卡方过滤是专门针对离散型标签的相关性过滤，通过卡方检验类feature_selection.chi2结合feature_selection.SelectKBest来选出前K个分数最高的特征类</p>
+<ul>
+<li>F检验</li>
+</ul>
+<p>用来捕捉每个特征与标签之间的线性关系的过滤方法，即可以做回归也可以做分类。</p>
+<ul>
+<li>互信息法</li>
+</ul>
+<p>互信息法是用来捕捉每个特征与标签之间的任意关系（包括线性和非线性）的过滤方法，也可以做回归和分类。</p>
+<h4 id="2-2-Embedded嵌入法"><a href="#2-2-Embedded嵌入法" class="headerlink" title="2.2 Embedded嵌入法"></a>2.2 Embedded嵌入法</h4><p>嵌入法是一种让算法自己决定使用哪些特征的方法，即特征选择和算法训练同时进行。</p>
+<p><img src="https://note.youdao.com/yws/api/personal/file/B20CE443F91E421FA086F0D7B773F940?method=download&shareKey=329d8ddf018f6e52198b696aafc99c1a" alt></p>
+<ul>
+<li>feature_selection.SelectFromModel</li>
+</ul>
+<p>SelectFromModel是一个元变换器，可以与任何在拟合后具有coef_,feature_impoortances_属性或参数中可选惩罚项的评估器一起使用</p>
+<table>
+<thead>
+<tr>
+<th align="left">参数</th>
+<th align="left">说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">estimator</td>
+<td align="left">使用的模型评估器，只要是带feature_importances_或者coef_属性，或带有$l_1$和$l_2$惩罚项的模型都可以使用</td>
+</tr>
+<tr>
+<td align="left">threshold</td>
+<td align="left">特征重要性的阈值，重要性低于这个阈值的特征都将被删除</td>
+</tr>
+<tr>
+<td align="left">preﬁt</td>
+<td align="left">默认False，判断是否将实例化后的模型直接传递给构造函数。如果为True，则必须直接调用ﬁt和transform，不能使用ﬁt_transform，并且SelectFromModel不能与cross_val_score，GridSearchCV和克隆估计器的类似实用程序一起使用。</td>
+</tr>
+<tr>
+<td align="left">norm_order</td>
+<td align="left">k可输入非零整数，正无穷，负无穷，默认值为1在评估器的coef_属性高于一维的情况下，用于过滤低于阈值的系数的向量的范数的阶数。</td>
+</tr>
+<tr>
+<td align="left">max_features</td>
+<td align="left">在阈值设定下，要选择的最大特征数。要禁用阈值并仅根据max_features选择，请设置threshold = -np.inf</td>
+</tr>
+</tbody></table>
+<h4 id="3-3-Wrapper包装法"><a href="#3-3-Wrapper包装法" class="headerlink" title="3.3 Wrapper包装法"></a>3.3 Wrapper包装法</h4><p>包装法也是一个特征选择和算法训练同时记性的方法，与嵌入法十分相似，但不同的是，我们往往使用一个目标函数作为黑盒来帮助我们选取特征，而不是自己输入某个评估指标或统计量的阈值。</p>
+<p><img src="https://note.youdao.com/yws/api/personal/file/2210DFBFBE614558A58D1F7F7C3A207F?method=download&shareKey=a4ee875d7e0cf4e62258f04f111375e1" alt></p>
+<ul>
+<li>feature_selection.RFE<br>最典型的目标函数是递归特征消除法（Recursive feature elimination, RFE）</li>
+</ul>
 
     </div>
 
@@ -329,7 +441,7 @@
 
       <footer class="post-footer">
           <div class="post-tags">
-              <a href="/tags/%E8%A1%8C%E6%B5%8B%E7%AC%94%E8%AF%95/" rel="tag"># 行测笔试</a>
+              <a href="/tags/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/" rel="tag"># 机器学习</a>
           </div>
 
         
@@ -338,12 +450,12 @@
         
     <div class="post-nav">
       <div class="post-nav-item">
-    <a href="/2020/07/22/xingce2/" rel="prev" title="行测笔记：判断推理（二）类比推理">
-      <i class="fa fa-chevron-left"></i> 行测笔记：判断推理（二）类比推理
+    <a href="/2020/08/05/Unsupervised/" rel="prev" title="机器学习笔记（七）无监督学习">
+      <i class="fa fa-chevron-left"></i> 机器学习笔记（七）无监督学习
     </a></div>
       <div class="post-nav-item">
-    <a href="/2020/07/24/LogisticRegression/" rel="next" title="机器学习笔记（四）逻辑回归">
-      机器学习笔记（四）逻辑回归 <i class="fa fa-chevron-right"></i>
+    <a href="/2020/08/11/computer%20network/" rel="next" title="计算机网络总结（一）：计算机网络体系结构">
+      计算机网络总结（一）：计算机网络体系结构 <i class="fa fa-chevron-right"></i>
     </a></div>
     </div>
       </footer>
@@ -404,7 +516,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#解题思维："><span class="nav-text">解题思维：</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#一、快速识别有效信息"><span class="nav-text">一、快速识别有效信息</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#（1）关键词——主体、客体"><span class="nav-text">（1）关键词——主体、客体</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#（2）句式引导词——引导的内容重点看"><span class="nav-text">（2）句式引导词——引导的内容重点看</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#（3）优先看到定义所在的那句话的句号和补充说明"><span class="nav-text">（3）优先看到定义所在的那句话的句号和补充说明</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#（4）多定义：做题方法与单定义题目一致"><span class="nav-text">（4）多定义：做题方法与单定义题目一致</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#二、小技巧"><span class="nav-text">二、小技巧</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#（1）拆词"><span class="nav-text">（1）拆词</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#（2）同构选项排除法"><span class="nav-text">（2）同构选项排除法</span></a></li></ol></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#数据预处理和特征工程"><span class="nav-text">数据预处理和特征工程</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-数据预处理"><span class="nav-text">1 数据预处理</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1-1-数据无量纲化"><span class="nav-text">1.1 数据无量纲化</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#1-2-缺失值"><span class="nav-text">1.2 缺失值</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#1-3-处理分类型特征：编码与哑变量"><span class="nav-text">1.3 处理分类型特征：编码与哑变量</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#1-4-处理连续特征：二值化与分段"><span class="nav-text">1.4 处理连续特征：二值化与分段</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-特征选择"><span class="nav-text">2 特征选择</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#2-1-Filter过滤法"><span class="nav-text">2.1 Filter过滤法</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#2-1-1-方差过滤"><span class="nav-text">2.1.1 方差过滤</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#2-1-2-相关性过滤"><span class="nav-text">2.1.2 相关性过滤</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-2-Embedded嵌入法"><span class="nav-text">2.2 Embedded嵌入法</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-3-Wrapper包装法"><span class="nav-text">3.3 Wrapper包装法</span></a></li></ol></li></ol></li></ol></div>
       </div>
       <!--/noindex-->
 

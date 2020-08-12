@@ -1,238 +1,163 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
-    <title>机器学习笔记（五）集成学习</title>
-    <url>/2020/07/26/ensemble/</url>
-    <content><![CDATA[<h2 id="1-概述"><a href="#1-概述" class="headerlink" title="1 概述"></a>1 概述</h2><p>多个模型集成称为的模型叫作集成评估器（ensemble estimator），组成集成评估器的每个模型都叫作基评估器(base estimator)。通常来说，有两类集成算法：装袋法（Bagging），提升法(Boosting)。要获得好的集成，个体学习器应“好而不同”，即个体学习器要有一定的“准确性”，并且要有“多样性”</p>
-<p><img src="https://note.youdao.com/yws/api/personal/file/ADF733049258402C8AD900FD965CB288?method=download&shareKey=18ded5ff7e25a56d46886670b21ef009" alt></p>
-<ul>
-<li>装袋法：多个相互独立的评估器，对其预测进行平均或多数表决原则来决定集成评估器的结果（随机森林）</li>
-<li>提升法：基评估器是相关的，是按顺序一一构建的。其核心思想是结合弱评估器的力量一次次对难以评估的样本进行预测，从而构成一个强评估器（Adaboost，梯度提升树）<a id="more"></a>
+    <title>机器学习笔记（六）朴素贝叶斯</title>
+    <url>/2020/08/03/Bayes/</url>
+    <content><![CDATA[<h2 id="1-朴素贝叶斯原理"><a href="#1-朴素贝叶斯原理" class="headerlink" title="1 朴素贝叶斯原理"></a>1 朴素贝叶斯原理</h2><p>朴素贝叶斯是一种直接衡量标签和特征之间的概率关系的有监督学习算法，是一种专注分类的算法</p>
+<p>贝叶斯理论等式：</p>
+<p>$$P(Y|X)=\frac{P(X|Y) * P(Y)}{P(X)}$$</p>
+<p>我们可以把特征$X$当成是我们的条件事件，而我们要求解的标签Y当成是我们被满足条件后会被影响的结果，而两者之间的概率关系就是$P(Y|X)$，这个概率在机器学习中，被称为是标签的后验概率。而标签Y被写作$P(Y)$，被称为标签的先验概率</p>
+<a id="more"></a>
 
-</li>
-</ul>
-<h2 id="2-Bagging"><a href="#2-Bagging" class="headerlink" title="2 Bagging"></a>2 Bagging</h2><p>Bagging是并行式集成学习方法最著名的代表，通过自助采样法得到多个训练样本的采样集，然后基于每个采样集孙连出一个基学习器，再将这些基学习器进行结合，在对预测输出进行结合时，Bagging通常对分类任务使用简单投票法，对回归任务使用简单平均法。</p>
-<h3 id="2-1-随机森林（Random-Forest-RF）"><a href="#2-1-随机森林（Random-Forest-RF）" class="headerlink" title="2.1 随机森林（Random Forest, RF）"></a>2.1 随机森林（Random Forest, RF）</h3><p>随机森林是非常具有代表性的Bagging集成算法，RF在以决策树为基学习器构建Bagging集成的基础上，进一步在决策树的训练过程中引入了随机属性选择，传统决策树在选择划分属性时是在当前节点的属性集合（假设有d个属性）中选择一个最优属性；而在RF中，对基决策树的每个节点，先从该节点的属性集合中随机选择一个包含$k$个属性的子集，然后再从这个子集中选择一个最优属性用于划分。</p>
-<h3 id="2-2-重要参数"><a href="#2-2-重要参数" class="headerlink" title="2.2 重要参数"></a>2.2 重要参数</h3><h3 id="2-2-1-控制基评估器的参数"><a href="#2-2-1-控制基评估器的参数" class="headerlink" title="2.2.1 控制基评估器的参数"></a>2.2.1 控制基评估器的参数</h3><table>
-<thead>
-<tr>
-<th align="left">参数</th>
-<th align="left">含义</th>
-</tr>
-</thead>
-<tbody><tr>
-<td align="left">criterion</td>
-<td align="left">不纯度的衡量指标，有基尼系数和信息熵两种选择</td>
-</tr>
-<tr>
-<td align="left">max_depth</td>
-<td align="left">树的最大深度，超过最大深度的树枝都会被剪掉</td>
-</tr>
-<tr>
-<td align="left">min_samples_leaf</td>
-<td align="left">一个节点在分枝后的每个子节点都必须包含至少min_samples_leaf个训练样本，否则分枝就不会发生</td>
-</tr>
-<tr>
-<td align="left">min_samples_split</td>
-<td align="left">一个节点必须要包含至少min_samples_split个训练样本，这个节点才允许被分枝，否则分枝就不会发生</td>
-</tr>
-<tr>
-<td align="left">max_features</td>
-<td align="left">max_features限制分枝时考虑的特征个数，超过限制个数的特征都会被舍弃，默认值为总特征个数开平方取整</td>
-</tr>
-<tr>
-<td align="left">min_impurity_decrease</td>
-<td align="left">限制信息增益的大小，信息增益小于设定数值的分枝不会发生</td>
-</tr>
-</tbody></table>
-<h3 id="2-2-2-n-estimators"><a href="#2-2-2-n-estimators" class="headerlink" title="2.2.2 n_estimators"></a>2.2.2 n_estimators</h3><p>这是森林中树木的数量，即基评估器的数量。这个参数对随机森林模型的精确性影响是单调的，n_estimators越大，模型的效果往往越好。但是相应的，任何模型都有决策边界，n_estimators达到一定的程度之后，随机森林的精确性往往不在上升或开始波动，并且，n_estimators越大，需要的计算量和内存也越大，训练的时间也会越来越长。对于这个参数，我们是渴望在训练难度和模型效果之间取得平衡。</p>
-<p>n_estimators的默认值在现有版本的sklearn中是10，但是在即将更新的0.22版本中，这个默认值会被修正为100。这个修正显示出了使用者的调参倾向：要更大的n_estimators。</p>
-<h3 id="2-2-3-random-state"><a href="#2-2-3-random-state" class="headerlink" title="2.2.3 random_state"></a>2.2.3 random_state</h3><p>在决策树中，从最重要的特征中随机选择出一个特征进行分枝，这个功能由参数random_state控制，在随机森林中，用法和分类树相似，通过这个参数控制生成森林的模型，让森林中的树木具有多样性</p>
-<h3 id="2-2-4-bootstrap-amp-oob-score"><a href="#2-2-4-bootstrap-amp-oob-score" class="headerlink" title="2.2.4 bootstrap &amp; oob_score"></a>2.2.4 bootstrap &amp; oob_score</h3><p>Bagging通过自助采样技术来形成不同的训练数据，bootstrap就是用来控制采样技术的参数</p>
-<p>bootstrap参数默认True，代表采用这种有放回的随机抽取技术（通常不会被设置为False）</p>
-<p><img src="https://note.youdao.com/yws/api/personal/file/4BDC11FD2EB54DFE874F6D1AB68277A0?method=download&shareKey=6ade8a6ff415a53d39ae944bccf89e54" alt></p>
-<p>一般来说，自助集大概平均会包含63%的原始数据，每一个样本被抽取到某自助集的概率为：</p>
-<p>$$1-(1-\frac{1}{n})^n$$</p>
-<p>当n足够大时，这个概率收敛与$1-(1/e)$，越等于0.632，因此会约有37%的训练数据被浪费掉，没有参与建模，这些数据被称为袋外数据(out of bag data, oob)。</p>
-<p>也就是说，在使用随机森林时，可以不划分测试集和训练集，用袋外数据来测试我们的模型</p>
-<h2 id="3-boosting"><a href="#3-boosting" class="headerlink" title="3 boosting"></a>3 boosting</h2><p>Boosting是一族可将弱学习器提升为强学习器的算法。先从初始训练集训练出一个基学习器，再根据基学习器的表现对训练样本分布进行调整，使得先前基学习器做错的训练样本在后续受到更多关注，然后基于调整后的样本分布来训练下一个基学习器。</p>
-<h3 id="3-1-Adaboost"><a href="#3-1-Adaboost" class="headerlink" title="3.1 Adaboost"></a>3.1 Adaboost</h3><h4 id="3-1-1-Adaboost原理"><a href="#3-1-1-Adaboost原理" class="headerlink" title="3.1.1 Adaboost原理"></a>3.1.1 Adaboost原理</h4><p>AdaBoost算法是Adaptive Boost的简称，Boosting通过将一系列弱学习器组合起来，通过集成这些弱学习器的学习能力，得到一个强学习器。具体到AdaBoost算法，AdaBoost在之前学习器的基础上改变样本的权重，增加那些之前被分类错误的样本的比重，降低分类正确样本的比重，这样之后的学习器将重点关注那些被分类错误的样本。最后通过将这些学习器通过加权组合成一个强学习器，具体的，分类正确率高的学习器权重较高，分类正确率低的学习器权重较低。</p>
-<p>假设：</p>
-<p>输入：训练集$X={(x_1,y_1),(x_2,y_2),(x_3,y_3),\dots,(x_n,y_n)},\ x_i\in R^n,\ y_i\in 0,1$</p>
-<p>输出：最终学习器$G(x)$</p>
+<p>假设我们只有两个特征$X_1,X_2$，由联合概率公式</p>
+<p>$$P(X_1,X_2|Y=1)=\frac{X_1,X_2,Y=1}{P(Y=1)}$$<br>$$=\frac{P(X_1,X_2,Y=1)}{P(X_2,Y=1)} * \frac{P(X_2,Y=1)}{P(Y=1)}$$<br>$$=P(X_1|X_2,Y=1) * P(X_2|Y=1)$$</p>
+<p><strong>将(X_2,Y=1)看成一个条件</strong></p>
+<p><strong>当X_1,X_2是独立时$$P(X_1|X_2,Y=1)等于P(X_1|Y=1)$$</strong><br>$$=P(X_1|Y=1) * P(X_2|Y=1)$$</p>
+<p>推广到n个$X$，则有：</p>
+<p>$$P(X|Y=1)=\prod_{i=1}^{n}P(X_i=x_i|Y=1)$$</p>
+<p><strong>假设特征之间是有条件独立的，可以解决众多问题，也简化了很多计算过程，这是朴素贝叶斯被称为“朴素”的理由</strong></p>
+<p>因此，贝叶斯在特征之间有较多相关性的数据集上表现不佳。</p>
+<p>分母的求解可以根据全概率公式<br>$$P(X)=\sum_{i=1}^mP(y_i) * P(X|Y_i)$$</p>
+<p>其中m代表标签的种类，对于二分类：<br>$$P(X)=P(Y=1) * P(X|Y=1)+P(Y=0) * P(X|Y=0)$$</p>
+<h2 id="2-不同分布下的贝叶斯"><a href="#2-不同分布下的贝叶斯" class="headerlink" title="2 不同分布下的贝叶斯"></a>2 不同分布下的贝叶斯</h2><h3 id="2-1-高斯朴素贝叶斯GaussianNB"><a href="#2-1-高斯朴素贝叶斯GaussianNB" class="headerlink" title="2.1 高斯朴素贝叶斯GaussianNB"></a>2.1 高斯朴素贝叶斯GaussianNB</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">class sklearn.naive_bayes.GaussianNB (priors&#x3D;None, var_smoothing&#x3D;1e-09)</span><br></pre></td></tr></table></figure>
+
+<p>高斯朴素贝叶斯，通过假设$P(x_i|Y)$是服从高斯分布</p>
+<p>$$P(x_i|Y)=f(x_i;\mu,\sigma) * \epsilon$$<br>$$=\frac{1}{\sqrt{2\pi \sigma_y^2}}exp(-\frac{(x_i-\mu_y)^2}{2\sigma_y^2})$$</p>
+<h3 id="2-2-多项式朴素贝叶斯MultinomialNB"><a href="#2-2-多项式朴素贝叶斯MultinomialNB" class="headerlink" title="2.2 多项式朴素贝叶斯MultinomialNB"></a>2.2 多项式朴素贝叶斯MultinomialNB</h3><p>假设概率分布是服从一个简单多项式分布，具体可解释为：实验包括n次重复实验，每项实验都有不同的可能结果，在任何给定的实验中，特定结果发生的概率是不变的。</p>
 <ol>
-<li>初始化训练数据的权重分布值：（$D_m$表示第m个弱学习器的样本点的权值）<br>$$D_1=(w_{11},\dots,w_{1i},\dots,w_{1N}),\  w_{1i}=1/N,\  i=1,2,\dots,N$$</li>
-<li>对于M个弱学习器，$m=1,2,3,\dots,M$<ul>
-<li>使用具有权值分布$D_m$的训练数据集进行学习，得到基本分类器$G_m(x)$，其输出值为$-1,1$</li>
-<li>计算弱分类器$G_m(x)$在训练数据集上的分类误差率$e_m$，其值越小的基分类器在最终分类器中的作用越大<br>$$e_m = P(G_m(x)\ne y_i)=\sum_{i=1}^N w_{mi}I(G_m(x_i)\ne y_i)$$<br>其中，$I(G_m(x_i)\ne y_i)$取值为0或1，取0表示分类正确，取1表示分类错误。</li>
-<li>计算弱分类器$G_m(x)$的权重系数$\alpha_m$:<br>$$\alpha_m = \frac{1}{2}ln\frac{1-e_m}{e_m}$$<br>当$e_m$减小是时候$\alpha_m$的值增大，而我们希望得到的是分类误差率越小的弱分类器的权值越大，对最终的预测产生的影响也就越大</li>
-<li>更新训练集的样本权值分布：<br>$$D_{m+1}=(w_{m+1,1},w_{m+1,2},\dots,w_{m+1,N})$$<br>$$w_{m+1,i}=\frac{w_{mi}}{Z_m}exp(-\alpha_m y_i G_m(x_i)),\ i=1,2,\dots,N$$<br>对于二分类，弱分类器$G_m(x)$的输出取值为$-1,1$，$y_i$的取值为$-1,1$，所以对于正确的分类$y_iG_m(x)&gt;0$，错误的分类小于0，由于样本权重值在$0-1$之间，当分类正确时的$w_{m+1,i}$取值较小，而分类错误时$w_{m+1,i}$取值较小，而分类错时取值较大，符合我们期望的权重值高的训练样本点在后面的弱学习器中会得到更多的重视。<br>其中，$Z_m$是规范化因子，主要作用是将$W_{mi}$规范到0-1之间，使得$\sum_{i=1}^Nw_{mi}=1$</li>
-</ul>
-</li>
+<li>多项式分布擅长的是分类型变量，在其原理假设中的概率是离散的，并且不同下的相互独立，互不影响。虽然sklearn中的多项式分布也可以处理连续型变量，但现实中，如果我们真的想要处理连续型变量，使用高斯朴素贝叶斯。</li>
+<li>多项式实验中的实验结果都很具体，它所涉及的特征往往是次数，频率，计数，出现与否这样的概念，这些概念都是离散的正整数，因此sklearn中的多项式朴素贝叶斯不接受负值的输入。</li>
 </ol>
-<p>$$Z_m = \sum_{i=1}^N w_{mi}exp(-\alpha_m y_i G_m(x_i))$$</p>
-<ol start="3">
-<li>通过加权平均法构建基本分类器的线性组合<br>$$f(x)=\sum_{m=1}^M \alpha_mG_m(x)$$<br>得到最终的分类器<br>$$G(x)=sign(f(x))=sign(\sum_{m=1}^M\alpha_mG_m(x))$$</li>
-</ol>
-<h4 id="3-1-2-Adaboost优缺点"><a href="#3-1-2-Adaboost优缺点" class="headerlink" title="3.1.2 Adaboost优缺点"></a>3.1.2 Adaboost优缺点</h4><h5 id="优点"><a href="#优点" class="headerlink" title="优点"></a>优点</h5><ol>
-<li>不容发生过拟合</li>
-<li>由于AdaBoost并没有限制弱学习器的种类，所以可以使用不同的学习算法来构建弱分类器</li>
-<li>具有很高的精度</li>
-<li>相对于Bagging算法和Random Forest算法，Adaboost充分考虑每个分类器的权重</li>
-<li>参数较少，实际应用中不需要调节太多的参数</li>
-</ol>
-<h5 id="缺点"><a href="#缺点" class="headerlink" title="缺点"></a>缺点</h5><ol>
-<li>AdaBoost迭代次数也就是弱分类器数目不太好设定，可以用交叉验证来确定</li>
-<li>数据不平衡导致分类精度下降</li>
-<li>训练比较耗时，每次重新选择当前分类器最好切分点</li>
-<li>对异常样本敏感，异常样本在迭代中可能会获得比较高的权重，影响最终的枪学习器的预测准确性</li>
-</ol>
-<h3 id="3-2-GBDT（Gradient-Boosting-Decision-Tree，梯度提升树）"><a href="#3-2-GBDT（Gradient-Boosting-Decision-Tree，梯度提升树）" class="headerlink" title="3.2 GBDT（Gradient Boosting Decision Tree，梯度提升树）"></a>3.2 GBDT（Gradient Boosting Decision Tree，梯度提升树）</h3><h4 id="3-2-1-GBDT原理"><a href="#3-2-1-GBDT原理" class="headerlink" title="3.2.1 GBDT原理"></a>3.2.1 GBDT原理</h4><p>输入：训练数据集$T=(x_1,y_1),(x_2,y_2),\dots,(x_N,y_N)$，损失函数为$L(y,f(x))$<br>输出：回归树$F(x)$</p>
-<ol>
-<li>初始化：（估计使损失函数极小化的常数值，是只有一个根节点的树，一般平方损失函数为节点的均值，而绝对损失函数为节点样本的中位数）</li>
-</ol>
-<p>$$f_0(x)=arg\min_c\sum_{i=1}^NL(y_i,c)$$</p>
-<ol start="2">
-<li><p>对$m=1,2,\dots,M$（M表示迭代次数，即生成弱学习器的个数）</p>
-<ul>
-<li>对于样本$i=1,2,\dots,N$，计算损失函数的负梯度在当前模型的值，将它作为残差的估计<br>$$r_{mi}=-\frac{\partial L(y_i,f(x))}{\partial f(x_i)}f(x)=f_{m-1}(x)$$</li>
-<li>对$(x_1,r_{m1}),\dots,(x_N,r_{mN})$拟合一个回归树，得到第$m$棵树的叶结点区域$R_{mj}，\ j=1,2,\dots,J$（$J$表示每棵树的叶结点个数）</li>
-<li>对$j=1,2,\dots,J$，利用线性所搜，估计叶结点区域的值，使损失函数最小化，计算<br>$$c_{mj}=arg\min_c\sum_{x\in R_{mj}}L(y_i,f_{m-1}(x_i+c))$$</li>
-<li>更新<br>$$f_m(x)=f_{m-1}(x)+\sum_{J}^{j=1}c_{mj}I(x\in R_{mj})$$</li>
-</ul>
-</li>
-<li><p>得到最终的回归树<br>$$F(x)=\sum_{m=1}^M\sum_{j=1}^Jc_{mj}I(x\in R_{mj})$$</p>
-</li>
-</ol>
-<h3 id="3-3-XGboost"><a href="#3-3-XGboost" class="headerlink" title="3.3 XGboost"></a>3.3 XGboost</h3><h4 id="3-3-1-目标函数"><a href="#3-3-1-目标函数" class="headerlink" title="3.3.1 目标函数"></a>3.3.1 目标函数</h4><p>不同于逻辑回归和SVM等算法中固定的损失函数写法，集成算法中的损失函数式可选的，要选用什么损失函数取决于我们希望解决什么问题，以及希望使用什么的模型。只要我们选出的函数式一个可微的，能够代表某种损失的函数，它就可以使XGB的损失函数</p>
-<p>并且XGB引入了模型复杂度来衡量算法的运算效率，因此目标函数被写作：传统损失函数+模型复杂度<br>$$0bj = \sum_{i=1}^ml(y_i,\hat y_i)+\sum_{k=1}^k\Omega (f_k)$$</p>
-<p>其中$i$代表数据集中的第$i$个样本，$m$表示导入第k课树的数据总量，$K$代表建立的所有树(n_estimators)</p>
-<p><strong>注意，第二项中没有特征矩阵$x_i$的介入</strong></p>
-<p>第一项传统损失函数式与已建好的所有树相关的</p>
-<p>$$\hat y_i^{(t)}=\sum_k^t f_k(x_i)=\sum_k^{t-1}f_k(x_i)+f_t(x_i)$$</p>
-<p>一个集成模型$(f)$在位置数据集$(D)$上的泛化误差$E(f;D)$,有方差(var)，偏差(bais)和噪声$(\epsilon)$共同决定。</p>
-<p><img src="https://note.youdao.com/yws/api/personal/file/48279AFEA82B4F87A43B6C43E9140635?method=download&shareKey=ec4af651ab4bd7023b0bcaa0f4657e25" alt></p>
-<p>我们使用参数”objective”来确定我们目标函数的第一部分，也是衡量损失的部分</p>
-<table>
-<thead>
-<tr>
-<th align="left">输入</th>
-<th align="left">选用的损失函数</th>
-</tr>
-</thead>
-<tbody><tr>
-<td align="left">reg:linear</td>
-<td align="left">使用线性回归的损失函数，均方误差，回归时使用</td>
-</tr>
-<tr>
-<td align="left">binary:logistic</td>
-<td align="left">使用逻辑回归的损失函数，对数损失log_loss，二分类时使用</td>
-</tr>
-<tr>
-<td align="left">binary:hinge</td>
-<td align="left">使用支持向量机的损失函数，Hinge Loss，二分类时使用</td>
-</tr>
-<tr>
-<td align="left">multi:softmax</td>
-<td align="left">使用softmax损失函数，多分类时使用</td>
-</tr>
-</tbody></table>
-<p>并且允许自定义损失函数（但通常我们还是使用类已经设置好的损失函数）</p>
-<h4 id="3-3-2-求解XGB的目标函数"><a href="#3-3-2-求解XGB的目标函数" class="headerlink" title="3.3.2 求解XGB的目标函数"></a>3.3.2 求解XGB的目标函数</h4><p>由于XGB迭代的是树，不是数字组成的向量，因此无法使用梯度下降，而是将目标函数转化为更简单的，与树结构直接相关的写法，以此来建立树的结构与模型的效果（泛化能力与运行速度）之间的直接联系，因为这种联系，XGB的目标函数又被称为“结构分数”。</p>
-<p>首先，进行第一步转换：</p>
-<p><img src="https://note.youdao.com/yws/api/personal/file/2200B3AF1AD249FD85F2101CC7F50213?method=download&shareKey=5ebe9bb0fea9178231e97a37e0f99383" alt></p>
-<p>其中$g_i,h_i$分别是在损失函数$l(y_i^t,\hat y_i^{(t-1)})$上对$\hat y_i^{(t-1)}$所求的一阶倒数和二阶导数。</p>
-<p>因此，我们的目标函数可以被转化为：</p>
-<p>$$Obj = \sum_{i=1}^m[f_t(x_i)g_i+\frac{1}{2}(f_t(x_i))^2h_i]+\Omega (f_t)$$</p>
-<p>这个式子中，$g_i,h_i$只与传统损失函数相关，核心的部分是我们需要决定的树$f_t$</p>
-<h4 id="3-3-3-参数化决策树-f-k-x"><a href="#3-3-3-参数化决策树-f-k-x" class="headerlink" title="3.3.3 参数化决策树$f_k(x)$"></a>3.3.3 参数化决策树$f_k(x)$</h4><p>对于回归树，通常来说每个叶子节点上的预测值是这个叶子节点上所有样本的标签的均值，但XGB作为普通回归树的改进算法，在$\hat y$上却有所不同。</p>
-<p>对于XGB来说，每个叶子节点上都会有一个预测分数，也称叶子权重，用$f_k(x)$或$w$来表示</p>
-<p>当有多课树的时候，集成模型的回归结果就是所有树的预测分数之和，假设这个集成模型中共有K棵决策树，则整个模型在这个样本$i$上给出的预测结果为:<br>$$\hat y_i^{(k)}=\sum_k^Kf_k(x_i)$$</p>
-<p>我们使用$q(x_i)$表示样本$x_i$所在的叶子节点，并且使用$w_{q(x_i)}$表示这个样本落到第$t$棵树上的第$q(x_i)$个叶子节点中所获得的分数，于是有：</p>
-<p>$$f_t(x_i)=w_q(x_i)$$</p>
-<p>设一棵树上总共包含了$T$个叶子节点，其中每个叶子节点的索引为$j$，则这个叶子节点上的样本权重是$w_j$，依据这个，我们定义模型的复杂度$\Omega(f)$为<br>$$\Omega(f)=\gamma T+正则项(Regularization)$$</p>
-<h4 id="3-3-4-寻找最佳树结构：求解-w-与-T"><a href="#3-3-4-寻找最佳树结构：求解-w-与-T" class="headerlink" title="3.3.4 寻找最佳树结构：求解$w$与$T$"></a>3.3.4 寻找最佳树结构：求解$w$与$T$</h4><p>我们定义了树和树的复杂度表达式：</p>
-<p>$$f_t(x_i)=w_q(x_i), \ \Omega(f_t)=\gamma T+\frac{1}{2}\lambda\sum_{j=1}^Tw_j^2$$</p>
-<p>假设现在第$t$棵树的结构已经被确定为q,可以将树的结构代入我们的损失函数，来继续转化我们的目标函数。转化目标函数的目的是：建立树的结构（叶子节点的数量）与目标函数的大小之间的直接联系，以求出在第$t$次迭代中需要求解的最优树$f_t$。</p>
-<p><img src="https://note.youdao.com/yws/api/personal/file/64A336827C294238BBE661A25CE488DF?method=download&shareKey=477b767da38b33f7f049ac795ad5f71a" alt></p>
-<p>对于橙色框的转化<br><img src="https://note.youdao.com/yws/api/personal/file/14DEB79D037D47E69496EE06E38D9930?method=download&shareKey=2ba7a8c972206128b62f304ef25f46aa" alt></p>
-<p>可以有：<br>$$\sum_{i=1}^m w_{q(x_i)} * g_i = w_{q(x_1)} * g_1 + w_{q(x_2)} * g_2+ w_{q(x_3)} * g_3$$<br>$$=w_1(g_1+g_2)+ w_2*g_3$$<br>$$=\sum_{j=1}^T(w_j\sum_{i\in I_j}g_i)$$</p>
-<p>我们定义：<br>$$G_j = \sum_{i\in I_j}g_i, \ H_j = \sum_{i\in I_j}h_i$$</p>
-<p>于是可以有：</p>
-<p>$$Obj^{(t)}=\sum_{j=1}^T[w_jG_j+\frac{1}{2}w_j^2(H_j+\lambda)]+\gamma T$$</p>
-<p>$$F^{*}(w_j)=w_jG_j+\frac{1}{2}w_j^2(H_j+\lambda)$$</p>
-<p>其中每个$j$取值下都是一个以$w_j$为自变量的二次函数$F^{<em>}$，我们的目标追求是让$Obj$最小，只要单独每一个叶子$j$取值下的二次函数都最小。于是在$F^{</em>}$对$w_j$求导，让一阶导数等于0，可得：</p>
-<p>$$\frac{\partial F^{*}(w_j)}{\partial w_j}=G_j+w_j(H_j+\lambda)$$<br>$$0=G_j+w_j(H_j+\lambda)$$<br>$$w_j = -\frac{G_j}{H_j+\lambda}$$</p>
-<p>代入目标函数，则有：<br>$$Obj^{(t)}=\sum_{j=1}^T[-\frac{G_j}{H_j+\lambda} * G_j + \frac{1}{2}(-\frac{G_j}{H_j+\lambda})]+\gamma T$$<br>$$=\sum_{j=1}^T[-\frac{G_j^2}{H_j+\lambda}+\frac{1}{2} * \frac{G_j^2}{H_j+\lambda}]+\gamma T$$<br>$$=-\frac{1}{2}\sum_{j=1}^T\frac{G_j^2}{H_j+\lambda}+\gamma T$$</p>
-<p>这样我们就建立了树的结构（叶子）和模型效果的直接联系</p>
-<p>下面来看一个例子：</p>
-<p><img src="https://note.youdao.com/yws/api/personal/file/9C5D143BEFCA42FC94E784306DFAA089?method=download&shareKey=5423ee0322a0c25fbdc19bfef02e51cb" alt></p>
-<p>$$Obj = -(\frac{g_1^2}{h_1+\lambda}+\frac{g_4^2}{h_4+\lambda}+\frac{(g_2+g_3+g_5)^2}{h_2+h_3+h_5+\lambda})+3\gamma$$</p>
-<h4 id="3-3-5-寻找最佳分枝：结构分数之差"><a href="#3-3-5-寻找最佳分枝：结构分数之差" class="headerlink" title="3.3.5 寻找最佳分枝：结构分数之差"></a>3.3.5 寻找最佳分枝：结构分数之差</h4><p>XGB使用贪婪算法，认为如果每片叶子都是最优的，则整体生成的树结构就是最优，可以避免枚举所有可能的树结构</p>
-<p><img src="https://note.youdao.com/yws/api/personal/file/40FD6184DB4342098CFA5C45D9053E81?method=download&shareKey=6fcc1916a4df5e8182cd835a0a0a20c0" alt></p>
-<h4 id="3-3-6-让树停止生长：重要参数gamma"><a href="#3-3-6-让树停止生长：重要参数gamma" class="headerlink" title="3.3.6 让树停止生长：重要参数gamma"></a>3.3.6 让树停止生长：重要参数gamma</h4><p>$\gamma$是对梯度提升树影响最大的参数之一，让树停止生长</p>
-<p>对于目标函数减小量的要求是：</p>
-<p>$$\frac{1}{2}[\frac{G^2_L}{H_L+\lambda}+\frac{G^2_R}{H_R+\lambda}-\frac{(G_L+G_R)^2}{H_L+H_R+\lambda}]&gt;\lambda$$</p>
-<h3 id="3-4-Lightgbm"><a href="#3-4-Lightgbm" class="headerlink" title="3.4 Lightgbm"></a>3.4 Lightgbm</h3><p>传统的Boost算法需要对每一个特征扫描所有的样本点来选择最好的切分点，非常耗时。为了解决这种在大样本高纬度数据的环境下耗时问题，Lightgbm使用了两种解决办法</p>
-<ol>
-<li>GOSS (Gradient-based One-Side Sampling, 基于梯度的单边采样)，不是使用所有的样本点来计算梯度，而是对样本进行采样计算梯度</li>
-<li>EFB（Exclusive Feature Bundling， 互斥特征捆绑）， 不是使用所有的特征来进行扫描获得最佳的切分点，而是将某些特征进行捆绑在一起来降低特征的维度，以减少寻找最佳切分点的耗时。 </li>
-</ol>
-<h4 id="3-4-1-GOSS算法"><a href="#3-4-1-GOSS算法" class="headerlink" title="3.4.1 GOSS算法"></a>3.4.1 GOSS算法</h4><p>每个样本的梯度对采样也提供了非常有用的信息，如果一个样本点的梯度小，那么该样本点的训练误差就小并且已经经过了很好的训练</p>
-<p>输入：训练数据，迭代步数$d$，大梯度数据的采样率$a$,小梯度的数据采样率$b$，损失函数和弱学习器的类型；</p>
-<p>输出：训练好的强学习器；</p>
-<ol>
-<li>根据样本点的梯度绝对值进行降序排序；</li>
-<li>对排序后的结果选取前$a * 100%$的样本生成一个大梯度样本点的子集；</li>
-<li>对剩下的样本$（1-a） * 100%$，随机选取$b * （1-a）* 100%$生成小梯度样本点的集合；</li>
-<li>将大梯度样本和采样的小梯度样本合并；</li>
-<li>将小梯度样本乘上一个权重系数$\frac{1-a}{b}$；</li>
-<li>使用上述的采样方法训练一个新的弱学习器；</li>
-<li>不断重复1-6步骤知道达到规定的迭代次数或者收敛</li>
-</ol>
-<p>通过GOSS算法，可以在不改变数据分布的前提下不损失学习器精度的同时大大减少模型的学习速率</p>
-<h4 id="3-4-2-EFB算法"><a href="#3-4-2-EFB算法" class="headerlink" title="3.4.2 EFB算法"></a>3.4.2 EFB算法</h4><p>Lightgbm实现中不仅进行了数据采样，也进行了特征抽样。但是该特征抽样与一般不同，将互斥特征绑定在一起从而减少特征维度。</p>
-<p>主要思想是，实际中高纬度数据往往都是稀疏数据，在稀疏特征空间中许多特征都是互斥的，可以基于直方图（histograms）的方法将互斥的特征捆绑形成一个特征，从而减少特征维度。</p>
-<p>并且允许小部分的冲突，使得模型的性能被影响$O([(1-\gamma)n]^{-2/3})$,这里的$\gamma$是每个绑定的最大冲突率。</p>
-<p>输入：特征F，最大冲突K，图G；<br>输出： 特征捆绑集合bundles;</p>
-<ol>
-<li>构造一个边带有权重的图，其权值对应于特征之间的总冲突；</li>
-<li>通过特征在图中的度来降序排序特征</li>
-<li>检查有序列表中的每个特征，并将其分配给具有小冲突的现有bunding或创建新bunding</li>
-</ol>
-<h4 id="3-4-3-合并互斥特征"><a href="#3-4-3-合并互斥特征" class="headerlink" title="3.4.3 合并互斥特征"></a>3.4.3 合并互斥特征</h4><p>Lightgbm关于互斥特征的合并用到了直方图（Histogram）算法。直方图算法的基本思想是先把连续的特征值离散化成k个整数，同时构造一个宽度为k的直方图。在遍历数据的时候，根据离散化后的值作为索引在直方图中累积统计量，当遍历一次数据后，直方图累积了需要的统计量，然后根据直方图的离散值，遍历寻找最优的分割点。</p>
-<p>由于基于直方图的算法存储的是离散的bins而不是连续的特征值，我们可以通过让互斥特征驻留在不同的bins中来构造feature bundle。这可以通过增加特征原始值的偏移量来实现。比如，假设我们有两个特征，特征A的取值范围是[0,10)，而特征B的取值范围是[0,20)，我们可以给特征B增加偏移量10，使得特征B的取值范围为[10, 30)，最后合并特征A和B，形成新的特征，取值范围为[0,30)来取代特征A和特征B。</p>
-<p>当然，Histogram算法并不是完美的。由于特征被离散化后，找到的并不是很精确的分割点，所以会对结果产生影响。但在不同的数据集上的结果表明，离散化的分割点对最终的精度影响并不是很大，甚至有时候会更好一点。原因是决策树本来就是弱模型，分割点是不是精确并不是太重要；差一点的切分点也有正则化的效果，可以有效地防止过拟合；即使单棵树的训练误差比精确分割的算法稍大，但在Gradient Boosting的框架下没有太大的影响。</p>
-<p><img src="https://note.youdao.com/yws/api/personal/file/BB4E003C937C441D80F12A44CEE7B01D?method=download&shareKey=6214970cf9c295e487ce3ed91422ef38" alt></p>
-<h3 id="3-5-Boosting算法优缺点对比"><a href="#3-5-Boosting算法优缺点对比" class="headerlink" title="3.5 Boosting算法优缺点对比"></a>3.5 Boosting算法优缺点对比</h3><h4 id="3-5-1-XGBoost-vs-GBDT"><a href="#3-5-1-XGBoost-vs-GBDT" class="headerlink" title="3.5.1 XGBoost vs GBDT"></a>3.5.1 XGBoost vs GBDT</h4><p>1）GBDT以传统CART作为基分类器，而XGBoost支持线性分类器，相当于引入L1和L2正则化项的逻辑回归（分类问题）和线性回归（回归问题）；</p>
-<p>2）GBDT在优化时只用到一阶导数，XGBoost对代价函数做了二阶Talor展开，引入了一阶导数和二阶导数。XGBoost支持自定义的损失函数，只要是能满足二阶连续可导的函数均可以作为损失函数；</p>
-<p>3）XGBoost在损失函数中引入正则化项，用于控制模型的复杂度。正则化项包含全部叶子节点的个数，每个叶子节点输出的score的L2模的平方和。从Bias-variance tradeoff角度考虑，正则项降低了模型的方差，防止模型过拟合，这也是xgboost优于传统GBDT的一个特性。</p>
-<p>4）当样本存在缺失值是，xgBoosting能自动学习分裂方向，即XGBoost对样本缺失值不敏感；</p>
-<p>5）XGBoost借鉴RF的做法，支持列抽样，这样不仅能防止过拟合，还能降低计算，这也是xgboost异于传统gbdt的一个特性。</p>
-<p>6）XGBoost在每次迭代之后，会将叶子节点的权重乘上一个学习率（相当于XGBoost中的eta，论文中的Shrinkage），主要是为了削弱每棵树的影响，让后面有更大的学习空间。实际应用中，一般把eta设置得小一点，然后迭代次数设置得大一点；</p>
-<p>7）XGBoost工具支持并行，但并行不是tree粒度的并行，XGBoost也是一次迭代完才能进行下一次迭代的（第t次迭代的代价函数里包含了前面t-1次迭代的预测值），XGBoost的并行是在特征粒度上的。XGBoost在训练之前，预先对数据进行了排序，然后保存为(block)结构，后面的迭代中重复地使用这个结构，大大减小计算量。这个块结构也使得并行成为了可能，在进行节点的分裂时，需要计算每个特征的增益，最终选增益最大的那个特征去做分裂，那么各个特征的增益计算就可以开多线程进行；</p>
-<p>8）可并行的近似直方图算法，树结点在进行分裂时，需要计算每个节点的增益，若数据量较大，对所有节点的特征进行排序，遍历的得到最优分割点，这种贪心法异常耗时，这时引进近似直方图算法，用于生成高效的分割点，即用分裂后的某种值减去分裂前的某种值，获得增益，为了限制树的增长，引入阈值，当增益大于阈值时，进行分裂；</p>
-<h4 id="3-5-2-XGboost-vs-LightGBM"><a href="#3-5-2-XGboost-vs-LightGBM" class="headerlink" title="3.5.2 XGboost vs LightGBM"></a>3.5.2 XGboost vs LightGBM</h4><p>1）XGBoost采用预排序，在迭代之前，对结点的特征做预排序，遍历选择最优分割点，数据量大时，贪心法耗时，LightGBM方法采用histogram算法，占用的内存低，数据分割的复杂度更低，但是不能找到最精确的数据分割点；</p>
-<p>2）XGBoost采用level-wise生成决策树策略，同时分裂同一层的叶子，从而进行多线程优化，不容易过拟合，但很多叶子节点的分裂增益较低，没必要进行更进一步的分裂，这就带来了不必要的开销；LightGBM采用leaf-wise生长策略，每次从当前叶子中选择增益最大的叶子进行分裂，如此循环，但会生长出更深的决策树，产生过拟合，因此 LightGBM 在leaf-wise之上增加了一个最大深度的限制，在保证高效率的同时防止过拟合）。另一个比较巧妙的优化是 histogram 做差加速。一个容易观察到的现象：一个叶子的直方图可以由它的父亲节点的直方图与它兄弟的直方图做差得到。</p>
-<h2 id="4-结合策略"><a href="#4-结合策略" class="headerlink" title="4 结合策略"></a>4 结合策略</h2><p>不同的结合策略也会影响集成模型性能，主要分为平均法、投票法和学习法，我们这里重点介绍学习法Stacking</p>
-<h3 id="4-1-平均法"><a href="#4-1-平均法" class="headerlink" title="4.1 平均法"></a>4.1 平均法</h3><ul>
-<li>简单平均法</li>
-<li>加权平均法</li>
-</ul>
-<h3 id="4-2-投票法"><a href="#4-2-投票法" class="headerlink" title="4.2 投票法"></a>4.2 投票法</h3><ul>
-<li>绝对多数投票法</li>
-<li>相对多数投票法</li>
-<li>加权投票法</li>
-</ul>
-<h3 id="4-3-学习法"><a href="#4-3-学习法" class="headerlink" title="4.3 学习法"></a>4.3 学习法</h3><p>当训练数据很多时，一种更为强大的结合策略是使用“学习法”，即通过另一个学习器来进行结合.Stacking是学习法的经典代表，这里我们吧个体学习器称为初级学习器，用于结合的学习器称为刺激学习器或元学习器。</p>
-<p><img src="https://note.youdao.com/yws/api/personal/file/119ABC7D390F428F8A036B925FD7C6E8?method=download&shareKey=85e6961c6b845acd5fab61326ede0493" alt></p>
-<p>次级学习器的输入属性表示和次级学习算法对Stacking集成的泛化性能有很大影响。研究表明，将初级学习器的输出类概率作为次级学习器的输入属性，用多响应线性回归（Multi-response Linear Regression，MLR）作为次级学算法效果较好。</p>
+<h3 id="2-3-伯努利朴素贝叶斯BernoulliNB"><a href="#2-3-伯努利朴素贝叶斯BernoulliNB" class="headerlink" title="2.3 伯努利朴素贝叶斯BernoulliNB"></a>2.3 伯努利朴素贝叶斯BernoulliNB</h3><p>多项式朴素贝叶斯可同时处理二项分布（抛硬币）和多项分布（掷骰子），其中二项分布又叫做伯努利分布，它是一种现实中常见，并且拥有很多优越数学性质的分布。因此，既然有着多项式朴素贝叶斯，我们自然也就又专门用来处理二项分布的朴素贝叶斯：伯努利朴素贝叶斯。</p>
+<h3 id="2-4-改进多项式朴素贝叶斯：补集朴素贝叶斯ComplementNB"><a href="#2-4-改进多项式朴素贝叶斯：补集朴素贝叶斯ComplementNB" class="headerlink" title="2.4 改进多项式朴素贝叶斯：补集朴素贝叶斯ComplementNB"></a>2.4 改进多项式朴素贝叶斯：补集朴素贝叶斯ComplementNB</h3><p>补集朴素贝叶斯（complement naive Bayes，CNB）算法是标准多项式朴素贝叶斯算法的改进。CNB的发明小组创造出CNB的初衷是为了解决贝叶斯中的“朴素”假设带来的各种问题，他们希望能够创造出数学方法以逃避朴素贝叶斯中的朴素假设，让算法能够不去关心所有特征之间是否是条件独立的。以此为基础，他们创造出了能够解决样本不平衡问题，并且能够一定程度上忽略朴素假设的补集朴素贝叶斯。在实验中，CNB的参数估计已经被证明比普通多项式朴素贝叶斯更稳定，并且它特别适合于样本不平衡的数据集。有时候，CNB在文本分类任务上的表现有时能够优于多项式朴素贝叶斯，因此现在补集朴素贝叶斯也开始逐渐流行。</p>
 ]]></content>
       <categories>
         <category>机器学习</category>
       </categories>
       <tags>
         <tag>机器学习</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>数据结构总结（一）：线性表</title>
+    <url>/2020/08/11/Data%20Structure/</url>
+    <content><![CDATA[<h1 id="1-线性表"><a href="#1-线性表" class="headerlink" title="1 线性表"></a>1 线性表</h1><h2 id="1-1-线性表的定义和基本操作"><a href="#1-1-线性表的定义和基本操作" class="headerlink" title="1.1 线性表的定义和基本操作"></a>1.1 线性表的定义和基本操作</h2><p>1.线性结构的特点是：在数据元素的非空有限集中</p>
+<ul>
+<li>存在唯一的一个被称作“第一个”的数据元素</li>
+<li>存在唯一一个被称作“最后一个”的数据元素</li>
+<li>除第一个之外，集合中的每个元素均只有一个前驱</li>
+<li>除最后一个之外，集合中每个元素均只有一个后继</li>
+</ul>
+<p>2.线性表示一种线性结构，在一个线性表中数据元素的类型是相同的，长度可以根据需要增长或缩短</p>
+<a id="more"></a>
+
+<h2 id="1-2-线性表的实现"><a href="#1-2-线性表的实现" class="headerlink" title="1.2 线性表的实现"></a>1.2 线性表的实现</h2><h3 id="1-2-1-顺序存储"><a href="#1-2-1-顺序存储" class="headerlink" title="1.2.1 顺序存储"></a>1.2.1 顺序存储</h3><p>1.顺序表的定义<br>线性表的顺序存储是指在内存中用地址连续的一块存储空间顺序存放线性表的各元素</p>
+<p><img src="https://note.youdao.com/yws/api/personal/file/96E6535559A647A3B6F63C3AE1535948?method=download&shareKey=7b053e18c9fb7504affa8b8851745fd7" alt></p>
+<p>2.顺序表上基本运算的实现</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">&#x2F;&#x2F; - -一一一线性表的动态分配顺序存储结构一一</span><br><span class="line">#define LIST_ INIT_ SIZE 100 &#x2F;&#x2F;线性表存储空间的初始分配量</span><br><span class="line"> </span><br><span class="line"># define LISTINCREMNT 10 &#x2F;&#x2F;线性表存储空间的分配增量</span><br><span class="line"></span><br><span class="line">1）静态结构：表一旦装满，不能扩充</span><br><span class="line">#define	MAX_SIZE	100 typedef	int	Status ； typedef	int	ElemType ； typedef	struct	sqlist</span><br><span class="line">&#123;	ElemType	Elem_array[MAX_SIZE] ；</span><br><span class="line">int length ；</span><br><span class="line">&#125; SqList ；</span><br><span class="line"></span><br><span class="line">2）动态结构：可以扩充，新的大小计入数据成员 maxSize 中。</span><br><span class="line">typedef struct sqlist&#123;</span><br><span class="line">ElemType *elem；&#x2F;&#x2F;存储数组int length；&#x2F;&#x2F;当前表元素个数int maxSize；&#x2F;&#x2F;表的最大长度</span><br><span class="line">&#125; SqList；</span><br></pre></td></tr></table></figure>
+<p>(1)顺序表的初始化</p>
+<p>将L设为引用参数，首先动态分配存储空间，然后将length置为0</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">Status Init_SqList( SqList *L )</span><br><span class="line">&#123;	</span><br><span class="line">L-&gt;elem_&#x3D;( ElemType * )malloc ( MAX_SIZE*sizeof( ElemType ))；</span><br><span class="line">if ( !L -&gt; elem )</span><br><span class="line">	return	ERROR ；</span><br><span class="line">else &#123;	L-&gt;length&#x3D; 0 ；</span><br><span class="line">		return OK ； </span><br><span class="line">	 &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>(2)插入运算</p>
+<p>在第i个位置上插入x，从$a_i-a_n$都要向下移动一个位置，共需要移动$n-i+1$个元素</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">Status Insert_SqList( Sqlist *L，int i，ElemType e)</span><br><span class="line">&#123;	int j ；</span><br><span class="line">if	( i&lt;0|| i&gt;L-&gt;length+1) return	ERROR ；</span><br><span class="line">if	(L-&gt;length&gt;&#x3D;MAX_SIZE)</span><br><span class="line">&#123; printf(“溢出!\n”)；return	ERROR ； &#125; </span><br><span class="line">for	( j&#x3D;L-&gt;length–1；j&gt;&#x3D;i-1；--j )</span><br><span class="line">L-&gt;Elem_array[j+1]&#x3D;L-&gt;Elem_array[j]；</span><br><span class="line">&#x2F;*	i-1 位置以后的所有结点后移	*&#x2F;</span><br><span class="line">L-&gt;Elem_array[i-1]&#x3D;e；</span><br><span class="line">&#x2F;*在 i-1 个位置插入 *&#x2F;</span><br><span class="line">L-&gt;length++ ；</span><br><span class="line">return	OK ；&#125;</span><br></pre></td></tr></table></figure>
+
+<p>(3)删除运算</p>
+<p>删除第i个元素，其后面的元素$a_{i+1}-a_n$都要向上移动，共移动了$n-i$个元素</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">ElemType	Delete_SqList(Sqlist *L，int i)</span><br><span class="line"> </span><br><span class="line">&#123;	int	k  ；	ElemType	x ；</span><br><span class="line">if	(L-&gt;length&#x3D;&#x3D;0)</span><br><span class="line">&#123;	printf(“线性表 L 为空!\n”)；</span><br><span class="line">	return ERROR；</span><br><span class="line">&#125;</span><br><span class="line">else if ( i&lt;1||i&gt;L-&gt;length )</span><br><span class="line">&#123;	printf(“要删除的数据元素不存在!\n”)；</span><br><span class="line">	 return ERROR ；&#125;</span><br><span class="line">else	&#123;	x&#x3D;L-&gt;Elem_array[i-1] ；</span><br><span class="line">&#x2F;*保存结点的值*&#x2F;</span><br><span class="line">for ( k&#x3D;i ； k&lt;L-&gt;length ；k++)</span><br><span class="line">	L-&gt;Elem_array[k-1]&#x3D;L-&gt;Elem_array[k]；</span><br><span class="line">&#x2F;*	i 位置以后的所有结点前移	*&#x2F; </span><br><span class="line">L-&gt;length--；</span><br><span class="line">return (x)；&#125;	&#125;</span><br></pre></td></tr></table></figure>
+<p><img src="https://note.youdao.com/yws/api/personal/file/A5E9B6356BA5483D8C339A5E599C9D35?method=download&shareKey=ffe88d5b4391046d95eebfc796a71a70" alt></p>
+<p>3.顺序线性表的查找定位删除</p>
+<p>在线性表$L=(a_1,a_2,\dots,a_n)$删除值为$x$的第一个节点</p>
+<p>(1)在线性表L查找值为x的第一个数据元素</p>
+<p>(2)将从找到的位置至最后一个结点依次向前移动一个位置</p>
+<p>(3)线性表长度减1</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">Status Locate_Delete_SqList(Sqlist *L，ElemType x)</span><br><span class="line">&#x2F;*	删除线性表 L 中值为 x 的第一个结点	*&#x2F;</span><br><span class="line">&#123;	int	i&#x3D;0，k ；</span><br><span class="line">while	(i&lt;L-&gt;length)&#x2F;*查找值为 x 的第一个结点*&#x2F;</span><br><span class="line">&#123; if	(L-&gt;Elem_array[i]!&#x3D;x ) i++ ；</span><br><span class="line">else</span><br><span class="line">&#123; for ( k&#x3D;i+1；k&lt; L-&gt;length；k++)</span><br><span class="line">	L-&gt;Elem_array[k-1]&#x3D;L-&gt;Elem_array[k]；</span><br><span class="line">		 L-&gt;length--； break ；&#125;</span><br><span class="line">&#125;</span><br><span class="line">if	(i&gt;L-&gt;length)</span><br><span class="line">&#123; printf(“要删除的数据元素不存在!\n”)；</span><br><span class="line">return ERROR ； &#125;</span><br><span class="line">return	OK；&#125;</span><br></pre></td></tr></table></figure>
+
+<p>4.顺序表的合并问题</p>
+<p>对于有序顺序表$L_a,L_b$</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">int MergeList（ SqList La，SqList Lb，SqList *Lc）&#123; pa&#x3D;La.elem；pb&#x3D;La.elem；</span><br><span class="line">Lc-&gt;listsize &#x3D; Lc.length&#x3D;La.length+ Lb.length；</span><br><span class="line">Pc&#x3D;Lc-&gt;elem &#x3D;( ElemType*)malloc(Lc.listsize*sizeof(ElemType))； </span><br><span class="line">If(!Lc.elem) exit(overfiow)；</span><br><span class="line">Pa_last&#x3D; La.elem+La.length-1； </span><br><span class="line">pb_last&#x3D; Lb.elem+Lb.length-1； </span><br><span class="line">while(pa&lt;&#x3D;pa_last&amp;&amp;pb&lt;&#x3D;pb_last)&#123;</span><br><span class="line">	if(*pa&lt;&#x3D;*pb)</span><br><span class="line">		*pc++&#x3D;*pa++；</span><br><span class="line">	else</span><br><span class="line">		*pc++&#x3D;*pb++；&#125;</span><br><span class="line">while(pa&lt;&#x3D;pa_last) *pc++&#x3D;*pa++； </span><br><span class="line">while(pb&lt;&#x3D;pb_last) *pc++&#x3D;*pb++；&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="1-2-2-链式存储"><a href="#1-2-2-链式存储" class="headerlink" title="1.2.2 链式存储"></a>1.2.2 链式存储</h3><p>1.单链表</p>
+<p>线性表的链式存储结构特点是用一组任意的存储单元存储线性表的数据元素（存储单元可以是连续的，也可以使不连续的）</p>
+<p>定义如下：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">typedef	struct LNode &#123;</span><br><span class="line">ElemType data； struct LNode * next；</span><br><span class="line">&#125;LNode，*LinkList；</span><br></pre></td></tr></table></figure>
+
+<p>2.单链表基本运算实现</p>
+<p>（1）建立单链表</p>
+<ul>
+<li>头插法————在链表的头部插入节点建立单链表</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">LNode	*create_LinkList(void)&#x2F;* 头插入法创建单链表，头结点 head 作为返回值*&#x2F;</span><br><span class="line">&#123;	int data ；</span><br><span class="line">LNode *head，*p；</span><br><span class="line">head&#x3D; (LNode	*)malloc( sizeof(LNode))；</span><br><span class="line">head-&gt;next&#x3D;NULL；&#x2F;*	创建链表的表头结点 head	*&#x2F; </span><br><span class="line">while (1)</span><br><span class="line">&#123;	scanf(“%d”，&amp;data)；</span><br><span class="line"> if (data&#x3D;&#x3D;32767) break ；</span><br><span class="line"> p&#x3D; (LNode	*)malloc(sizeof(LNode))；</span><br><span class="line"> p–&gt;data&#x3D;data；	&#x2F;*	数据域赋值	*&#x2F;</span><br><span class="line"> p–&gt;next&#x3D;head–&gt;next ；</span><br><span class="line">head–&gt;next&#x3D;p ；	&#x2F;*	钩链，新创建的结点总是作为第一个结点	*&#x2F;</span><br><span class="line">&#125;</span><br><span class="line">return (head)；</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://note.youdao.com/yws/api/personal/file/8849B8BB9FE946FC8CC970D8022939A1?method=download&shareKey=e854f232f11469e6c244f77d5f73ab42" alt></p>
+<ul>
+<li>尾插法————头插法虽然简单但是读入的数据元素顺序与生成的链表中元素是相反的，为了次序一致，可以使用尾插法</li>
+</ul>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">LNode	*create_LinkList(void) &#x2F;*尾插入法创建单链表，头结点 head 作为返回值	*&#x2F;</span><br><span class="line">&#123;	int data ；</span><br><span class="line">LNode *head，* last，*q；</span><br><span class="line">head&#x3D;p&#x3D;(LNode	*)malloc(sizeof(LNode))；</span><br><span class="line">p-&gt;next&#x3D;NULL；	&#x2F;*	创建单链表的表头结点 head	*&#x2F; </span><br><span class="line">while (1)</span><br><span class="line">&#123;	scanf(“%d”，&amp; data)； </span><br><span class="line">if (data&#x3D;&#x3D;32767) break ；</span><br><span class="line">q&#x3D; (LNode	*)malloc(sizeof(LNode))； </span><br><span class="line">q–&gt;data&#x3D;data；	&#x2F;*	数据域赋值	*&#x2F;</span><br><span class="line">q–&gt;next&#x3D; last–&gt;next；</span><br><span class="line">last–&gt;next&#x3D;q；</span><br><span class="line">last &#x3D;q ；&#x2F;*钩链，新创建的结点总是作为最后一个结点*&#x2F;</span><br><span class="line">&#125;</span><br><span class="line">return (head)；</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://note.youdao.com/yws/api/personal/file/A17A2DAD6A0B44F8B383E21B37DFBC81?method=download&shareKey=6b0d21c3a6ea6e2ed2387497e28ee6a0" alt></p>
+<p>(2)查找操作</p>
+<ul>
+<li>按序号查找</li>
+</ul>
+<p>子单链表中，取得第1个数据元素必须从头指针出发寻找，因此单链表是非随机存取的存储结构</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">ElemType	Get_Elem(LNode *L，int	i)</span><br><span class="line">&#123;	int j ；LNode *p； if(i&lt;1)</span><br><span class="line">&#123;printf(“i 太小\n”)；return；&#125;</span><br><span class="line">p&#x3D;L-&gt;next； j&#x3D;1；	&#x2F;*	使 p 指向第一个结点	*&#x2F; </span><br><span class="line">while	(p!&#x3D;NULL &amp;&amp; j&lt;i)</span><br><span class="line">&#123; p&#x3D;p–&gt;next； j++；&#125;&#x2F;*	移动指针 p，j 计数	*&#x2F; </span><br><span class="line">if	(p&#x3D;&#x3D;NULL)</span><br><span class="line">	return(-32768)； </span><br><span class="line">else</span><br><span class="line">	return(p-&gt;data)；&#x2F;*	p 为 NULL 表示 i 太大； j&gt;i 表示 i 为 0	*&#x2F;&#125;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>按值查找</li>
+</ul>
+<p>查找时从开始节点出发，沿链表逐个将节点的值和给定值key作比较</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">LNode *Locate_Node(LNode *L，int key)</span><br><span class="line">&#x2F;*	在以 L 为头结点的单链表中查找值为 key 的第一个结点	*&#x2F;</span><br><span class="line">&#123;	LNode *p&#x3D;L–&gt;next；</span><br><span class="line">while	( p!&#x3D;NULL&amp;&amp; p–&gt;data!&#x3D;key) p&#x3D;p–&gt;next；</span><br><span class="line">if	(p–&gt;data &#x3D;&#x3D; key) </span><br><span class="line">return p；</span><br><span class="line">else</span><br><span class="line">&#123; printf(“所要查找的结点不存在!!\n”)； </span><br><span class="line">return(NULL)；&#125;</span><br></pre></td></tr></table></figure>
+
+<p>（3）插入运算（后插法）</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">void	Insert_LNode( LNode *L，int i，ElemType e)</span><br><span class="line">&#x2F;*	在以 L 为头结点的单链表的第 i 个位置插入值为 e 的结点 *&#x2F;</span><br><span class="line">&#123; int	j&#x3D;0； LNode *p，*q； if(i&lt;1)</span><br><span class="line">&#123;printf(“i 太小\n”)；return；&#125;</span><br><span class="line">p&#x3D;L ；</span><br><span class="line">while( p!&#x3D;NULL &amp;&amp; j&lt;i-1)</span><br><span class="line">&#123;	p&#x3D;p–&gt;next； j++；	&#125; </span><br><span class="line">if	(p&#x3D;&#x3D;NULL)</span><br><span class="line">printf(“i 太大!!\n ”)；</span><br><span class="line">else</span><br><span class="line">&#123;		</span><br><span class="line">q&#x3D;(LNode *)malloc(sizeof(LNode))；</span><br><span class="line"> q–&gt;data&#x3D;e；	</span><br><span class="line">q–&gt;next&#x3D;p–&gt;next；</span><br><span class="line"> p–&gt;next&#x3D;q；&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>（4）删除运算</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">void	Delete_LinkList(LNode *L，int i)</span><br><span class="line">&#x2F;*	删除以 L 为头结点的单链表中的第 i 个结点	*&#x2F;</span><br><span class="line">&#123;	int	j&#x3D;1； LNode *p，*q； </span><br><span class="line">if(i&lt;1)</span><br><span class="line">&#123;printf(“i 太小\n”)；return；&#125; </span><br><span class="line">p&#x3D;L； q&#x3D;L-&gt;next；</span><br><span class="line">while	( q!&#x3D;NULL&amp;&amp; j&lt;i)</span><br><span class="line">&#123;	p&#x3D;q； q&#x3D;q–&gt;next； j++； &#125; </span><br><span class="line">if	(p&#x3D;&#x3D;NULL)</span><br><span class="line">printf(“i 太大!!\n ”)；</span><br><span class="line"> else</span><br><span class="line">&#123;	p–&gt;next&#x3D;q–&gt;next；	free(q)；	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>3.单链表的合并</p>
+<p>若La,Lb两个链表的长度分别是m,n，则链表合并的时间复杂度为O(m+n)</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">LNode	*Merge_LinkList(LNode *La，LNode *Lb)</span><br><span class="line">&#x2F;*合并以 La，Lb 为头结点的两个有序单链表*&#x2F;</span><br><span class="line">&#123;	LNode *Lc， *pa， *pb， *pc，*ptr ；</span><br><span class="line">Lc&#x3D;La ； pc&#x3D;La	；</span><br><span class="line">pa&#x3D;La-&gt;next ； pb&#x3D;Lb-&gt;next	；</span><br><span class="line">while (pa!&#x3D;NULL &amp;&amp; pb!&#x3D;NULL)</span><br><span class="line">&#123;	if	(pa-&gt;data&lt;pb-&gt;data)</span><br><span class="line">&#123;	pc-&gt;next&#x3D;pa ；</span><br><span class="line">pc&#x3D;pa ；	pa&#x3D;pa-&gt;next	；	&#125;</span><br><span class="line">&#x2F;*将 pa 所指的结点合并，pa 指向下一个结点	*&#x2F; </span><br><span class="line">if	(pa-&gt;data&gt;pb-&gt;data)</span><br><span class="line">&#123;	pc-&gt;next&#x3D;pb ；</span><br><span class="line">pc&#x3D;pb ；	pb&#x3D;pb-&gt;next	；	&#125;</span><br><span class="line">&#x2F;*		将 pa 所指的结点合并，pa 指向下一个结点	*&#x2F; </span><br><span class="line">if	(pa-&gt;data&#x3D;&#x3D;pb-&gt;data)</span><br><span class="line">&#123;	pc-&gt;next&#x3D;pa ； pc&#x3D;pa ；</span><br><span class="line">pa&#x3D;pa-&gt;next	；</span><br><span class="line">ptr&#x3D;pb ；pb&#x3D;pb-&gt;next ；free(ptr)；	&#125;</span><br><span class="line">&#x2F;*	将 pa 所指的结点合并，pb 所指结点删除	*&#x2F;</span><br><span class="line">&#125;</span><br><span class="line">if	(pa!&#x3D;NULL)</span><br><span class="line">	pc-&gt;next&#x3D;pa ；</span><br><span class="line">else</span><br><span class="line">	pc-&gt;next&#x3D;pb ；	&#x2F;*将剩余的结点链上*&#x2F;</span><br><span class="line">free(Lb)；</span><br><span class="line">return(Lc)；&#125;</span><br></pre></td></tr></table></figure>
+
+<p>4.循环链表</p>
+<p>对于单链表，最后一个节点的指针域是空指针，如果将该链表投指针置入该指针域，则使得链表头尾节点相连，构成了单循环链表</p>
+<p>对于单链表只能从头结点开始遍历整个链表，而对于单循环链表则可以从表中任意结点   开始遍历整个链表，不仅如此，有时对链表常做的操作是在表尾、表头进行，此时可以改变   一下链表的标识方法，不用头指针而用一个指向尾结点的指针 R 来标识，可以使得操作效率得以提高。</p>
+<ol start="5">
+<li>双向链表</li>
+</ol>
+<table>
+<thead>
+<tr>
+<th align="center">前驱指针域</th>
+<th align="center">数据域</th>
+<th align="center">后继指针域</th>
+</tr>
+</thead>
+</table>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">typedef struct Dulnode</span><br><span class="line">&#123;	ElemType	data ；</span><br><span class="line">struct Dulnode	*prior，*next ；</span><br><span class="line">&#125;DulNode ；</span><br></pre></td></tr></table></figure>
+
+<p>(1)双向链表的插入</p>
+<ol>
+<li>插入时仅仅指出直接前驱节点，钩链时必须注意先后次序是：“先右后左”</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">S&#x3D;(DulNode *)malloc(sizeof(DulNode))； </span><br><span class="line">S-&gt;data&#x3D;e；</span><br><span class="line">S-&gt;next&#x3D;p-&gt;next；	p-&gt;next-&gt;prior&#x3D;S；</span><br><span class="line">p-&gt;next&#x3D;S； S-&gt;prior&#x3D;p；&#x2F;* 钩链次序非常重要	*&#x2F;</span><br></pre></td></tr></table></figure>
+
+<ol start="2">
+<li>插入时同时之处直接前驱节点p和直接后继节点q，钩链时无需注意先后次序</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">S&#x3D;(DulNode *)malloc(sizeof(DulNode))；</span><br><span class="line">S-&gt;data&#x3D;e；</span><br><span class="line">p-&gt;next&#x3D;S； S-&gt;next&#x3D;q； </span><br><span class="line">S-&gt;prior&#x3D;p；	q-&gt;prior&#x3D;S；</span><br></pre></td></tr></table></figure>
+
+<p>(2)双向链表中节点的删除</p>
+<p><img src="https://note.youdao.com/yws/api/personal/file/9E3F091C1048407BA19F473010DBB842?method=download&shareKey=71f41f90b3a0d26a4b185941b04bd5d9" alt></p>
+<p>删除时可以不引入新的辅助指针变量，可以直接先断链，再释放结点</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">p-&gt;prior-&gt;next&#x3D;p-&gt;next；</span><br><span class="line">p-&gt;next-&gt;prior&#x3D;p-&gt;prior； </span><br><span class="line">free(p)；</span><br></pre></td></tr></table></figure>
+<p>注意：与单链表的插入和删除操作不同的是，在双向链表中插入和删除必须同时修改两个方向上的指针域的指向。</p>
+]]></content>
+      <categories>
+        <category>计算机基础知识</category>
+      </categories>
+      <tags>
+        <tag>计算机基础知识</tag>
       </tags>
   </entry>
   <entry>
@@ -310,6 +235,209 @@
       </categories>
       <tags>
         <tag>机器学习</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>机器学习笔记（八）数据预处理与特征工程</title>
+    <url>/2020/08/09/Feat/</url>
+    <content><![CDATA[<h2 id="数据预处理和特征工程"><a href="#数据预处理和特征工程" class="headerlink" title="数据预处理和特征工程"></a>数据预处理和特征工程</h2><h3 id="1-数据预处理"><a href="#1-数据预处理" class="headerlink" title="1 数据预处理"></a>1 数据预处理</h3><h4 id="1-1-数据无量纲化"><a href="#1-1-数据无量纲化" class="headerlink" title="1.1 数据无量纲化"></a>1.1 数据无量纲化</h4><ul>
+<li>preprocessing.MinMaxScaler：归一化</li>
+</ul>
+<p>$$x^{*} = \frac{x-min(x)}{max(x)-min(x)}$$</p>
+<ul>
+<li>preprocessing.StandardScaler：标准化</li>
+</ul>
+<p>$$x^{*}=\frac{x-\mu}{\sigma}$$</p>
+<ul>
+<li>StandardScaler和MinMaxScaler选哪个</li>
+</ul>
+<p>大多数机器选择算法会选择StandardScaler进行放缩，因为MinMaxScaler对异常值非常敏感</p>
+<a id="more"></a>
+
+<h4 id="1-2-缺失值"><a href="#1-2-缺失值" class="headerlink" title="1.2 缺失值"></a>1.2 缺失值</h4><ul>
+<li>填充固定值</li>
+<li>填充均值</li>
+<li>填充中位数</li>
+<li>填充众数</li>
+<li>填充上下跳的数据</li>
+<li>填充插值得到的数据</li>
+<li>填充KNN数据</li>
+<li>填充模型预测的值</li>
+</ul>
+<h4 id="1-3-处理分类型特征：编码与哑变量"><a href="#1-3-处理分类型特征：编码与哑变量" class="headerlink" title="1.3 处理分类型特征：编码与哑变量"></a>1.3 处理分类型特征：编码与哑变量</h4><ul>
+<li><p>preprocessing.LabelEncoder：标签专用，能够将分类转换为分类数值</p>
+</li>
+<li><p>preprocessing.OrdinalEncoder：特征专用，能够将分类特征转化为分类数值</p>
+</li>
+<li><p>preprocessing.OneHotEncoder:独热编码，创建哑变量</p>
+</li>
+</ul>
+<p><img src="https://note.youdao.com/yws/api/personal/file/671DF765B3D84C68A1C2E1038494B94C?method=download&shareKey=5c723470f1cc5eaed7f35061d1aac324" alt></p>
+<p><img src="https://note.youdao.com/yws/api/personal/file/DAC20B5C378C4A4485B373870AAF5971?method=download&shareKey=8ba1b6bb9905782ae7951e742ae79fd0" alt></p>
+<p>但是在独热编码后，增加了特征的维数。如果类别有很多种的话可能特征矩阵非常稀疏</p>
+<h4 id="1-4-处理连续特征：二值化与分段"><a href="#1-4-处理连续特征：二值化与分段" class="headerlink" title="1.4 处理连续特征：二值化与分段"></a>1.4 处理连续特征：二值化与分段</h4><ul>
+<li>sklearn.preprocessing.Binarizer</li>
+</ul>
+<p>根据阈值将数据二值化，用于处理连续型变量。大于阈值的值映射为1，而小于或等于阈值的值射为0。二值化常用于文本计数数据</p>
+<ul>
+<li>preprocessing.KBinsDiscretizer</li>
+</ul>
+<p>将连续型变量划分为分类变量的类，能够将连续型变量排序后按顺序分分箱后编码</p>
+<table>
+<thead>
+<tr>
+<th align="left">参数</th>
+<th align="left">含义&amp;输入</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">n_bins</td>
+<td align="left">每个特征中分箱的个数，默认5，一次会被运用到所有导入的特征</td>
+</tr>
+<tr>
+<td align="left">encode</td>
+<td align="left">编码的方 式，默 认 “onehot”：做哑变量，之后返回一个稀疏矩阵，每一列是一个特征中的一个类别，含有该类别的样本表示为 1， 不含的表示为0</td>
+</tr>
+<tr>
+<td align="left"></td>
+<td align="left">“ordinal”：每个特征的每个箱都被编码为一个整数，返回每一列是一个特征，每个特征下含有不同整数编码的箱的矩阵</td>
+</tr>
+<tr>
+<td align="left"></td>
+<td align="left">“onehot-dense”：做哑变量，之后返回一个密集数组。</td>
+</tr>
+<tr>
+<td align="left">strategy</td>
+<td align="left">用来定义箱宽的方式，默认”quantile”</td>
+</tr>
+<tr>
+<td align="left"></td>
+<td align="left">“uniform”：表示等宽分箱，即每个特征中的每个箱的最大值之间的差为（$特征.max()-特征.min()/n_bins$）</td>
+</tr>
+<tr>
+<td align="left"></td>
+<td align="left">“quantile”：表示等位分箱，即每个特征中的每个箱内的样本数量都相同</td>
+</tr>
+<tr>
+<td align="left"></td>
+<td align="left">“kmeans”：表示按聚类分箱，每个箱中的值到最近的一维k均值聚类的簇心得距离都相同</td>
+</tr>
+</tbody></table>
+<h3 id="2-特征选择"><a href="#2-特征选择" class="headerlink" title="2 特征选择"></a>2 特征选择</h3><p>我们有四种方法可以用来选择特征：过滤法、嵌入法、包装法、降维算法</p>
+<h4 id="2-1-Filter过滤法"><a href="#2-1-Filter过滤法" class="headerlink" title="2.1 Filter过滤法"></a>2.1 Filter过滤法</h4><p>它是根据各种统计检验中的分数以及相关性的各向指标来选择特征</p>
+<h5 id="2-1-1-方差过滤"><a href="#2-1-1-方差过滤" class="headerlink" title="2.1.1 方差过滤"></a>2.1.1 方差过滤</h5><ul>
+<li>VarianceThreshold</li>
+</ul>
+<p>通过特征本身的方差来筛选特征的类。如果一个特征本身的方差很小，就表示这个特征基本没有差异，那这个特征对于样本区分没有什么作用。</p>
+<h5 id="2-1-2-相关性过滤"><a href="#2-1-2-相关性过滤" class="headerlink" title="2.1.2 相关性过滤"></a>2.1.2 相关性过滤</h5><p>我们希望选出与标签相关且有意义的特征，这样的特征能够为我们提供大量的信息。</p>
+<p><img src="https://note.youdao.com/yws/api/personal/file/6A85336AB79345C18D14A5F3F3D1B4B9?method=download&shareKey=a1bc337ffcb61ce727aa8d9300b45809" alt></p>
+<ul>
+<li>卡方过滤</li>
+</ul>
+<p>卡方过滤是专门针对离散型标签的相关性过滤，通过卡方检验类feature_selection.chi2结合feature_selection.SelectKBest来选出前K个分数最高的特征类</p>
+<ul>
+<li>F检验</li>
+</ul>
+<p>用来捕捉每个特征与标签之间的线性关系的过滤方法，即可以做回归也可以做分类。</p>
+<ul>
+<li>互信息法</li>
+</ul>
+<p>互信息法是用来捕捉每个特征与标签之间的任意关系（包括线性和非线性）的过滤方法，也可以做回归和分类。</p>
+<h4 id="2-2-Embedded嵌入法"><a href="#2-2-Embedded嵌入法" class="headerlink" title="2.2 Embedded嵌入法"></a>2.2 Embedded嵌入法</h4><p>嵌入法是一种让算法自己决定使用哪些特征的方法，即特征选择和算法训练同时进行。</p>
+<p><img src="https://note.youdao.com/yws/api/personal/file/B20CE443F91E421FA086F0D7B773F940?method=download&shareKey=329d8ddf018f6e52198b696aafc99c1a" alt></p>
+<ul>
+<li>feature_selection.SelectFromModel</li>
+</ul>
+<p>SelectFromModel是一个元变换器，可以与任何在拟合后具有coef_,feature_impoortances_属性或参数中可选惩罚项的评估器一起使用</p>
+<table>
+<thead>
+<tr>
+<th align="left">参数</th>
+<th align="left">说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">estimator</td>
+<td align="left">使用的模型评估器，只要是带feature_importances_或者coef_属性，或带有$l_1$和$l_2$惩罚项的模型都可以使用</td>
+</tr>
+<tr>
+<td align="left">threshold</td>
+<td align="left">特征重要性的阈值，重要性低于这个阈值的特征都将被删除</td>
+</tr>
+<tr>
+<td align="left">preﬁt</td>
+<td align="left">默认False，判断是否将实例化后的模型直接传递给构造函数。如果为True，则必须直接调用ﬁt和transform，不能使用ﬁt_transform，并且SelectFromModel不能与cross_val_score，GridSearchCV和克隆估计器的类似实用程序一起使用。</td>
+</tr>
+<tr>
+<td align="left">norm_order</td>
+<td align="left">k可输入非零整数，正无穷，负无穷，默认值为1在评估器的coef_属性高于一维的情况下，用于过滤低于阈值的系数的向量的范数的阶数。</td>
+</tr>
+<tr>
+<td align="left">max_features</td>
+<td align="left">在阈值设定下，要选择的最大特征数。要禁用阈值并仅根据max_features选择，请设置threshold = -np.inf</td>
+</tr>
+</tbody></table>
+<h4 id="3-3-Wrapper包装法"><a href="#3-3-Wrapper包装法" class="headerlink" title="3.3 Wrapper包装法"></a>3.3 Wrapper包装法</h4><p>包装法也是一个特征选择和算法训练同时记性的方法，与嵌入法十分相似，但不同的是，我们往往使用一个目标函数作为黑盒来帮助我们选取特征，而不是自己输入某个评估指标或统计量的阈值。</p>
+<p><img src="https://note.youdao.com/yws/api/personal/file/2210DFBFBE614558A58D1F7F7C3A207F?method=download&shareKey=a4ee875d7e0cf4e62258f04f111375e1" alt></p>
+<ul>
+<li>feature_selection.RFE<br>最典型的目标函数是递归特征消除法（Recursive feature elimination, RFE）</li>
+</ul>
+]]></content>
+      <categories>
+        <category>机器学习</category>
+      </categories>
+      <tags>
+        <tag>机器学习</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>计算机网络总结（一）：计算机网络体系结构</title>
+    <url>/2020/08/11/computer%20network/</url>
+    <content><![CDATA[<h1 id="1-计算机网络概述"><a href="#1-计算机网络概述" class="headerlink" title="1 计算机网络概述"></a>1 计算机网络概述</h1><h2 id="1-1-计算机网络的概念、组成与功能"><a href="#1-1-计算机网络的概念、组成与功能" class="headerlink" title="1.1 计算机网络的概念、组成与功能"></a>1.1 计算机网络的概念、组成与功能</h2><p>互联网的拓扑结构虽然非常复杂，并且在地理上覆盖了全球，但从其工作方式上看，可以划分为以下两大块：<br>（1）边缘部分    由所有连接在互联网上的主机组成。这部分是用户直接使用的，用来进行通信（传送数据、音频或视频）和资源共享。<br>（2）核心部分    由大量网络和连接这些网络的路由器组成。这部分是为边缘部分提供服务的（提供连通性和交换）</p>
+<a id="more"></a>
+
+<h2 id="1-2-计算机网络的分类"><a href="#1-2-计算机网络的分类" class="headerlink" title="1.2 计算机网络的分类"></a>1.2 计算机网络的分类</h2><p>计算机网络有多种类别，下面进行简单的介绍。<br>1.按照网络的作用范围进行分类<br>（1）广域网 WAN（Wide Area Network）<br>广域网的作用范围通常为几十到几千公里。广域网是互联网的核心部分，其任务是通过长距离（例如，跨越不同的国家）运送主机所发送的数据。连接广域网各结点交换机的链路一般都是高速链路，具有较大的通信容量。<br>（2）城域网 MAN（Metropolitan Area Network）<br>城域网的作用范围一般是一个城市，可跨越几个街区甚至整个城市。城域网可以为一个或几个单位所拥有，但也可以是一种公用设施，用来将多个局域网进行互连。目前很多城域网采用的是以太网技术，因此有时也常并入局域网的范围进行讨论。<br>（3）局域网 LAN（Local Area Network）<br>局域网一般用微型计算机或工作站通过高速通信线路相连（速率通常在 10 Mbit/s 以上），但地理上则局限在较小的范围（如 1 km 左右）。<br>（4）个人区域网 PAN（Personal Area Network）<br>个人区域网就是在个人工作的地方把属于个人使用的电子设备（如便携式电脑等）用无线技术连接起来的网络，因此也常称为无线个人区域网 WPAN（WirelessPAN），其范围很小，大约在 10 m 左右。<br>2.按照网络的使用者进行分类<br>（5）公用网（publiCnetwork）这是指电信公司（国有或私有）出资建造的大型网络。”公用”的意思就是所有愿意按电信公司的规定交纳费用的人都可以使用这种网络。因此公用网也可称为公众网。<br>（6）专用网（private network）这是某个部门为满足本单位的特殊业务工作的需要而建造的网络。这种网络不向本单位以外的人提供服务。例如，军队、铁路、银行、电力等系统均有本系统的专用网。</p>
+<p>公用网和专用网都可以提供多种服务。如传送的是计算机数据，则分别是公用计算机网络和专用计算机网络。</p>
+<h1 id="2-计算机网络体系结构与参考模型"><a href="#2-计算机网络体系结构与参考模型" class="headerlink" title="2 计算机网络体系结构与参考模型"></a>2 计算机网络体系结构与参考模型</h1><h2 id="2-1-计算机网络协议、接口、服务等概念"><a href="#2-1-计算机网络协议、接口、服务等概念" class="headerlink" title="2.1 计算机网络协议、接口、服务等概念"></a>2.1 计算机网络协议、接口、服务等概念</h2><p>1.协议<br>主要由以下三要素组成</p>
+<ul>
+<li>语法，即数据与控制信息的结构或格式：</li>
+<li>语义，即需要发出何种控制信息，完成何种动作以及做出何种响应：</li>
+<li>同步，即事件实现顺序的详细说明。</li>
+</ul>
+<p>2.接口（服务访问点）<br>同一系统中相邻两层的实体进行交互的地方。</p>
+<p>3.服务（service）<br>为保证上层对等体之间能相互通信，下层向上层提供的功能。</p>
+<h2 id="2-2-ISO-OSI参考模型和TCP-IP模型"><a href="#2-2-ISO-OSI参考模型和TCP-IP模型" class="headerlink" title="2.2 ISO/OSI参考模型和TCP/IP模型"></a>2.2 ISO/OSI参考模型和TCP/IP模型</h2><p>1.ISO/OSI参考模型</p>
+<p><img src="https://note.youdao.com/yws/api/personal/file/9AA9B51F88884CCE88B4E887CBD0F540?method=download&shareKey=3fad92c71278a5fdcac6d459d65c99d2" alt></p>
+<p>(1) 物理层<br>物理层是 OSI 参考模型的最低一层，也是在同级层之间直接进行信息交换的唯一一层。物理层负责传输二进制位流，也就是透明的传输比特，它的任务就是为上层（数据链路层）提供一个物理连接，以便在相邻节点之间无差错地传送二进制位流。有一点应该注意的是，传送二进制位流的传输介质，如双绞线、同轴电缆以及光纤等并不属于物理层要考虑的问题。实际上传输介质并不在 OSI的7个层次之内。<br>(2) 数据链路层<br>数据链路层负责在两个相邻节点之间，无差错地传送以 “ 帧 ” 为单位的数据。每一帧包括一定数量的数据和若干控制信息。数据链路的任务首先要负责建立、维持和释放数据链路的连接。在传送数据时，如果接收节点发现数据有错，要通知发送方重发这一帧，直到这一帧正确无误地送到为止。这样，数据链路层就把一条可能出错的链路，转变成让网络层看起来就像是一条不出错的理想链路。<br>(3) 网络层<br>网络层的主要功能是为处在不同网络系统中的两个节点设备通信提供一条逻辑通路。其基本任务包括路由选择、拥塞控制与网络互联等功能。<br>(4) 传输层<br>传输层的主要任务是向用户提供可靠的端到端（end-to-end ）服务，透明地传送报文。它向高层屏蔽了下层数据通信的细节，因而是计算机通信体系结构中最关键的一层。该层关心的主要问题包括建立、维护和中断虚电路、传输差错校验和恢复以及信息流量控制机制等。<br>(5) 会话层<br>负责通讯的双方在正式开始传输前的沟通，目的在于建立传输时所遵循的规则，使传输更顺畅、有效率。沟通的议题包括：使用全双工模式或半双式模式？如何发起传输？如何结束传输？如何设置传输参数就像两国元首在见面会晤之前，总会先派人谈好议事规则，正式谈判时就根据这套规则进行一样。<br>(6) 表示层<br>表示层处理两个应用实体之间进行数据交换的语法问题，解决数据交换中存在的数据格式不一致以及数据表示方法不同等问题。例如，IBM 系统的用户使用 EBCD 编码，而其它用户使用 ASCII 编码。表示层必须提供这两编码的转换服务。数据加密与解密、数据压缩与恢复等也都是表示层提供的服务。<br>(7) 应用层<br>应用层是 OSI 参考模型中最靠近用户的一层，它直接提供文件传输、电子邮件、网页浏览等服务给用户。</p>
+<p>2.TCP/IP模型</p>
+<p><img src="https://note.youdao.com/yws/api/personal/file/612A9DB2F78D400882E6E63B5039B5D7?method=download&shareKey=34d2de9a289a9eab74e01f3de190d316" alt></p>
+<p>TCP/IP 是一个四层的体系结构，它包含应用层、传输层、网际层和网络接口层（用网际层这个名字 是强调这一层是为了解决不同网络的互连问题）。不过从实质上讲，TCP/IP 只有最上面的三层，因为最下面的网络接口层并没有什么具体内容。<br>(1) 网络接口层（network interface layeR）</p>
+<p>在 TCP/IP 分层体系结构中，最底层是网络接口层，它 负责通过网络发送和接收 IP 数据报 。TCP/IP 体系结构并未对网络接口层使用权的协议做出强硬的规定，它允许主机连入网络时使用多种现成的和流行的协议，例如局域网协议或其他一些协议。</p>
+<p>(2) 网络层（internet layeR）也就是网际层</p>
+<p>网络层是 TCP/IP 体系结构的第二层，它实现的功能相当于 OSI 参考模型网络层的无连接网络服务。互联层负责将源主机的报文分组发送到目的的主机，源主机与目的主机可以在一个网上，也可以在不同的网上。</p>
+<ol>
+<li>处理来自传输层的分组发送请求。在收到分组发送请求之后，将分组装入 IP 数据报，填充报头，选择发送路径，然后将数据报发送到相应的网络输出线。</li>
+<li>处理接收的数据报。在接收到其他主机发送的数据报之后，检查目的地址，如需要转发，则选择发送路径，转发出去；如目的地址为本节点 IP 地址，则除去报头，将分组送交给传输层处理。</li>
+<li>处理互联的路径、流控与拥塞问题。</li>
+</ol>
+<p>(3) 传输层（transport layeR）<br>网络层之上是传输层，它的主要功能是负责应用进程之间的 端 - 端（Host-to-host ）通信。在 TCP/IP 体系结构中，设计传输层的主要目的是在互联网中源主机与目的主机的对等实体之间建立用于会话的端- 端连接 。因此，它与 OSI 参考模型的传输层功能相似。</p>
+<p>TCP/IP 体系结构的传输层定义了 传输控制协议（TCP，transportControlProtocol ）和 用户数据报协（UDP,useRdatagramProtocol ）两种协议。<br>TCP 协议是一种可靠的面向连接的协议，它允许将一台主机的字节流（byte stream ）无差错地传送到目的主机。<br>UDP 协议是一种不可靠的无连接协议，它主要用于不要求分组顺序到达的传输中，分组传输顺序检查与排序由应用层完成。</p>
+<p>(4) 应用层（application layeR）<br>在 TCP/IP 体系结构中，应用层是最靠近用户的一层。它包括了所有的高层协议，并且总是不断有新的协议加入。其主要协议包括：</p>
+<ol>
+<li>文件传输协议（FTP ,file transfeRprotocol ），用于实现互联网中交互式文件传输功能；</li>
+<li>简单邮件传输协议（SMTP simple mail transfeRprotocol ），用于实现互联网中邮件传送功能；</li>
+<li>域名系统（DNS, domain name system ），用于实现互联网设备名字到 IP 地址映射的网络服务；</li>
+<li>超文本传输协议（HTTP, bypeRtext transfeRprotocol ），用于目前广泛使用的 Web 服务；</li>
+<li>路由信息协议（RIP,Routing informationProtocol ），用于网络设备之间交换路由信息；</li>
+</ol>
+<p>在学习计算机网络的原理时往往采取折中的办法，即综合 OSI 和 TCP/IP 的优点，采用一种只有五层协议的体系结构，这样既简洁又能将概念阐述清楚。</p>
+<p><img src="https://note.youdao.com/yws/api/personal/file/7AF501D78232488DA7EF5B4DAD0A6487?method=download&shareKey=29133d1298976bc40cf97fb451b81b45" alt></p>
+]]></content>
+      <categories>
+        <category>计算机基础知识</category>
+      </categories>
+      <tags>
+        <tag>计算机基础知识</tag>
       </tags>
   </entry>
   <entry>
@@ -1527,6 +1655,1184 @@ print(&apos;runtime:&apos;, time.time() - start_t)</code></pre>]]></content>
       </tags>
   </entry>
   <entry>
+    <title>LeetCode学习笔记</title>
+    <url>/2020/08/11/leetcode/</url>
+    <content><![CDATA[<h1 id="Problem-1-数组中重复的数字"><a href="#Problem-1-数组中重复的数字" class="headerlink" title="Problem 1 数组中重复的数字"></a>Problem 1 数组中重复的数字</h1><p>找出数组中重复的数字。</p>
+<p>在一个长度为 n 的数组 nums 里的所有数字都在 0～n-1 的范围内。数组中某些数字是重复的，但不知道有几个数字重复了，也不知道每个数字重复了几次。请找出数组中任意一个重复的数字。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">示例 1：</span><br><span class="line"></span><br><span class="line">输入：</span><br><span class="line">[2, 3, 1, 0, 2, 5, 3]</span><br><span class="line">输出：2 或 3</span><br></pre></td></tr></table></figure>
+<a id="more"></a>
+
+<h2 id="方法一：-先排序，然后看相邻元素是否有相同的，直接return-时间O-nlogn-，空间O-1"><a href="#方法一：-先排序，然后看相邻元素是否有相同的，直接return-时间O-nlogn-，空间O-1" class="headerlink" title="方法一： 先排序，然后看相邻元素是否有相同的，直接return,时间O(nlogn)，空间O(1)"></a>方法一： 先排序，然后看相邻元素是否有相同的，直接return,时间O(nlogn)，空间O(1)</h2><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">class Solution:</span><br><span class="line">    def findRepeatNumber(self, nums: List[int]) -&gt; int:</span><br><span class="line">        nums.sort()</span><br><span class="line">        pre &#x3D; nums[0]</span><br><span class="line">        n &#x3D; len(nums)</span><br><span class="line">        for index in range(1,n):</span><br><span class="line">            if pre &#x3D;&#x3D; nums[index]:</span><br><span class="line">                return pre</span><br><span class="line">            pre &#x3D; nums[index]</span><br></pre></td></tr></table></figure>
+
+<h2 id="方法二：使用哈希表，时间O-n-，空间O-n"><a href="#方法二：使用哈希表，时间O-n-，空间O-n" class="headerlink" title="方法二：使用哈希表，时间O(n)，空间O(n)"></a>方法二：使用哈希表，时间O(n)，空间O(n)</h2><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">class Solution:</span><br><span class="line">    def findRepeatNumber(self, nums: List[int]) -&gt; int:</span><br><span class="line">        repeatDict &#x3D; &#123;&#125;</span><br><span class="line">        for num in nums:</span><br><span class="line">            if num not in repeatDict:</span><br><span class="line">                repeatDict[num] &#x3D; 1</span><br><span class="line">            else:</span><br><span class="line">                return num</span><br></pre></td></tr></table></figure>
+<hr>
+<h1 id="Problem-2-二维数组中的查找"><a href="#Problem-2-二维数组中的查找" class="headerlink" title="Problem 2 二维数组中的查找"></a>Problem 2 二维数组中的查找</h1><p>在一个 n * m 的二维数组中，每一行都按照从左到右递增的顺序排序，每一列都按照从上到下递增的顺序排序。请完成一个函数，输入这样的一个二维数组和一个整数，判断数组中是否含有该整数。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">示例:</span><br><span class="line"></span><br><span class="line">现有矩阵 matrix 如下：</span><br><span class="line">[</span><br><span class="line">  [1,   4,  7, 11, 15],</span><br><span class="line">  [2,   5,  8, 12, 19],</span><br><span class="line">  [3,   6,  9, 16, 22],</span><br><span class="line">  [10, 13, 14, 17, 24],</span><br><span class="line">  [18, 21, 23, 26, 30]</span><br><span class="line">]</span><br><span class="line">给定 target &#x3D; 5，返回 true。</span><br><span class="line"></span><br><span class="line">给定 target &#x3D; 20，返回 false</span><br></pre></td></tr></table></figure>
+<h2 id="方法：-利用矩阵特点引入标志数"><a href="#方法：-利用矩阵特点引入标志数" class="headerlink" title="方法： 利用矩阵特点引入标志数"></a>方法： 利用矩阵特点引入标志数</h2><ol>
+<li>若flag&gt;target，则target一定在flag所在行的上方，即flag所在行可被消除</li>
+<li>若flag&lt;target, 则target一定在flag所在列的右方，即flag所在列可被消除</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">class Solution:</span><br><span class="line">    def findNumberIn2DArray(self, matrix: List[List[int]], target: int) -&gt; bool:</span><br><span class="line">        i, j &#x3D; len(matrix) - 1, 0</span><br><span class="line">        while i &gt;&#x3D; 0 and j &lt; len(matrix[0]):</span><br><span class="line">            if matrix[i][j] &gt; target: i -&#x3D; 1</span><br><span class="line">            elif matrix[i][j] &lt; target: j +&#x3D; 1</span><br><span class="line">            else: return True</span><br><span class="line">        return False</span><br></pre></td></tr></table></figure>
+<hr>
+]]></content>
+      <categories>
+        <category>编程</category>
+      </categories>
+      <tags>
+        <tag>编程</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>机器学习笔记（七）无监督学习</title>
+    <url>/2020/08/05/Unsupervised/</url>
+    <content><![CDATA[<h2 id="无监督学习"><a href="#无监督学习" class="headerlink" title="无监督学习"></a>无监督学习</h2><p>在“无监督学习”中，训练样本的标记信息时未知的，目标是通过对无标记训练样本的学习来揭示数据的内在性质及规律，为进一步的数据分析提供基础</p>
+<h3 id="1-聚类算法"><a href="#1-聚类算法" class="headerlink" title="1 聚类算法"></a>1 聚类算法</h3><h4 id="1-1-K-means"><a href="#1-1-K-means" class="headerlink" title="1.1 K-means"></a>1.1 K-means</h4><table>
+<thead>
+<tr>
+<th align="left">关键概念：簇与质心</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">KMeans算法将一组N个样本的特征矩阵X划分为K个无交集的簇，直观上来看是簇是一组一组聚集在一起的数据，在一个簇中的数据就认为是同一类。簇就是聚类的结果表现。簇中所有数据的均值\mu_j通常被称为这个簇的“质心”（centroids）。在一个二维平面中，一簇数据点的质心的横坐标就是这一簇数据点的横坐标的均值，质心的纵坐标就是这一簇数据点的纵坐标的均值。同理可推广至高维空间。</td>
+</tr>
+<tr>
+<td align="left"><a id="more"></a></td>
+</tr>
+</tbody></table>
+<p>K-means具体步骤如下：</p>
+<ol>
+<li>随机抽取K个样本作为最初的质心</li>
+<li>开始循坏：<ul>
+<li>将每个样本点分配到离他们最近的质心，生成K个簇</li>
+<li>对于每个簇，计算所有被分到该簇的样本点的平均值作为新的质心</li>
+</ul>
+</li>
+<li>当质心的位置不再发生变化，迭代停止，聚类完成</li>
+</ol>
+<p><img src="https://note.youdao.com/yws/api/personal/file/32020546C1AE4109A10AF82CB9898E86?method=download&shareKey=cd5356c9150e5202cc049f0c226a91c2" alt></p>
+<p>令$x$表示簇找那个的一个样本点，$mu$表示簇中的质心，$n$表示每个样本点钟的特征数目，$i$表示成点$x$的每个特征，则该样本点到质心的距离可以由一下距离来度量</p>
+<p>$$欧几里得距离：d(x,\mu)=\sqrt{\sum_{i=1}^n(x_i-\mu_i)^2}$$</p>
+<p>$$欧几里得距离：d(x,\mu)=\sum_{i=1}^n(|x_i-\mu_i|)$$</p>
+<p>$$余弦距离：cos\theta = \frac{\sum_1^n(x_i * \mu)}{\sqrt{\sum_1^n(x_i)^2} * \sqrt{\sum_1^n(\mu)^2}}$$</p>
+<p>如果我们采用欧几里得距离，则一个簇中所有样本点到质心的距离平方和为</p>
+<p>$$Cluster Sum of Square (CSS) = \sum_{j=0}^n\sum_{i=1}^n(x_i-u_i)^2$$<br>$$Total Cluster Sum of Square = \sum_{l=1}^k CSS_l$$</p>
+<p>其中,$m$为一个簇中样本的个数，$j$是每个样本的编号。将整个数据集中的所有簇的簇内平方和相加，就得到了整体平方和（Total Cluster Sum of Square），KMeans追求的是能让整体平方和最小的质心</p>
+<h4 id="1-2-DBSCAN"><a href="#1-2-DBSCAN" class="headerlink" title="1.2 DBSCAN"></a>1.2 DBSCAN</h4><p>DBSCAN基于“领域”参数（$\epsilon,MinPts$）来刻画样本分布的紧密程度</p>
+<p>|关键概念|<br>|:–|:–|<br>|$\epsilon-$领域|样本集中$x_j$的距离不大于$\epsilon$的样本|<br>|核心对象|若$x_j$的$\epsilon-$领域至少包含MinPts个样本|<br>|密度直达|若$x_j$位于$\epsilon-$领域中，且$x_j$是核心对象，则称$x_j,x_i$密度直达|<br>|密度可达|对$x_i,x_j$存在样本序列$p_1,p_2,\dots,p_n$，其中$p_1=x_i,p_n=x_j$且$p_{i+1}$由$p_i$密度直达|<br>|密度相连|$x_i,x_j$存在$x_k$使得$x_i,x_j$由$x_k$密度可达|</p>
+<p><img src="https://note.youdao.com/yws/api/personal/file/3CFC7255AEF5494EA28847EF8F53B986?method=download&shareKey=d0ab0fa0be730535ee659da645a0ca7d" alt></p>
+<p>DBSCAN具体步骤如下：</p>
+<p>1.找寻核心点形成临时聚类簇</p>
+<p>扫描全部样本点，如果某个样本点R半径范围内点数目大于等于MinPoints，则将其纳入核心点列表，并将其密度直达的点形成对应的临时聚类簇</p>
+<p>2.合并临时聚类簇得到聚类簇</p>
+<p>对于每一个临时聚类簇，检测其中的点是否为核心点，如果是，将该点对应的临时聚类簇和当前临时聚类簇合并，得到新的临时聚类簇</p>
+<p>重复此操作，直到当前临时聚类簇的每一个点要么不在核心点列表，要么密度直达的点都已经在该临时聚类簇，该临时聚类簇升级成为聚类簇</p>
+<p><img src="https://note.youdao.com/yws/api/personal/file/77CEBDB3B8164208AF15C9BF40488424?method=download&shareKey=012cf4c589db2cea9df552ad9aa29fe7" alt></p>
+<h4 id="1-3-层次聚类AGNES"><a href="#1-3-层次聚类AGNES" class="headerlink" title="1.3 层次聚类AGNES"></a>1.3 层次聚类AGNES</h4><p>AGNES是一种采用自底向上聚合策略的层次聚类算法，先将数据集中的每个样本看做一个初始聚类簇，然后在算法运行的每一步中找出距离最近的两个聚类簇进行合并，该过程不断重复，直到达到预设的簇类簇个数</p>
+<p>关键是如何计算簇类簇之间的距离，实际上，每个簇是一个样本集合，因此，只需采用关于集合的某种距离即可，给定聚类簇$c_i,c_j$通过下面式子来计算距离：</p>
+<p>$$最小距离：d_{min}(c_i,c_j)=\min_{x\in c_i,z\in c_j}dist(x,z)$$<br>$$最大距离：d_{max}(c_i,c_j)=\max_{x\in c_i,z\in c_j}dist(x,z)$$<br>$$平均距离：d_{avg}(c_i,c_j)=\frac{1}{|c_i||c_j|}\sum_{x\in c_i}\sum_{z\in c_j}dist(x,z)$$</p>
+<h3 id="2-降维算法"><a href="#2-降维算法" class="headerlink" title="2 降维算法"></a>2 降维算法</h3><h4 id="2-1-PCA所需数学原理"><a href="#2-1-PCA所需数学原理" class="headerlink" title="2.1 PCA所需数学原理"></a>2.1 PCA所需数学原理</h4><p>主成份分析，简称为PCA，是一种非监督学习算法，经常被用来进行</p>
+<ul>
+<li><p>数据降维</p>
+</li>
+<li><p>有损数据压缩</p>
+</li>
+<li><p>特征抽取</p>
+</li>
+<li><p>数据可视化</p>
+</li>
+</ul>
+<p>通过计算数据矩阵的协方差矩阵，然后得到协方差矩阵的特征值特征向量，选择特征值最大(即方差最大)的k个特征所对应的特征向量组成的矩阵。这样就可以将数据矩阵转换到新的空间当中，实现数据特征的降维。</p>
+<p>由于得到协方差矩阵的特征值特征向量有两种方法：特征值分解协方差矩阵、奇异值分解协方差矩阵，所以PCA算法有两种实现方法：</p>
+<ul>
+<li>基于特征值分解协方差矩阵实现PCA算法</li>
+<li>基于SVD分解协方差矩阵实现PCA算法。</li>
+</ul>
+<h5 id="2-1-1-特征值、特征向量、特征值分解"><a href="#2-1-1-特征值、特征向量、特征值分解" class="headerlink" title="2.1.1 特征值、特征向量、特征值分解"></a>2.1.1 特征值、特征向量、特征值分解</h5><p>1.特征值、特征向量</p>
+<p>如果一个向量v是矩阵A的特征向量，将一定可以表示成下面的形式：<br>$$Av=\lambda v$$<br>其中，$\lambda$是特征向量$v$对应的特征值，一个矩阵的一组特征向量是一组正交向量</p>
+<p>2.特征值分解</p>
+<p>对于矩阵A，有一组特征向量v，将这组向量进行正交单位化，就能得到一组正交单位向量。特征值分解，就是将矩阵A分解为如下式：<br>$$A=Q\Sigma Q^{-1}$$<br>其中，Q是矩阵A的特征向量组成的矩阵，$\Sigma$则是一个对角阵，对角线上的元素就是特征值。我们来分析一下特征值分解的式子，分解得到的$\Sigma$矩阵是一个对角阵，里面的特征值是由大到小排列的，这些特征值所对应的特征向量就是描述这个矩阵变换方向（从主要的变化到次要的变化排列）</p>
+<p>当矩阵是高维的情况下，那么这个矩阵就是高维空间下的一个线性变换，这个线性变换可能没法通过图片来表示，但是可以想象，这个变换也同样有很多的变化方向，我们通过特征值分解得到的钱N个特征向量，就对应了这个矩阵最重要的N个变化方向。我们利用这前N个变化方向，就可以近似这个矩阵变换，也就是之前说的：<strong>提取这个矩阵最重要的特征</strong>。</p>
+<p><strong>总结</strong>：特征值分解可以得到特征值与特征向量，特征值表示的是这个特征到底有多么重要，而特征向量表示这个特征是什么，可以将每一个特征向量理解为一个线性的子空间，我们可以利用这些线性的子空间干很多事情。不过，<strong>特征值分解也有很多局限，比如说变换的矩阵必须是方阵。</strong></p>
+<h5 id="2-1-2-SVD分解"><a href="#2-1-2-SVD分解" class="headerlink" title="2.1.2 SVD分解"></a>2.1.2 SVD分解</h5><p>1.特征值分解矩阵的缺点</p>
+<p>我们前面讲了很多特征值、特征向量和特征值分解，而且基于我们以前学习的线性代数知识、利用特征值分解提取特征矩阵是一个容易理解并且便于实现的方法。但是为什么还存在奇异值分解呢？特征值分解最大的问题是只能针对方阵，即$n*n$的矩阵，而在实际的应用中，我们分解的大部分都不是方阵。</p>
+<p><strong>举个例子：</strong><br>关系型数据库中的某一张表的数据存储结构类似于一个二维矩阵，假设这个表有m行，有n个字段，那么这个表数据矩阵规模就是$m*n$。很明显，在绝大部分情况下，m和n是不相等的。如果这个时候要对这个矩阵进行特征提取，特征值分解的方法明显就不行了。此时，就可以用SVD对非方阵进行分解。</p>
+<p>2.奇异值分解</p>
+<p>奇异值分解是一个能使用与任意矩阵的一种分解方式，对于任意矩阵A总是存在一个奇异值分解：</p>
+<p>$$A=U\Sigma V^T$$</p>
+<p>假设A是一个$m * n$的矩阵，那么得到的U是一个$m * m$的方阵，U里面的正交向量被称为左奇异向量。$\Sigma$是一个$m*n$的矩阵，<br>$\Sigma$除了对角线其他元素都为0，对角线上的元素称为奇异值。</p>
+<p><strong>思考：</strong>虽说上面奇异值分解等式成立，但是如何求得左奇异值向量、右奇异值向量和奇异值呢？<br><strong>答案：</strong>由上面的奇异值分解等式，我们是不知道如何拆分矩阵A的。我们可以把奇异值和特征值联系起来。<br>首先，我们用矩阵A的转置乘以A，得到一个方阵，用这样的方阵进行特征分解，得到的特征值和特征向量满足下面的等式：<br>$$(A^TA)v_i=\lambda_iv_i$$<br>这里的$v_i$就是我们要求的右奇异向量。<br>其次，我们将A和A的转置做矩阵的乘法，得到一个方阵，用这样的方阵进行特征分解，得到的特征和特征向量满足下面的等式：<br>$$(AA^T)u_i=\lambda_iu_i$$<br>这里的$u_i$就是左奇异向量。<br><strong>思考：</strong>上面我们说$A^TA$的特征向量组成的矩阵是我们SVD中的V矩阵，而$AA^T$的特征向量组成的就是我们SVD的U矩阵，这有什么根据么？我们来证明一下，以V举证的证明为例：<br>$$A=U\Sigma V^T\Rightarrow A^T=V\Sigma^TU^T\Rightarrow A^TA=V\Sigma^TU^TU\Sigma V^T=V\Sigma^2V^T$$</p>
+<p>上式证明中使用了$U^TU=I,\Sigma^T\Sigma=\Sigma^2$,可以看出，$A^TA$的特征向量组成的矩阵就是我们SVD中的V矩阵，而$AA^T$的特征向量组成的就是我们SVD中的U矩阵。</p>
+<p><strong>补充定义：</strong><br>$$U\in M_n(R)满足U^TU=I，则U是实正交矩阵$$<br>此外，我们还可以得到奇异值，奇异值求法有两种：</p>
+<p><strong>a)第一种：</strong><br>$$A=U\Sigma V^T\Rightarrow AV\Rightarrow U\Sigma V^TV\Rightarrow AV = U\Sigma\Rightarrow Av_i=\sigma u_i\Rightarrow \sigma_i=\frac{Av_i}{u_i}$$</p>
+<p><strong>b)第二种</strong> </p>
+<p>通过上面的证明，我们还可以看出，特征值举证等于奇异值矩阵的平方，也就是说特征值和奇异值满足如下关系：<br>$$\sigma_i=\sqrt{\lambda_i}$$<br>这里的$\sigma_i$就是奇异值，奇异值$\sigma_i$跟特征值类似，在矩阵$\Sigma$中也是从大到小排列。</p>
+<p><strong>思考：</strong><br>我们已经知道如何用奇异值分解任何矩阵了，那么问题又来了，一个m<em>n的矩阵A，你把它分解成m</em>m的矩阵U、m<em>n的矩阵$\Sigma$和n</em>n的矩阵$V^T$</p>
+<p>这三个矩阵中任何一个的维度似乎一点也不比A的维度小，而且还要做两次矩阵的乘法，这不是把简单的事情变得更加复杂了吗？</p>
+<p><strong>答案：</strong><br>在奇异值分解矩阵中$\Sigma$里面的奇异值按从大到小的顺序排列，奇异值$\sigma_i$从大到小的顺序减小的特别快。<strong>在很多情况下，前10%甚至1%的奇异值的和就占了全部的奇异值之和的99%以上，也就是说，剩下的90%甚至99%的奇异值几乎没有什么作用。</strong>因此，我们可以用前面r个打的奇异值来近似描述矩阵，于是奇异值分解公式可以写成如下：</p>
+<p>$$A_{m * n}\approx U_{m * n}\Sigma_{r * r}V_{r * n}^T$$</p>
+<p>其中r是一个远远小于m和n的数，右边的三个举证相乘的结果会将使一个接近A的矩阵。如果r越接近于n，则相乘的结果越接近于A。如果r的取值远远小于n，从计算机内存的角度来说，右边三个矩阵的存储内存要远远小于矩阵A的。<strong>所以在奇异值分解中r的取值很重要，就是在计算精度和事件空间之间做选择。</strong></p>
+<h5 id="2-1-3-协方差和散度矩阵"><a href="#2-1-3-协方差和散度矩阵" class="headerlink" title="2.1.3 协方差和散度矩阵"></a>2.1.3 协方差和散度矩阵</h5><p><strong>样本均值：</strong></p>
+<p>$$\bar x = \frac{1}{n}\sum_{i=1}^Nx_i$$</p>
+<p><strong>样本方差：</strong><br>$$S^2=\frac{1}{n-1}\sum_{i=1}^n(x_i-\bar x)^2$$</p>
+<p><strong>样本X和样本Y的协方差</strong></p>
+<p>$$Cov(X,Y)=E[(X-E(X))(Y-E(Y))]=\frac{1}{n-1}\sum_{i=1}^n(x_i-\bar x)(y_i-\bar y)$$</p>
+<p>由上面的公式，我们可以得到以下结论：</p>
+<p>（1）方差的计算公式是针对一维特征，即针对同一特征不同样本的取值来进行计算得到；而协方差则必须要求至少满足二维特征；方差是协方差的特殊情况。</p>
+<p>（2）方差和协方差的除数是n-1，这是为了得到方差和协方差的无偏估计。</p>
+<p>协方差为正时，说明X和Y是正相关关系；协方差为负时，说明X和Y是负相关关系；协方差为0时，说明X和Y是相互独立。Cov(X,X)就是X的方差。当样本是n维数据时，它们的协方差实际上式协方差矩阵（对称方阵）。例如，对于3维数据（x,y,z），计算它的协方差就是：</p>
+<p>$$<br>Cov(X,Y,Z)=\begin{bmatrix}<br>Cov(x,x) &amp; Cov(x,y) &amp;Cov(x,z) \\<br>Cov(y,x) &amp; Cov(y,y) &amp; Cov(y,x)\\<br>Cov(z,x) &amp; Cov(z,x) &amp; Cov(z,z)<br>\end{bmatrix}<br>$$</p>
+<p><strong>散度矩阵定义为：</strong><br>$$S=\sum_{k=1}^n(x_k-m)(x_k-m)^T$$</p>
+<p>$$m=\frac{1}{n}\sum_{k=1}^nx_k$$</p>
+<p>对于数据X的<strong>散度矩阵为：</strong>$$XX^T$$</p>
+<p>其实协方差矩阵和三都矩阵关系密切，散度矩阵就是协方差矩阵乘以（总数据量-1）。因此它们的特征值和特征向量是一样的。这里值得注意的是，散度矩阵是SVD奇异值分解的一步，因此PCA和SVD是由很大联系的。</p>
+<h4 id="2-2-PCA算法两种实现方法"><a href="#2-2-PCA算法两种实现方法" class="headerlink" title="2.2 PCA算法两种实现方法"></a>2.2 PCA算法两种实现方法</h4><h5 id="2-2-1-基于特征值分解协方差矩阵实现PCA算法"><a href="#2-2-1-基于特征值分解协方差矩阵实现PCA算法" class="headerlink" title="2.2.1 基于特征值分解协方差矩阵实现PCA算法"></a>2.2.1 基于特征值分解协方差矩阵实现PCA算法</h5><p>输入数据集：<br>$$X={x_1,x_2,x_3,\dots,x_n}$$</p>
+<p>需要降到K维</p>
+<ol>
+<li><p>去平均值（即去中心化），即每一位特征减去各自的平均值</p>
+</li>
+<li><p>计算协方差矩阵$$\frac{1}{n}XX^T$$</p>
+<p> 注：这里除或不除n或n-1，其实对求出的特征向量没有影响。</p>
+</li>
+<li><p>用特征值分解方法求协方差矩阵</p>
+<p> $$\frac{1}{n}XX^T$$的特征值与特征向量。</p>
+</li>
+<li><p>对特征值从大到小排序，选择其中最大的k个，然后将其对应的k个特征向量分别作为行向量组成特征向量矩阵P。</p>
+</li>
+<li><p>将数据转换到k个特征向量构建的新空间中，即Y=PX。</p>
+</li>
+</ol>
+<h5 id="2-2-2-基于SVD分解协方差矩阵实现PCA算法"><a href="#2-2-2-基于SVD分解协方差矩阵实现PCA算法" class="headerlink" title="2.2.2 基于SVD分解协方差矩阵实现PCA算法"></a>2.2.2 基于SVD分解协方差矩阵实现PCA算法</h5><p>输入数据集：<br>$$X={x_1,x_2,x_3,\dots,x_n}$$</p>
+<p>需要降到K维</p>
+<ol>
+<li><p>去平均值（即去中心化），即每一位特征减去各自的平均值</p>
+</li>
+<li><p>计算协方差矩阵$$\frac{1}{n}XX^T$$</p>
+<p> 注：这里除或不除n或n-1，其实对求出的特征向量没有影响。</p>
+</li>
+<li><p>用SVD计算协方差矩阵</p>
+<p> $$\frac{1}{n}XX^T$$的特征值与特征向量。</p>
+</li>
+<li><p>对特征值从大到小排序，选择其中最大的k个，然后将其对应的k个特征向量分别作为行向量组成特征向量矩阵P。</p>
+</li>
+<li><p>将数据转换到k个特征向量构建的新空间中，即Y=PX。</p>
+<p> 在PCA降维中，我们需要找到样本协方差矩阵$XX^T$的最大K个特征向量，然后用这个最大的K个特征向量组成的矩阵来做低维投影降维。</p>
+<p> 当样本数多、样本特征数也多的时候，这个计算还是很大的。</p>
+</li>
+</ol>
+<p><strong>当我们用SVD分解协方差矩阵的时候SVD有两个好处：</strong></p>
+<ol>
+<li>有一些SVD的实现算法可以先不求出协方差矩阵$XX^T$也能求出我们的右奇异矩阵V。也就是说，我们的PCA算法可以不用做特征分解而是通过SVD来完成，这个方法在样本量很大的时候很有效。实际上，scikit-learn的PCA算法的背后真正的实现就是用的SVD，而不是特征值分解。</li>
+</ol>
+<ol start="2">
+<li>注意到PCA仅仅使用了我们SVD的左奇异矩阵，没有使用到右奇异值矩阵，那么右奇异值矩阵有什么用呢？假设我们的样本是$m * n$的矩阵X，如果我们通过SVD找到了矩阵$X^TX$最大的k个特征向量组成的$k * n$的矩阵$V^T$,可以得到一个$m * k$的矩阵$X^{‘}$,这个矩阵和我们原来$m * n$的矩阵X相比，列数从n减到了K,可见对列数进行了压缩，也就是说，左奇异矩阵可以用于对行数的压缩；右奇异矩阵可以用于对列（即特征维度）的压缩。这就是我们用SVD分解协方差矩阵实现PCA可以得到两个方向的PCA降维（即行和列两个方向）</li>
+</ol>
+]]></content>
+      <categories>
+        <category>机器学习</category>
+      </categories>
+      <tags>
+        <tag>机器学习</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>机器学习笔记（二）支持向量机（SVM）</title>
+    <url>/2020/07/16/svm/</url>
+    <content><![CDATA[<h1 id="1-支持向量机（SVM）原理"><a href="#1-支持向量机（SVM）原理" class="headerlink" title="1 支持向量机（SVM）原理"></a>1 支持向量机（SVM）原理</h1><p>从算法的功能来看，SVM几乎涵盖了机器学习的所有算法需求</p>
+<table>
+<thead>
+<tr>
+<th align="left"></th>
+<th align="left">功能</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">有监督学习</td>
+<td align="left">线性二分类与多分类（Linear Support Vector Classiﬁcation）</td>
+</tr>
+<tr>
+<td align="left"></td>
+<td align="left">非线性二分类与多分类（Support Vector Classiﬁcation, SVC）</td>
+</tr>
+<tr>
+<td align="left"></td>
+<td align="left">普通连续型变量的回归（Support Vector Regression）</td>
+</tr>
+<tr>
+<td align="left"></td>
+<td align="left">概率型连续变量的回归（Bayesian SVM）</td>
+</tr>
+<tr>
+<td align="left">无监督学习</td>
+<td align="left">支持向量聚类（Support Vector Clustering，SVC）</td>
+</tr>
+<tr>
+<td align="left"></td>
+<td align="left">异常值检测（One-class SVM）</td>
+</tr>
+<tr>
+<td align="left">半监督学习</td>
+<td align="left">转导支持向量机（Transductive Support Vector Machines，TSVM）</td>
+</tr>
+</tbody></table>
+<a id="more"></a>
+<h2 id="1-1-线性SVM用于分类的原理"><a href="#1-1-线性SVM用于分类的原理" class="headerlink" title="1.1 线性SVM用于分类的原理"></a>1.1 线性SVM用于分类的原理</h2><p>要理解SVM的损失函数，先定义决策边界，假设数据中共计有$N$个训练样本，每个训练样本$i$可以被表示为$(x_i,y_i)(i=1,2,\dots N)$，其中$x_i$是$(x_{1i},x_{2i}\dots x_{ni})^T$这样一个特征向量，每个样本总共包含$n$个特征。</p>
+<p>二分类标签$y_i$取值为${-1,1}$</p>
+<p>若$n=2$，则有$i=(x_{1i},x_{2i},y_i)^T$，在二维平面上，以$x_2$为横坐标，$x_1$为从坐标，$y$为颜色，来可视化所有的$N$个样本</p>
+<p><img src="https://note.youdao.com/yws/api/personal/file/A4A7E90B88454F098F8BDBDCCF02B27D?method=download&shareKey=a5c90f8c069094d544bacfbb471dbd02" alt></p>
+<p>所以要在这个数据集上找寻一个决策边界(超平面)，让紫色点的标签为1，红色点的标签为-1</p>
+<p>二维平面上，任意一条线可以表示为：<br>$$x_1 = ax_2+b$$</p>
+<p>将表达式变换：<br>$$0=ax_2-x_1+b$$<br>$$0=(a,-1)*\binom{x_2}{x_1}+b$$<br>$$0=w^Tx+b$$</p>
+<p>其中$(a,-1)$是参数向量$w$，$x$是特征向量，$b$是截距，在SVM中，使用这个表达式表示决策边界。</p>
+<p><strong>我们的目标是求解能够让边际最大化的决策边界</strong></p>
+<p>如果在决策边界上任意取两个点$x_a,x_b$，并代入决策边界的表达式，则有：<br>$$w^Tx_a+b=0$$<br>$$w^Tx_b+b=0$$<br>两式相减，可以得到：<br>$$w^T*(x_a-x_b)=0$$</p>
+<p>两个向量的点积为0，证明参数向量$w$的方向垂直与我们的决策边界</p>
+<p><img src="https://note.youdao.com/yws/api/personal/file/F29C776BA1854D9C87B9BA1EEFF2F3B9?method=download&shareKey=f6addba1a1e3223deb09059443ef2cf1" alt></p>
+<p>由于紫色的点代表标签$y=1，y=-1$，因此以下式判定：<br>$$<br>y=<br>\begin{cases}<br>1, &amp;if\ w*x_t+b&gt;0\\<br>-1, &amp;if\ w * x_t+b&lt;0<br>\end{cases}<br>$$</p>
+<p><strong>注意：决策边界以上的点都为正，以下的点都为负，是人为规定的，不会影响对参数$w$和截距$b$的求解</strong></p>
+<p>决策边界的两边要有两个超平面，两个超平面在二维空间中是两条平行线（虚线超平面），而他们之间的距离就是我们的边际$d$。<br>我们将这两条平行线表示为：</p>
+<p>$$w * x+b=k, w * x+b=-k$$</p>
+<p>两边同时除以$k$,则可以得到：</p>
+<p>$$w * x+b=1, w * x+b=-1$$</p>
+<p>表达式两边1和-1分别表示了两条平行决策边界的虚线到决策边界的相对距离。让这两条线分别过两类数据中距离决策边界最近的点，这些点被称为“支持向量”。</p>
+<p>令紫色类的点为$x_p$，红色类的点为$x_r$，则可以得到：</p>
+<p>$$w * x_p+b=1,w * x_r+b=-1$$</p>
+<p>两个式相减，则有：<br>$$w * (w_p-w_r)=2$$<br>如下图所示，$(x_p-x_r)$可以表示为两点之间的连线，而边际$d$是平行于$w$的。</p>
+<p>又因为以下数学性质：</p>
+<table>
+<thead>
+<tr>
+<th align="left">线性代数中模长的运用</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">向量$b$除以自身的模长可以得到$b$方向上的单位向量</td>
+</tr>
+<tr>
+<td align="left">向量a乘以向量b方向上的单位向量，可以得到向量a在向量b方向上的投影的长度。</td>
+</tr>
+</tbody></table>
+<p>所以，将上述式子两边同时除以$||w||$, 则可以得到：<br>$$\frac{w*(x_p-x_r)}{||w||}=\frac{2}{||w||}$$<br>$$d = \frac{2}{||w||}$$</p>
+<p><img src="https://note.youdao.com/yws/api/personal/file/B26C385AAC024C1791BBFDDF643F3D01?method=download&shareKey=aa3e06d8df0f9b472581aa1282400ae3" alt></p>
+<p>所以，求最大边界，对应的就是最大化d,求解以下函数的最小值：<br>$$f(w)=\frac{||w||^2}{2}$$</p>
+<p>对于任意样本，可以把决策函数写作：<br>$$w * x_i+b&gt;=1\   if\ y_i=1$$<br>$$w * x_i+b&lt;=-1 \  if\ y_i=-1$$<br>将两个式子整合：<br>$$y_i(w*x_i+b)&gt;=1, i=1,2,\dots N$$</p>
+<h2 id="1-2-线性SVM的拉格朗日对偶函数和决策函数"><a href="#1-2-线性SVM的拉格朗日对偶函数和决策函数" class="headerlink" title="1.2 线性SVM的拉格朗日对偶函数和决策函数"></a>1.2 线性SVM的拉格朗日对偶函数和决策函数</h2><p>损失函数分为两个部分：最要最小化的函数，以及参数求解后必须满足的约束条件</p>
+<h3 id="1-2-1-将损失函数从最初形态转换为拉格朗日乘数形态"><a href="#1-2-1-将损失函数从最初形态转换为拉格朗日乘数形态" class="headerlink" title="1.2.1 将损失函数从最初形态转换为拉格朗日乘数形态"></a>1.2.1 将损失函数从最初形态转换为拉格朗日乘数形态</h3><p><strong>1.为什么要进行转换？</strong></p>
+<p>我们的目标是求解让损失函数最小化的$w$，希望能够找出一种方式，能在满足条件$y_i(w*x_i+b)&gt;=1$，因此，一种业界认可的方式是使用拉格朗日乘数法(standard Lagrange multiplier method)</p>
+<p><strong>2.为什么可以进行转换</strong></p>
+<p>拉格朗日乘数法正好可以用来解决凸优化问题，使用拉格朗日乘数法将损失函数改写为考虑了约束条件的形式：<br>$$L(w,b,\alpha)=\frac{1}{2}||w||^2-\sum_{i=1}^N\alpha_i(y_i(w*x_i+b)-1) (\alpha_i&gt;=0)$$</p>
+<p>其中，$\alpha_i$叫作拉格朗日乘数。</p>
+<p><strong>3.怎样进行转换</strong></p>
+<p>拉格朗日函数分为两个部分，第一部分是原始损失函数，第二部分是约束条件。我们希望，$L(w,b,\alpha)$在满足约束条件下，最小化损失函数。所以要先以$\alpha$为参数，求解$L(w,b,\alpha)$的最大值，在以$w,b$为参数，求解$L(w,b,\alpha)$的最小值。</p>
+<p>因此，我们的目标可写作：</p>
+<p>$$\min_{w,b}\max_{\alpha_i&gt;=0}L(w,b,\alpha) (\alpha_i&gt;=0)$$</p>
+<p>首先，第一步执行max，即最大化$L(w,b,\alpha)$，有两种情况：</p>
+<ul>
+<li>当$y_i(w * x_i+b)&gt;1$，函数的第二部分$\sum_{i=1}^N\alpha_i(y_i(w*x_i+b)-1)$一定为正，式子$\frac{1}{2}||w||^2$就要减去一个正数，此时若需要最大化$L(w,b,\alpha)$,则$\alpha$必须取到0</li>
+<li>当$y_i(w * x_i+b)&lt;1$，函数的第二部分$\sum_{i=1}^N\alpha_i(y_i(w*x_i+b)-1)$一定为负，式子$\frac{1}{2}||w||^2$就要减去一个负数，此时若需要最大化$L(w,b,\alpha)$,则$\alpha$必须取到正无穷</li>
+</ul>
+<p>因此，可以把函数的第二部分当做一个惩罚项，只有当$y_i(w*x_i+b)&gt;1$时函数没有受到惩罚，从而在求解最小值的时候让约束条件满足</p>
+<p>现在，$L(w,b,\alpha)$是我们新的损失函数，目标要通过先最大化，再最小化求解$w，b$</p>
+<h3 id="1-2-2-将拉格朗日函数转换为拉格朗日对偶函数"><a href="#1-2-2-将拉格朗日函数转换为拉格朗日对偶函数" class="headerlink" title="1.2.2 将拉格朗日函数转换为拉格朗日对偶函数"></a>1.2.2 将拉格朗日函数转换为拉格朗日对偶函数</h3><p><strong>1.为什么要进行转换？</strong><br>求极值，最简单的方法是对参数求导后让一阶导数为0，这里对参数$w,b$分别求偏导并使其为0</p>
+<p>$$<br>\begin{equation}\begin{split}<br>L(w,b,\alpha)&amp;=\frac{1}{2}||w||^2-\sum_{i=1}^N\alpha_i(y_i(w * x_i+b)-1)\\<br>&amp;=\frac{1}{2}||w||^2-\sum_{i=1}^N(\alpha_iy_iw * x_i+\alpha_iy_ib-\alpha_i) \\<br>&amp; =\frac{1}{2}||w||^2-\sum_{i=1}^N(\alpha_iy_iw * x_i)-\sum_{i=1}^N\alpha_iy_ib+\sum_{i=1}^N\alpha_i\\<br>&amp;=\frac{1}{2}(w^Tw)^{\frac{1}{2}*2}-\sum_{i=1}^N(\alpha_iy_iw * x_i)-\sum_{i=1}^N\alpha_iy_ib+\sum_{i=1}^N\alpha_i<br>\end{split}\end{equation}<br>$$</p>
+<p>$$<br>\begin{equation}\begin{split}<br>\frac{\partial L(w,b,\alpha)}{\partial w}&amp;=\frac{1}{2}*2w-\sum_{i=1}^N\alpha_iy_ix_i \\<br>&amp;=w-\sum_{i=1}^N\alpha_iy_ix_i=0 \to w = \sum_{i=1}^N\alpha_iy_ix_i<br>\end{split}\end{equation}<br>$$</p>
+<p>$$<br>\begin{equation}\begin{split}<br>\frac{\partial L(w,b,\alpha)}{\partial b}&amp;=\sum_{i=1}^N\alpha_iy_i=0 \to \sum_{i=1}^N\alpha_iy_i=0 \\<br>\end{split}\end{equation}<br>$$</p>
+<p>由于两个求偏导结果中都带有未知的拉格朗日乘数$\alpha_i$，因此需要有一种方法来求解拉格朗日乘数，而拉格朗日对偶函数，是只带有$alpha_i$而不带有$w,b$的形式，可以求解$\alpha_i$然后再代入（2）、（3）式中来求解参数$w,b$</p>
+<p><strong>2.为什么能够进行转换</strong></p>
+<p>对于任意一个拉格朗日函数$L(x,\alpha)=f(x)+\sum_{i=1}^q\alpha_ih_i(x)$，都存在一个与它对应的对偶函数$g(\alpha)$，只带有拉格朗日乘数$\alpha$作为唯一参数。如果$L(x,\alpha)$存在最优解并可以表示为$\min_xL(x,\alpha)$，并且对偶函数的最优解也存在并可以表示为$\max_\alpha g(\alpha)$，则可以定义对偶差异(dual gap)<br>$$\Delta = \min_{x}L(x,\alpha)-\max_\alpha g(\alpha)$$</p>
+<p>如果$\Delta=0$,则称$L(x,\alpha)$与其对偶函数之间存在强对偶关系，此时可以通过求其对偶函数的最优解来代替原始函数。</p>
+<p>强对偶关系存在需要满足KKT(Karush-Kuhn-Tucker)条件：<br>$$<br>\begin{equation}\begin{split}<br>\frac{\partial L}{\partial x_i}=0,\forall_i = 1,2,\dots,d \\<br>h_i(x)&lt;=0,\forall_i = 1,2,\dots,q \\<br>\alpha_i&gt;=0,\forall_i = 1,2,\dots,q \\<br>\alpha_ih_i(x)=0,\forall_i = 1,2,\dots,q \\<br>\end{split}\end{equation}<br>$$</p>
+<p>如果我们可以让KKT条件全部成立，则可以求解出$L(w,b,\alpha)$的对偶函数来求解$\alpha$</p>
+<p>之前求偏导时，得到<br>$$w = \sum_{i=1}^N\alpha_iy_ix_i$$<br>$$\sum_{i=1}^N\alpha_iy_i=0$$</p>
+<p>并且满足：<br>$$-(y(w*x_i+b)-1)&lt;=0, \alpha_i&gt;=0$$</p>
+<p>接下来，只需要满足：<br>$$\alpha_i(y_i(w*x_i+b)-1)=0$$</p>
+<p>当这个条件满足时，能够让$y_i(w*x_i+b)-1=0$是在虚线的超平面上的样本点，即我们的支持向量，其余样本点必须满足$\alpha_i=0$。</p>
+<p>现在KKT的五个条件都得到了满足，可以使用对偶函数求解。</p>
+<p><strong>3.怎样进行转换</strong></p>
+<p>首先将求导为0代入原始：<br>$$<br>\begin{equation}\begin{split}<br>L(w,b,\alpha)&amp;=\frac{1}{2}||w||^2-\sum_{i=1}^N\alpha_i(y_i(w * x_i+b)-1)\\<br>&amp;=\frac{1}{2}||w||^2-\sum_{i=1}^N(\alpha_iy_iw * x_i+\alpha_iy_ib-\alpha_i) \\<br>&amp; =\frac{1}{2}||w||^2-\sum_{i=1}^N(\alpha_iy_iw * x_i)-\sum_{i=1}^N\alpha_iy_ib+\sum_{i=1}^N\alpha_i\\<br>&amp;=\frac{1}{2}(w^Tw)^{\frac{1}{2}*2}-w\sum_{i=1}^N(\alpha_iy_i * x_i)-b\sum_{i=1}^N\alpha_iy_i+\sum_{i=1}^N\alpha_i \\<br>\end{split}\end{equation}</p>
+<p>将（2）、（3）式代入则有<br>$$=\frac{1}{2}w^Tw-w^Tw+\sum_{i=1}^N\alpha_i $$</p>
+<p>$$=-\frac{1}{2}w^Tw+\sum_{i=1}^N\alpha_i$$</p>
+<p>将（2）式代入，则有：<br>$$=-\frac{1}{2}\sum_{i=1}^N\alpha_iy_ix_i^T * \sum_{i=1}^N\alpha_iy_ix_i+\sum_{i=1}^N\alpha_i$$</p>
+<p>令这两个$w$源于不同的特征和标签：<br>$$=-\frac{1}{2}\sum_{i=1,j=1}^N\alpha_iy_ix_i^T\alpha_iy_ix_i+\sum_{i=1}^N\alpha_i$$</p>
+<p>$$=\sum_{i=1}^N\alpha_i-\frac{1}{2}\sum_{i=1,j=1}^N\alpha_i\alpha_jy_iy_jx_i^Tx_j$$</p>
+<p>将矩阵相乘转换为内积形式：<br>$$L_d = \sum_{i=1}^N\alpha_i-\frac{1}{2}\sum_{i=1,j=1}^N\alpha_i\alpha_jy_iy_jx_i * x_j$$</p>
+<p>函数$L_d$就是对偶函数，其对偶差异$L(w,b,\alpha)$和$L_d$，则有：<br>$$\Delta = \min_{w,b}\max_{\alpha_i&gt;=0}L(w,b,\alpha)-\max_{\alpha_i&gt;=0}L_d$$</p>
+<p>又因为在推导$L_d$时，对$L(w,b,\alpha)$偏导为0，所以可以把公式写成：<br>$$\Delta = \min_{w,b}\max_{\alpha_i&gt;=0}L(w,b,\alpha)-\max_{\alpha_i&gt;=0}\min_{w,b}L(w,b,\alpha)$$</p>
+<p>又因为所有KKT条件满足，所以：<br>$$ \min_{w,b}\max_{\alpha_i&gt;=0}L(w,b,\alpha)=\max_{\alpha_i&gt;=0}\min_{w,b}L(w,b,\alpha)$$</p>
+<p>所以，我们只需要求解对偶函数的最大值就可以了，最终，目标函数变化为：<br>$$\max_{\alpha_i&gt;=0}(\sum_{i=1}^N\alpha_i-\frac{1}{2}\sum_{i=1,j=1}^N\alpha_i\alpha_jy_iy_jx_i * x_j)$$</p>
+<h3 id="1-2-3-求解拉格朗日对偶函数极值及其后续过程"><a href="#1-2-3-求解拉格朗日对偶函数极值及其后续过程" class="headerlink" title="1.2.3 求解拉格朗日对偶函数极值及其后续过程"></a>1.2.3 求解拉格朗日对偶函数极值及其后续过程</h3><p>需要使用梯度下降、SMO或者二次规划(QP, quadratic programming)来求解，但是这一过程对数学要求的程度已经远远超出了需要的程度，因此不再深入了解。</p>
+<p>只需要知道，一旦求到了$\alpha$值，就可以求得决策边界参数$w,b$</p>
+<p>当求得参数后，就可以得到决策边界的表达式：<br>$$f(x_{test})=sign(w*x_{test}+b)$$</p>
+<p>其中$x_{test}$是任意测试样本，$sign(h)$是符号函数。</p>
+<p>至此，我们对SVM的原理已经有了一个比较深刻的理解。</p>
+<h2 id="1-3-非线性SVM与核函数"><a href="#1-3-非线性SVM与核函数" class="headerlink" title="1.3 非线性SVM与核函数"></a>1.3 非线性SVM与核函数</h2><h3 id="1-3-1-SVC在非线性数据上的推广"><a href="#1-3-1-SVC在非线性数据上的推广" class="headerlink" title="1.3.1 SVC在非线性数据上的推广"></a>1.3.1 SVC在非线性数据上的推广</h3><p>为了找出非线性数据的线性决策边界，我们需要将数据从原始空间$x$，投射到新空间$\Phi(x)$中，$\Phi(x)$是一个映射函数，代表某种非线性变换。线性SVM的原理可以很容易推广到非线性情况下，推导过程和逻辑都与线性SVM一样，只是在定义决策边界之前，需要对数据升维，将原始的$x$，转换成$\Phi(x)$</p>
+<p>因此，非线性SVM的损失函数初始形态为：<br>$$\min_{w,b}\frac{||w||^2}{2}$$<br>$$subject\  to\  y_i(w * \Phi(x)+b&gt;=1), i=1,2,\dots,N$$<br>拉格朗日和拉格朗日对偶函数也可得：<br>$$L(w,b,\alpha)=\frac{1}{2}||w||^2-\sum_{i=1}^N\alpha_i(y_i(w * \Phi(x)+b)-1)$$<br>$$L_d = \sum_{i=1}^N\alpha_i - \frac{1}{2}\sum_{i,j}\alpha_i\alpha_j y_i y_j\Phi(x_i)\Phi(x_j)$$</p>
+<p>同理可以使用相同的推导方式让拉格朗日函数满足KKT条件，并且对每个参数求导，再使用梯度下降或SMO等方式求解，最终得到决策边界函数：<br>$$f(x_{test})=sign(w*\Phi(x_{test})+b)$$</p>
+<h3 id="1-3-2-重要参数kernel"><a href="#1-3-2-重要参数kernel" class="headerlink" title="1.3.2 重要参数kernel"></a>1.3.2 重要参数kernel</h3><p>但是，我们不清楚什么样的数据应该使用什么类型的映射函数确保在变换空间中可以找出决策边界。</p>
+<table>
+<thead>
+<tr>
+<th align="left">关键概念：核函数</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">解决这个问题的数学方式，叫作“核技巧”(Kernel Trick)，是一种讷讷够使用数据原始空间中的向量计算表示生维后的空间中的点积结果的数学方式$K(u,v)=\Phi(u)*\Phi(v)$,而这个点积函数$K(u,v)$，就被叫作“核函数”(Kernel Funciton)</td>
+</tr>
+</tbody></table>
+<p>选用不同的核函数，就可以解决不同数据分布下寻找超平面的问题。以下是“kernel”在Sklearn中的几种选项：</p>
+<p><img src="https://note.youdao.com/yws/api/personal/file/0D76DD0804FD486EA95C591CDF1335C5?method=download&shareKey=c5e8aae3bd6137b2f4c315008302565b" alt></p>
+<h3 id="1-3-3-核函数的优势和缺陷"><a href="#1-3-3-核函数的优势和缺陷" class="headerlink" title="1.3.3 核函数的优势和缺陷"></a>1.3.3 核函数的优势和缺陷</h3><ol>
+<li>线性核，尤其是多项式核：在高次项计算非常缓慢</li>
+<li>rbf和多项式核不擅长处理量纲不统一的数据集</li>
+</ol>
+<p><strong>因此，SVM执行之前，推荐先进行数据的无量纲化处理</strong></p>
+<h3 id="1-3-4-核函数相关的参数：degree-amp-gamma-amp-coef0"><a href="#1-3-4-核函数相关的参数：degree-amp-gamma-amp-coef0" class="headerlink" title="1.3.4 核函数相关的参数：degree &amp; gamma &amp; coef0"></a>1.3.4 核函数相关的参数：degree &amp; gamma &amp; coef0</h3><ul>
+<li>gamma是表达式中的$\gamma$</li>
+<li>degree是多项式核函数的次数$d$</li>
+<li>ceof0是常数项</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th align="left">参数</th>
+<th align="left">含义</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">degree</td>
+<td align="left">整数，可不填，默认3</td>
+</tr>
+<tr>
+<td align="left"></td>
+<td align="left">多项式核函数的次数（’poly’），如果核函数没有选择”poly”，这个参数会被忽略</td>
+</tr>
+<tr>
+<td align="left">gamma</td>
+<td align="left">浮点数，可不填，默认“auto”</td>
+</tr>
+<tr>
+<td align="left"></td>
+<td align="left">核函数的系数，仅在参数Kernel的选项为”rbf”,”poly”和”sigmoid”的时候有效</td>
+</tr>
+<tr>
+<td align="left"></td>
+<td align="left">输入“auto”，自动使用1/(n_features)作为gamma的取值</td>
+</tr>
+<tr>
+<td align="left"></td>
+<td align="left">输入”scale”，则使用1/(n_features * X.std())作为gamma的取值</td>
+</tr>
+<tr>
+<td align="left">ceof0</td>
+<td align="left">浮点数，可不填，默认=0.0</td>
+</tr>
+<tr>
+<td align="left"></td>
+<td align="left">核函数中的常数项，它只在参数kernel为’poly’和’sigmoid’的时候有效。</td>
+</tr>
+</tbody></table>
+<h2 id="1-4-硬间隔与软间隔：重要参数C"><a href="#1-4-硬间隔与软间隔：重要参数C" class="headerlink" title="1.4 硬间隔与软间隔：重要参数C"></a>1.4 硬间隔与软间隔：重要参数C</h2><h3 id="1-4-1-SVM在软间隔数据上的推广"><a href="#1-4-1-SVM在软间隔数据上的推广" class="headerlink" title="1.4.1 SVM在软间隔数据上的推广"></a>1.4.1 SVM在软间隔数据上的推广</h3><p>我们可以通过调整我们对决策边界的定义，将硬间隔时得出的数学结论推广到软间隔的情况上，让决策边界能够忍  受一小部分训练误差。这个时候，我们的决策边界就不是单纯地寻求最大边际了，因为对于软间隔地数据来说，边  际越大被分错的样本也就会越多，因此我们需要找出一个”最大边际“与”被分错的样本数量“之间的平衡<br>|关键概念：硬间隔与软间隔|<br>|:–|<br>|当两组数据是完全线性可分，我们可以找出一个决策边界使得训练集上的分类误差为0，这两种数据就被称为  是存在”硬间隔“的。当两组数据几乎是完全线性可分的，但决策边界在训练集上存在较小的训练误差，这两种数据就被称为是存在”软间隔“。|</p>
+<p><img src="https://note.youdao.com/yws/api/personal/file/C2FFA1AA25854902ACF46B5A0C5D3410?method=download&shareKey=95be7710c6d12317d6fbda16a8bd436e" alt></p>
+<p>由上图可知，超平面无法让数据上的训练误差为0，因此需要放松判别函数的条件，引入松弛系数$\zeta$来帮助优化判别函数：<br>$$w<em>x_i +b&gt;=1-\zeta_i if\ y_i = 1$$<br>$$w</em>x_i +b&lt;=-1+\zeta_i if\ y_i = -1$$</p>
+<p>其中$\zeta_i&gt;0$，在求解最大边际的损失函数中加上一个惩罚项，我们的拉格朗日函数，拉格朗日对偶函数也因此被松弛系数改变：<br>$$\min_{w,b,\zeta}\frac{||w||^2}{2}+C\sum_{i=1}^n\zeta_i$$<br>$$subject to y_i(w* \Phi(x_i)+b&gt;=1-\zeta_i)$$<br>$$\zeta_i&gt;=0,i=1,2,\dots,N$$</p>
+<p>其中，$C$是用来控制惩罚力度的系数</p>
+<p>拉格朗日函数为(其中$\mu$是第二个拉格朗日乘数)：<br>$$L(w,b,\alpha,\zeta)= \frac{1}{2}||w||^2+C\sum_{i=1}^N\zeta_i-\sum_{i=1}^N\alpha_i(y_i(w*\zeta(x_i)+b)-1+\zeta_i)-\sum_{i=1}^N\mu_i\zeta_i$$</p>
+<p>需要满足的KKT条件为：<br>$$\frac{\partial L(w,b,\alpha,\zeta)}{\partial w}=\frac{\partial L(w,b,\alpha,\zeta)}{\partial b}=\frac{\partial L(w,b,\alpha,\zeta)}{\partial \zeta}=0$$</p>
+<p>$$\zeta_i&gt;=0,\alpha_i&gt;=0,\mu_i&gt;=0$$<br>$$\alpha_i(y_i(w*\Phi(x_i)+b)-1+\zeta_i)=0$$<br>$$\mu_i\zeta_i=0$$</p>
+<p>拉格朗日对偶函数为：<br>$$L_D = \sum_{i=1}^N\alpha_i - \frac{1}{2}\sum_{i,j}\alpha_i\alpha_jy_iy_j\Phi(x_i)\Phi(x_j)$$<br>$$subject\  to\  C &gt;=\alpha_i&gt;=0$$<br>公式中唯一出现的新变量，松弛系数惩罚力度$C$。由参数$C$来进行控制</p>
+<h3 id="1-4-2-重要参数C"><a href="#1-4-2-重要参数C" class="headerlink" title="1.4.2 重要参数C"></a>1.4.2 重要参数C</h3><p>参数C用于权衡”训练样本的正确分类“与”决策函数的边际最大化“两个不可同时完成的目标，希望找出一个平衡点来让模型的效果最佳。</p>
+<table>
+<thead>
+<tr>
+<th align="left">参数</th>
+<th align="left">含义</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">C</td>
+<td align="left">浮点数，默认1，必须大于等于0，可不填</td>
+</tr>
+<tr>
+<td align="left"></td>
+<td align="left">松弛系数的惩罚项系数。如果C值设定比较大，那SVC可能会选择边际较小的，能够更好地分类所有训练点的决策边界，不过模型的训练时间也会更长。如果C的设定值较小，那SVC会尽量最大化边界，决策功能会更简单，但代价是训练的准确度。换句话说，C在SVM中的影响就像正则化参数对逻辑回归的影响。</td>
+</tr>
+</tbody></table>
+]]></content>
+      <categories>
+        <category>机器学习</category>
+      </categories>
+      <tags>
+        <tag>机器学习</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>机器学习笔记（三）线性回归</title>
+    <url>/2020/07/22/LinearRegression/</url>
+    <content><![CDATA[<h1 id="1-多元线性回归LinearRegression"><a href="#1-多元线性回归LinearRegression" class="headerlink" title="1 多元线性回归LinearRegression"></a>1 多元线性回归LinearRegression</h1><h2 id="1-1-多元线性回归的基本原理"><a href="#1-1-多元线性回归的基本原理" class="headerlink" title="1.1 多元线性回归的基本原理"></a>1.1 多元线性回归的基本原理</h2><p>对于一个$n$个特征的样本$i$而言，回归方程为：<br>$$\hat y_i = w_0 +w_1x_{i1}+w_2x_{i2}+\dots+w_nx_{in}$$</p>
+<p>$w_0$被称为截距，$w_1 \sim w_n$被称为回归系数，$w_{i1} \sim x_{in}$是样本$i$上的不同特征，如果考虑我们有m个样本，则回归可以被写作：<br>$$\hat y = w_0 +w_1x_{1}+w_2x_{2}+\dots+w_nx_{n}$$</p>
+<a id="more"></a>
+
+<p>其中$y$是包含了m个全部样本回归的列向量，$w$可以被看作是结构为$(n+1,1)$的列矩阵，$X$是一个结构为$(m,n+1)$的特征矩阵，则有：</p>
+<p>$$\begin{bmatrix}<br>\hat y_1 \\<br>\hat y_2\\<br>\hat y_3\\<br>\dots\\<br>\hat y_m\\<br>\end{bmatrix}=\begin{bmatrix}<br>1&amp; x_{11} &amp; x_{12} &amp; x_{13} &amp; \dots &amp; x_{1n} \\<br>1&amp; x_{21} &amp; x_{22} &amp; x_{23} &amp; \dots &amp; x_{2n}\\<br>1&amp; x_{31} &amp; x_{32} &amp; x_{33} &amp; \dots &amp; x_{3n}\\<br>\dots\\<br>1&amp; x_{m1} &amp; x_{m2} &amp; x_{m3} &amp; \dots &amp; x_{mn}\\<br>\end{bmatrix} * \begin{bmatrix}<br>w_0 \\<br>w_1 \\<br>w_2 \\<br>\dots\\<br>w_n \\<br>\end{bmatrix}$$</p>
+<p>$$\hat y = Xw$$</p>
+<p>在多元线性回归中，定义损失函数如下：</p>
+<p>$$\sum_{i=1}^m(y_i-\hat y_i)^2=\sum_{i=1}^m(y_i-X_iw)^2$$</p>
+<p>其中$y_i$是样本$i$对应的真实标签，$\hat y_i$，也就是$X_iw$样本$i$在一组参数$w$下的预测标签。</p>
+<p>因此，最小化损失，将求解目标转化为：<br>$$\min_w||y-Xw||^2_2$$</p>
+<p>我们称这个式子为SEE(Sum of Sqaured Error, 误差平方和)或者RSS(Residual Sum of Squares 残差平方和)</p>
+<h2 id="1-2-最小二乘法求解多元线性回归的参数"><a href="#1-2-最小二乘法求解多元线性回归的参数" class="headerlink" title="1.2 最小二乘法求解多元线性回归的参数"></a>1.2 最小二乘法求解多元线性回归的参数</h2><p>首先，我们对$w$求导：<br>$$<br>\begin{equation}\begin{split}<br>\frac{\partial RSS}{\partial w}&amp;=\frac{\partial ||y-Xw||^2_2}{\partial w} \\<br>&amp; =\frac{\partial (y-Xw)^T(y-Xw)}{\partial w}<br>\end{split}\end{equation}<br>$$<br>$$\because (A-B)^T = A^T-B^T 并且(AB)^T=B^T*A^T$$<br>$$\therefore =\frac{\partial (y^T-w^TX^T)(y-Xw)}{\partial w}$$<br>$$=\frac{\partial(y^Ty-w^TX^Ty-y^TXw+w^TX^TXw)}{\partial w}$$</p>
+<p>$\because$ 矩阵求导中，$a$为常数，有如下规则：<br>$$\frac{\partial a}{\partial A}=0,\frac{\partial A^TB^TC}{\partial A}=B^TC,\frac{\partial C^TBA}{\partial A}=B^TC,\frac{\partial A^TBA}{\partial A}=(B+B^T)A$$</p>
+<p>$$=0-X^Ty-X^Ty+2X^TXw$$<br>$$=X^TXw-X^Ty$$</p>
+<p>然后让一阶导数为0：<br>$$X^TXw-X^Ty=0$$<br>$$X^TXw=X^Ty$$<br>左乘一个$(X^TX)^{-1}$则有：<br>$$w=(X^TX)^{-1}X^Ty$$</p>
+<p>在这里，逆矩阵的充分必要条件是特征矩阵不存在多重共线性。并且在统计学中，使用最小二乘法求解线性回归方程式一种“无偏估计”的方法，也就是标签的分布必须服从正太分布。</p>
+<h2 id="1-3-linear-model-LinearRegression"><a href="#1-3-linear-model-LinearRegression" class="headerlink" title="1.3 linear_model.LinearRegression"></a>1.3 linear_model.LinearRegression</h2><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">class sklearn.linear_model.LinearRegression (ﬁt_intercept&#x3D;True, normalize&#x3D;False, copy_X&#x3D;True, n_jobs&#x3D;None)</span><br></pre></td></tr></table></figure>
+
+<table>
+<thead>
+<tr>
+<th align="left">参数</th>
+<th align="left">含义</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">ﬁt_intercept</td>
+<td align="left">布尔值，可不填，默认为True是否计算此模型的截距。如果设置为False，则不会计算截距</td>
+</tr>
+<tr>
+<td align="left">normalize</td>
+<td align="left">布尔值，可不填，默认为False当ﬁt_intercept设置为False时，将忽略此参数。如果为True，则特征矩阵X在进入回归之前将会被减去均值（中心化）并除以L2范式（缩放）。如果你希望进行标准化，请在ﬁt数据之前   使用preprocessing模块中的标准化专用类StandardScaler</td>
+</tr>
+<tr>
+<td align="left">copy_X</td>
+<td align="left">布尔值，可不填，默认为True如果为真，将在X.copy()上进行操作，否则的话原本的特征矩阵X可能被线性回归影响并覆盖</td>
+</tr>
+<tr>
+<td align="left">n_jobs</td>
+<td align="left">整数或者None，可不填，默认为None用于计算的作业数。只在多标签的回归和数据量足够大的时候才生效。除非None在joblib.parallel_backend上下文中，否则None统一表示为1。如果输入 -1，则表示使用全部的CPU来进行计算。</td>
+</tr>
+</tbody></table>
+<h1 id="2-多重共线性：岭回归与Lasso"><a href="#2-多重共线性：岭回归与Lasso" class="headerlink" title="2 多重共线性：岭回归与Lasso"></a>2 多重共线性：岭回归与Lasso</h1><h2 id="2-1-多重共线性"><a href="#2-1-多重共线性" class="headerlink" title="2.1 多重共线性"></a>2.1 多重共线性</h2><p><img src="https://note.youdao.com/yws/api/personal/file/A616BDB61AA6498B98A1A83048F5B23F?method=download&shareKey=8d479565cbc667165d0e688acf357ea0" alt></p>
+<ul>
+<li>多重共线性与相关性</li>
+</ul>
+<p>多重共线性如果存在，则线性回归就无法使用最小二乘法求解，但是不代表不能存在相关性——机器学习不要求特征之间必须独立，只要不是高度相关就好。</p>
+<h2 id="2-2-岭回归"><a href="#2-2-岭回归" class="headerlink" title="2.2 岭回归"></a>2.2 岭回归</h2><h3 id="2-2-1-岭回归解决多重共线性问题"><a href="#2-2-1-岭回归解决多重共线性问题" class="headerlink" title="2.2.1 岭回归解决多重共线性问题"></a>2.2.1 岭回归解决多重共线性问题</h3><p>岭回归在多元线性回归的损失函数上加了正则项，表达为系数$w$的$L_2$范式乘以正则化系数$\alpha$，岭回归的损失函数的完整表达式写作：<br>$$\min_w||Xw-y||^2_2+\alpha||w||_2^2$$</p>
+<p>现在对$w$进行求导：<br>$$\frac{\partial(RSS+\alpha||w||^2_2)}{\partial w}=\frac{\partial(||y-Xw||^2_2+\alpha||w||^2_2)}{\partial w}$$<br>$$=\frac{\partial(y-Xw)^T(y-Xw)}{\partial w}+\frac{\partial \alpha||w||^2_2}{\partial w}$$<br>$$=0-2X^Ty+2X^TXw+2\alpha$$<br>将含有$w$的项合并，其中$\alpha$为常数<br>为了实现矩阵相加，乘以一个结构为$n*n$的单位矩阵$I$:<br>$$=(X^TX+\alpha I)w-X^Ty$$<br>$$(X^TX+\alpha I)w=X^Ty$$</p>
+<p>现在，只要$(X^TX+\alpha I)$存在逆矩阵，就可以解出$w$。一个矩阵存在逆举证的充分必要条件是这个矩阵的行列式不为0.</p>
+<p>假设原本的特征矩阵$X^TX$不满秩：</p>
+<p>$$X^TX=\begin{vmatrix}<br>\alpha_{11} &amp; \alpha_{12} &amp;\alpha_{13}&amp;\dots &amp;\alpha_{1n} \\<br>0 &amp; \alpha_{22} &amp;\alpha_{23}&amp;\dots &amp;\alpha_{2n} \\<br>0 &amp; 0 &amp;\alpha_{33}&amp;\dots &amp;\alpha_{3n} \\<br>&amp; &amp; \dots &amp;\\<br>0 &amp; 0 &amp;0&amp;\dots &amp;0 \\<br>\end{vmatrix}$$</p>
+<p>然而，加上了$\alpha I$后：</p>
+<p>$$X^TX+\alpha I=\begin{vmatrix}<br>\alpha_{11}+\alpha &amp; \alpha_{12} &amp;\alpha_{13}&amp;\dots &amp;\alpha_{1n} \\<br>0 &amp; \alpha_{22} &amp;\alpha_{23}+\alpha&amp;\dots &amp;\alpha_{2n} \\<br>0 &amp; 0 &amp;\alpha_{33}&amp;\dots &amp;\alpha_{3n}+\alpha \\<br>&amp; &amp; \dots &amp;\\<br>0 &amp; 0 &amp;0&amp;\dots &amp;\alpha \\<br>\end{vmatrix}$$</p>
+<p>现在，这个行列式不存在全0行或者全0列了，除非：</p>
+<ol>
+<li>$\alpha=0$</li>
+<li>原本矩阵$X^TX$存在对角线上元素为$-\alpha$，其他元素都为0的行或者列</li>
+</ol>
+<p>因此，$w$就可以写作：<br>$$w=(X^TX+\alpha I)^{-1}X^Ty$$</p>
+<h3 id="2-2-2-linear-model-Ridge"><a href="#2-2-2-linear-model-Ridge" class="headerlink" title="2.2.2 linear_model.Ridge"></a>2.2.2 linear_model.Ridge</h3><p>在sklearn中，岭回归由线性模型库中的Ridge类来调用：</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">class sklearn.linear_model.Ridge (alpha&#x3D;1.0, ﬁt_intercept&#x3D;True, normalize&#x3D;False, copy_X&#x3D;True, max_iter&#x3D;None, tol&#x3D;0.001, solver&#x3D;’auto’, random_state&#x3D;None)</span><br></pre></td></tr></table></figure>
+
+<h2 id="2-3-Lasso"><a href="#2-3-Lasso" class="headerlink" title="2.3 Lasso"></a>2.3 Lasso</h2><h3 id="2-3-1-Lasso与多重共线性"><a href="#2-3-1-Lasso与多重共线性" class="headerlink" title="2.3.1 Lasso与多重共线性"></a>2.3.1 Lasso与多重共线性</h3><p>Lasso使用的是系数$w$的$L_1$范式乘以正则化系数$\alpha$，因此Lasso的损失函数表达式为：<br>$$\min_w||Xw-y||^2_2+\alpha||w||_1$$</p>
+<p>对损失函数进行求导：</p>
+<p>$$\frac{\partial(RSS+||w||_1)}{\partial w}=\frac{\partial(||y-Xw||^2_2)+\alpha||w||_1}{\partial w}$$<br>$$=\frac{\partial(y-Xw)^T(y-Xw)}{\partial w}+\frac{\partial \alpha||w||_1}{\partial w}$$<br>$$=0-2X^Ty+2X^TXw+\alpha$$<br>将含有$w$的项合并，其中$\alpha$为常数</p>
+<p>为实现矩阵相加，乘以一个结构为$n*n$的单位矩阵$I:$<br>$$=X^TXw-X^Ty+\frac{\alpha I}{2}$$<br>$$X^TXw=X^Ty-\frac{\alpha I}{2}$$</p>
+<p>而$L_1$范式所带的正则项$\alpha$在求导之后并不带有$w$这个项，因此<strong>Lasso无法解决特征之间“精确相关”的问题</strong></p>
+<p>假设方阵$X^TX$的逆是一定存在的，那我们可以有：<br>$$w=(X^TX)^{-1}(X^Ty-\frac{\alpha I}{2})$$</p>
+<p>通过增大$\alpha$，可以为$w$的计算增肌按一个负项，从而限制参数估计中$w$的大小，而防止多重共线性引起的失准问题。因此<strong>Lasso不是从根本上解决多重共线性问题，而是限制多重共线性带来的影响</strong></p>
+<p>$L_1,L_2$正则化一个核心差异就是他们对系数$w$的影响：两个正则化都会压缩系数$w$的大小，对标签贡献更少的特征系数会更小，也会更容易被压缩，不过$L_2$正则化只会将系数压缩到尽可能接近0，但$L_1$正则化主导稀疏性，会将系数压缩到0，这个性质让Lasso称为了线性模型中的特征选择工具首选。</p>
+<h3 id="2-3-2-Lasso的核心作用：特征选择"><a href="#2-3-2-Lasso的核心作用：特征选择" class="headerlink" title="2.3.2 Lasso的核心作用：特征选择"></a>2.3.2 Lasso的核心作用：特征选择</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">class sklearn.linear_model.Lasso (alpha&#x3D;1.0, ﬁt_intercept&#x3D;True, normalize&#x3D;False, precompute&#x3D;False, copy_X&#x3D;True, max_iter&#x3D;1000, tol&#x3D;0.0001, warm_start&#x3D;False, positive&#x3D;False, random_state&#x3D;None, selection&#x3D;’cyclic’)</span><br></pre></td></tr></table></figure>
+
+
+<h1 id="3-非线性问题：多项式回归"><a href="#3-非线性问题：多项式回归" class="headerlink" title="3 非线性问题：多项式回归"></a>3 非线性问题：多项式回归</h1><h2 id="3-1-“线性”概念"><a href="#3-1-“线性”概念" class="headerlink" title="3.1 “线性”概念"></a>3.1 “线性”概念</h2><h3 id="3-1-1-变量之间的线性关系"><a href="#3-1-1-变量之间的线性关系" class="headerlink" title="3.1.1 变量之间的线性关系"></a>3.1.1 变量之间的线性关系</h3><p>两个变量之间的关系可以展示为一条直线</p>
+<p><img src="https://note.youdao.com/yws/api/personal/file/97AE26C1073A4E8F862543C4AD9A3223?method=download&shareKey=e4b169f42f176d2c0e21bfa46b06d126" alt></p>
+<h3 id="3-1-2-数据的线性与非线性"><a href="#3-1-2-数据的线性与非线性" class="headerlink" title="3.1.2 数据的线性与非线性"></a>3.1.2 数据的线性与非线性</h3><p>一组数据由多个特征和标签组成。当这些特征分别与标签存在线性关系的时候，我们就说这一组数据是线性数据。当需要用三角函数，指数函数等来定义，则说这种数据叫作“非线性数据”</p>
+<p><img src="https://note.youdao.com/yws/api/personal/file/D4B139AFD9FA4DF19C2C2E9CA44526FC?method=download&shareKey=f750e469a64f7fe5ed9af4c120d7772c" alt></p>
+<h3 id="3-1-3-线性模型和非线性模型"><a href="#3-1-3-线性模型和非线性模型" class="headerlink" title="3.1.3 线性模型和非线性模型"></a>3.1.3 线性模型和非线性模型</h3><p>线性回归方程中，其自变量都是一次项，线性模型可以用来拟合非线性数据，而非线性模型也可以用来拟合线性数据，有的模型既可以使线性也可以使非线性模型。</p>
+<ul>
+<li>非线性模型拟合线性数据</li>
+</ul>
+<p>非线性模型几乎都可以在线性可分数据上有不逊于线性模型的表现<br><img src="https://note.youdao.com/yws/api/personal/file/1D70B4CDFF03423E97ABC37F0C1B8733?method=download&shareKey=f3b9556697932b23dedc04c06ae3a3cd" alt></p>
+<ul>
+<li>线性模型拟合非线性数据</li>
+</ul>
+<p>但是相反的，线性模型用来拟合非线性数据，通常表现糟糕。改善线性模型在非线性数据上的效果的方法之一是进行分箱，甚至可以搞过一些非线性模型。</p>
+<p><img src="https://note.youdao.com/yws/api/personal/file/A2F08F0D7A8D4761B16B779877453614?method=download&shareKey=36e49e3e63725e9534077264653e4574" alt></p>
+<ul>
+<li>即是线性，也是非线性的模型</li>
+</ul>
+<p>有一些模型，即可以处理线性数据又可以处理非线性数据，比如支持向量机。这个模型的线性和非线性取决于它的核函数。</p>
+<p><img src="https://note.youdao.com/yws/api/personal/file/19A7E95570314268BD269B76FF89ED2E?method=download&shareKey=5c1d7a4c6fd76e78ffad5e1fb8a91204" alt></p>
+<h2 id="3-2-使用分箱处理非线性问题"><a href="#3-2-使用分箱处理非线性问题" class="headerlink" title="3.2 使用分箱处理非线性问题"></a>3.2 使用分箱处理非线性问题</h2><p>让线性回归在非线性数据上表现提升的核心方法之一是对数据进行分箱，也就是离散化。</p>
+<p>在工业中，大量离散化变量与线性模型连用的实例很多，在深度学习出现之前，这种模式甚至一度统治一些工业中的机器学习应用场景，可见效果优秀，应用广泛。对于现在的很多工业场景而言，大量离散化特征的情况可能已经不是那么多了，不过大家依然需要对“分箱能够解决线性模型无法处理非线性数据的问题”有所了解。</p>
+<h2 id="3-3-多项式回归PolynomialFeatures"><a href="#3-3-多项式回归PolynomialFeatures" class="headerlink" title="3.3 多项式回归PolynomialFeatures"></a>3.3 多项式回归PolynomialFeatures</h2><h3 id="3-3-1-多项式对数据做了什么"><a href="#3-3-1-多项式对数据做了什么" class="headerlink" title="3.3.1 多项式对数据做了什么"></a>3.3.1 多项式对数据做了什么</h3><p>除了分箱之外，另一种更普遍的用于解决”线性回归只能处理线性数据“问题的手段，就是使用多项式回归对线性回归进行改进。这样的手法是机器学习研究者们从支持向量机中获得的：支持向量机通过升维可以将非线性可分数据转化为线性可分，然后使用核函数在低维空间中进行计算，这是一种“高维呈现，低维解释”的思维。那我们为什么不能让线性回归使用类似于升维的转换，将数据由非线性转换为线性，从而为线性回归赋予处理非线性数据的能力呢？当然可以。<br><img src="https://note.youdao.com/yws/api/personal/file/176FBDF502BB4D36ADAB608843183733?method=download&shareKey=0326e48215aac4f9a94d6ef3365e2d11" alt></p>
+<p>接下来，我们就来看看线性模型中的升维工具：多项式变化。这是一种通过增加自变量上的次数，而将数据映射到高维空间的方法，只要我们设定一个自变量上的次数（大于1），就可以相应地获得数据投影在高次方的空间中的结果。这种方法可以非常容易地通过sklearn中的类PolynomialFeatures来实现。我们先来简单看看这个类是如何使用的。</p>
+<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">class sklearn.preprocessing.PolyinomialFeatures(degree&#x3D;2, interaction_only&#x3D;False,include_bias&#x3D;True)</span><br></pre></td></tr></table></figure>
+
+<h3 id="3-3-2-多项式回归的可解释性"><a href="#3-3-2-多项式回归的可解释性" class="headerlink" title="3.3.2 多项式回归的可解释性"></a>3.3.2 多项式回归的可解释性</h3><p>多项式回归的可解释性还存在，并且我们可以通过这样的手段做特征工程——特征创造。多项式帮助我们进行了一些列特征之间相乘的结合，若讷讷够找出组合起来后对标签贡献巨大的特征，那我们就是创造了新的有效特征，对任何学科而言发现新特征都是非常有价值的。</p>
+]]></content>
+      <categories>
+        <category>机器学习</category>
+      </categories>
+      <tags>
+        <tag>机器学习</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>机器学习笔记（五）集成学习</title>
+    <url>/2020/07/26/ensemble/</url>
+    <content><![CDATA[<h2 id="1-概述"><a href="#1-概述" class="headerlink" title="1 概述"></a>1 概述</h2><p>多个模型集成称为的模型叫作集成评估器（ensemble estimator），组成集成评估器的每个模型都叫作基评估器(base estimator)。通常来说，有两类集成算法：装袋法（Bagging），提升法(Boosting)。要获得好的集成，个体学习器应“好而不同”，即个体学习器要有一定的“准确性”，并且要有“多样性”</p>
+<p><img src="https://note.youdao.com/yws/api/personal/file/ADF733049258402C8AD900FD965CB288?method=download&shareKey=18ded5ff7e25a56d46886670b21ef009" alt></p>
+<ul>
+<li>装袋法：多个相互独立的评估器，对其预测进行平均或多数表决原则来决定集成评估器的结果（随机森林）</li>
+<li>提升法：基评估器是相关的，是按顺序一一构建的。其核心思想是结合弱评估器的力量一次次对难以评估的样本进行预测，从而构成一个强评估器（Adaboost，梯度提升树）<a id="more"></a>
+
+</li>
+</ul>
+<h2 id="2-Bagging"><a href="#2-Bagging" class="headerlink" title="2 Bagging"></a>2 Bagging</h2><p>Bagging是并行式集成学习方法最著名的代表，通过自助采样法得到多个训练样本的采样集，然后基于每个采样集孙连出一个基学习器，再将这些基学习器进行结合，在对预测输出进行结合时，Bagging通常对分类任务使用简单投票法，对回归任务使用简单平均法。</p>
+<h3 id="2-1-随机森林（Random-Forest-RF）"><a href="#2-1-随机森林（Random-Forest-RF）" class="headerlink" title="2.1 随机森林（Random Forest, RF）"></a>2.1 随机森林（Random Forest, RF）</h3><p>随机森林是非常具有代表性的Bagging集成算法，RF在以决策树为基学习器构建Bagging集成的基础上，进一步在决策树的训练过程中引入了随机属性选择，传统决策树在选择划分属性时是在当前节点的属性集合（假设有d个属性）中选择一个最优属性；而在RF中，对基决策树的每个节点，先从该节点的属性集合中随机选择一个包含$k$个属性的子集，然后再从这个子集中选择一个最优属性用于划分。</p>
+<h3 id="2-2-重要参数"><a href="#2-2-重要参数" class="headerlink" title="2.2 重要参数"></a>2.2 重要参数</h3><h3 id="2-2-1-控制基评估器的参数"><a href="#2-2-1-控制基评估器的参数" class="headerlink" title="2.2.1 控制基评估器的参数"></a>2.2.1 控制基评估器的参数</h3><table>
+<thead>
+<tr>
+<th align="left">参数</th>
+<th align="left">含义</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">criterion</td>
+<td align="left">不纯度的衡量指标，有基尼系数和信息熵两种选择</td>
+</tr>
+<tr>
+<td align="left">max_depth</td>
+<td align="left">树的最大深度，超过最大深度的树枝都会被剪掉</td>
+</tr>
+<tr>
+<td align="left">min_samples_leaf</td>
+<td align="left">一个节点在分枝后的每个子节点都必须包含至少min_samples_leaf个训练样本，否则分枝就不会发生</td>
+</tr>
+<tr>
+<td align="left">min_samples_split</td>
+<td align="left">一个节点必须要包含至少min_samples_split个训练样本，这个节点才允许被分枝，否则分枝就不会发生</td>
+</tr>
+<tr>
+<td align="left">max_features</td>
+<td align="left">max_features限制分枝时考虑的特征个数，超过限制个数的特征都会被舍弃，默认值为总特征个数开平方取整</td>
+</tr>
+<tr>
+<td align="left">min_impurity_decrease</td>
+<td align="left">限制信息增益的大小，信息增益小于设定数值的分枝不会发生</td>
+</tr>
+</tbody></table>
+<h3 id="2-2-2-n-estimators"><a href="#2-2-2-n-estimators" class="headerlink" title="2.2.2 n_estimators"></a>2.2.2 n_estimators</h3><p>这是森林中树木的数量，即基评估器的数量。这个参数对随机森林模型的精确性影响是单调的，n_estimators越大，模型的效果往往越好。但是相应的，任何模型都有决策边界，n_estimators达到一定的程度之后，随机森林的精确性往往不在上升或开始波动，并且，n_estimators越大，需要的计算量和内存也越大，训练的时间也会越来越长。对于这个参数，我们是渴望在训练难度和模型效果之间取得平衡。</p>
+<p>n_estimators的默认值在现有版本的sklearn中是10，但是在即将更新的0.22版本中，这个默认值会被修正为100。这个修正显示出了使用者的调参倾向：要更大的n_estimators。</p>
+<h3 id="2-2-3-random-state"><a href="#2-2-3-random-state" class="headerlink" title="2.2.3 random_state"></a>2.2.3 random_state</h3><p>在决策树中，从最重要的特征中随机选择出一个特征进行分枝，这个功能由参数random_state控制，在随机森林中，用法和分类树相似，通过这个参数控制生成森林的模型，让森林中的树木具有多样性</p>
+<h3 id="2-2-4-bootstrap-amp-oob-score"><a href="#2-2-4-bootstrap-amp-oob-score" class="headerlink" title="2.2.4 bootstrap &amp; oob_score"></a>2.2.4 bootstrap &amp; oob_score</h3><p>Bagging通过自助采样技术来形成不同的训练数据，bootstrap就是用来控制采样技术的参数</p>
+<p>bootstrap参数默认True，代表采用这种有放回的随机抽取技术（通常不会被设置为False）</p>
+<p><img src="https://note.youdao.com/yws/api/personal/file/4BDC11FD2EB54DFE874F6D1AB68277A0?method=download&shareKey=6ade8a6ff415a53d39ae944bccf89e54" alt></p>
+<p>一般来说，自助集大概平均会包含63%的原始数据，每一个样本被抽取到某自助集的概率为：</p>
+<p>$$1-(1-\frac{1}{n})^n$$</p>
+<p>当n足够大时，这个概率收敛与$1-(1/e)$，越等于0.632，因此会约有37%的训练数据被浪费掉，没有参与建模，这些数据被称为袋外数据(out of bag data, oob)。</p>
+<p>也就是说，在使用随机森林时，可以不划分测试集和训练集，用袋外数据来测试我们的模型</p>
+<h2 id="3-boosting"><a href="#3-boosting" class="headerlink" title="3 boosting"></a>3 boosting</h2><p>Boosting是一族可将弱学习器提升为强学习器的算法。先从初始训练集训练出一个基学习器，再根据基学习器的表现对训练样本分布进行调整，使得先前基学习器做错的训练样本在后续受到更多关注，然后基于调整后的样本分布来训练下一个基学习器。</p>
+<h3 id="3-1-Adaboost"><a href="#3-1-Adaboost" class="headerlink" title="3.1 Adaboost"></a>3.1 Adaboost</h3><h4 id="3-1-1-Adaboost原理"><a href="#3-1-1-Adaboost原理" class="headerlink" title="3.1.1 Adaboost原理"></a>3.1.1 Adaboost原理</h4><p>AdaBoost算法是Adaptive Boost的简称，Boosting通过将一系列弱学习器组合起来，通过集成这些弱学习器的学习能力，得到一个强学习器。具体到AdaBoost算法，AdaBoost在之前学习器的基础上改变样本的权重，增加那些之前被分类错误的样本的比重，降低分类正确样本的比重，这样之后的学习器将重点关注那些被分类错误的样本。最后通过将这些学习器通过加权组合成一个强学习器，具体的，分类正确率高的学习器权重较高，分类正确率低的学习器权重较低。</p>
+<p>假设：</p>
+<p>输入：训练集$X={(x_1,y_1),(x_2,y_2),(x_3,y_3),\dots,(x_n,y_n)},\ x_i\in R^n,\ y_i\in 0,1$</p>
+<p>输出：最终学习器$G(x)$</p>
+<ol>
+<li>初始化训练数据的权重分布值：（$D_m$表示第m个弱学习器的样本点的权值）<br>$$D_1=(w_{11},\dots,w_{1i},\dots,w_{1N}),\  w_{1i}=1/N,\  i=1,2,\dots,N$$</li>
+<li>对于M个弱学习器，$m=1,2,3,\dots,M$<ul>
+<li>使用具有权值分布$D_m$的训练数据集进行学习，得到基本分类器$G_m(x)$，其输出值为$-1,1$</li>
+<li>计算弱分类器$G_m(x)$在训练数据集上的分类误差率$e_m$，其值越小的基分类器在最终分类器中的作用越大<br>$$e_m = P(G_m(x)\ne y_i)=\sum_{i=1}^N w_{mi}I(G_m(x_i)\ne y_i)$$<br>其中，$I(G_m(x_i)\ne y_i)$取值为0或1，取0表示分类正确，取1表示分类错误。</li>
+<li>计算弱分类器$G_m(x)$的权重系数$\alpha_m$:<br>$$\alpha_m = \frac{1}{2}ln\frac{1-e_m}{e_m}$$<br>当$e_m$减小是时候$\alpha_m$的值增大，而我们希望得到的是分类误差率越小的弱分类器的权值越大，对最终的预测产生的影响也就越大</li>
+<li>更新训练集的样本权值分布：<br>$$D_{m+1}=(w_{m+1,1},w_{m+1,2},\dots,w_{m+1,N})$$<br>$$w_{m+1,i}=\frac{w_{mi}}{Z_m}exp(-\alpha_m y_i G_m(x_i)),\ i=1,2,\dots,N$$<br>对于二分类，弱分类器$G_m(x)$的输出取值为$-1,1$，$y_i$的取值为$-1,1$，所以对于正确的分类$y_iG_m(x)&gt;0$，错误的分类小于0，由于样本权重值在$0-1$之间，当分类正确时的$w_{m+1,i}$取值较小，而分类错误时$w_{m+1,i}$取值较小，而分类错时取值较大，符合我们期望的权重值高的训练样本点在后面的弱学习器中会得到更多的重视。<br>其中，$Z_m$是规范化因子，主要作用是将$W_{mi}$规范到0-1之间，使得$\sum_{i=1}^Nw_{mi}=1$</li>
+</ul>
+</li>
+</ol>
+<p>$$Z_m = \sum_{i=1}^N w_{mi}exp(-\alpha_m y_i G_m(x_i))$$</p>
+<ol start="3">
+<li>通过加权平均法构建基本分类器的线性组合<br>$$f(x)=\sum_{m=1}^M \alpha_mG_m(x)$$<br>得到最终的分类器<br>$$G(x)=sign(f(x))=sign(\sum_{m=1}^M\alpha_mG_m(x))$$</li>
+</ol>
+<h4 id="3-1-2-Adaboost优缺点"><a href="#3-1-2-Adaboost优缺点" class="headerlink" title="3.1.2 Adaboost优缺点"></a>3.1.2 Adaboost优缺点</h4><h5 id="优点"><a href="#优点" class="headerlink" title="优点"></a>优点</h5><ol>
+<li>不容发生过拟合</li>
+<li>由于AdaBoost并没有限制弱学习器的种类，所以可以使用不同的学习算法来构建弱分类器</li>
+<li>具有很高的精度</li>
+<li>相对于Bagging算法和Random Forest算法，Adaboost充分考虑每个分类器的权重</li>
+<li>参数较少，实际应用中不需要调节太多的参数</li>
+</ol>
+<h5 id="缺点"><a href="#缺点" class="headerlink" title="缺点"></a>缺点</h5><ol>
+<li>AdaBoost迭代次数也就是弱分类器数目不太好设定，可以用交叉验证来确定</li>
+<li>数据不平衡导致分类精度下降</li>
+<li>训练比较耗时，每次重新选择当前分类器最好切分点</li>
+<li>对异常样本敏感，异常样本在迭代中可能会获得比较高的权重，影响最终的枪学习器的预测准确性</li>
+</ol>
+<h3 id="3-2-GBDT（Gradient-Boosting-Decision-Tree，梯度提升树）"><a href="#3-2-GBDT（Gradient-Boosting-Decision-Tree，梯度提升树）" class="headerlink" title="3.2 GBDT（Gradient Boosting Decision Tree，梯度提升树）"></a>3.2 GBDT（Gradient Boosting Decision Tree，梯度提升树）</h3><h4 id="3-2-1-GBDT原理"><a href="#3-2-1-GBDT原理" class="headerlink" title="3.2.1 GBDT原理"></a>3.2.1 GBDT原理</h4><p>输入：训练数据集$T=(x_1,y_1),(x_2,y_2),\dots,(x_N,y_N)$，损失函数为$L(y,f(x))$<br>输出：回归树$F(x)$</p>
+<ol>
+<li>初始化：（估计使损失函数极小化的常数值，是只有一个根节点的树，一般平方损失函数为节点的均值，而绝对损失函数为节点样本的中位数）</li>
+</ol>
+<p>$$f_0(x)=arg\min_c\sum_{i=1}^NL(y_i,c)$$</p>
+<ol start="2">
+<li><p>对$m=1,2,\dots,M$（M表示迭代次数，即生成弱学习器的个数）</p>
+<ul>
+<li>对于样本$i=1,2,\dots,N$，计算损失函数的负梯度在当前模型的值，将它作为残差的估计<br>$$r_{mi}=-\frac{\partial L(y_i,f(x))}{\partial f(x_i)}f(x)=f_{m-1}(x)$$</li>
+<li>对$(x_1,r_{m1}),\dots,(x_N,r_{mN})$拟合一个回归树，得到第$m$棵树的叶结点区域$R_{mj}，\ j=1,2,\dots,J$（$J$表示每棵树的叶结点个数）</li>
+<li>对$j=1,2,\dots,J$，利用线性所搜，估计叶结点区域的值，使损失函数最小化，计算<br>$$c_{mj}=arg\min_c\sum_{x\in R_{mj}}L(y_i,f_{m-1}(x_i+c))$$</li>
+<li>更新<br>$$f_m(x)=f_{m-1}(x)+\sum_{J}^{j=1}c_{mj}I(x\in R_{mj})$$</li>
+</ul>
+</li>
+<li><p>得到最终的回归树<br>$$F(x)=\sum_{m=1}^M\sum_{j=1}^Jc_{mj}I(x\in R_{mj})$$</p>
+</li>
+</ol>
+<h3 id="3-3-XGboost"><a href="#3-3-XGboost" class="headerlink" title="3.3 XGboost"></a>3.3 XGboost</h3><h4 id="3-3-1-目标函数"><a href="#3-3-1-目标函数" class="headerlink" title="3.3.1 目标函数"></a>3.3.1 目标函数</h4><p>不同于逻辑回归和SVM等算法中固定的损失函数写法，集成算法中的损失函数式可选的，要选用什么损失函数取决于我们希望解决什么问题，以及希望使用什么的模型。只要我们选出的函数式一个可微的，能够代表某种损失的函数，它就可以使XGB的损失函数</p>
+<p>并且XGB引入了模型复杂度来衡量算法的运算效率，因此目标函数被写作：传统损失函数+模型复杂度<br>$$0bj = \sum_{i=1}^ml(y_i,\hat y_i)+\sum_{k=1}^k\Omega (f_k)$$</p>
+<p>其中$i$代表数据集中的第$i$个样本，$m$表示导入第k课树的数据总量，$K$代表建立的所有树(n_estimators)</p>
+<p><strong>注意，第二项中没有特征矩阵$x_i$的介入</strong></p>
+<p>第一项传统损失函数式与已建好的所有树相关的</p>
+<p>$$\hat y_i^{(t)}=\sum_k^t f_k(x_i)=\sum_k^{t-1}f_k(x_i)+f_t(x_i)$$</p>
+<p>一个集成模型$(f)$在位置数据集$(D)$上的泛化误差$E(f;D)$,有方差(var)，偏差(bais)和噪声$(\epsilon)$共同决定。</p>
+<p><img src="https://note.youdao.com/yws/api/personal/file/48279AFEA82B4F87A43B6C43E9140635?method=download&shareKey=ec4af651ab4bd7023b0bcaa0f4657e25" alt></p>
+<p>我们使用参数”objective”来确定我们目标函数的第一部分，也是衡量损失的部分</p>
+<table>
+<thead>
+<tr>
+<th align="left">输入</th>
+<th align="left">选用的损失函数</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">reg:linear</td>
+<td align="left">使用线性回归的损失函数，均方误差，回归时使用</td>
+</tr>
+<tr>
+<td align="left">binary:logistic</td>
+<td align="left">使用逻辑回归的损失函数，对数损失log_loss，二分类时使用</td>
+</tr>
+<tr>
+<td align="left">binary:hinge</td>
+<td align="left">使用支持向量机的损失函数，Hinge Loss，二分类时使用</td>
+</tr>
+<tr>
+<td align="left">multi:softmax</td>
+<td align="left">使用softmax损失函数，多分类时使用</td>
+</tr>
+</tbody></table>
+<p>并且允许自定义损失函数（但通常我们还是使用类已经设置好的损失函数）</p>
+<h4 id="3-3-2-求解XGB的目标函数"><a href="#3-3-2-求解XGB的目标函数" class="headerlink" title="3.3.2 求解XGB的目标函数"></a>3.3.2 求解XGB的目标函数</h4><p>由于XGB迭代的是树，不是数字组成的向量，因此无法使用梯度下降，而是将目标函数转化为更简单的，与树结构直接相关的写法，以此来建立树的结构与模型的效果（泛化能力与运行速度）之间的直接联系，因为这种联系，XGB的目标函数又被称为“结构分数”。</p>
+<p>首先，进行第一步转换：</p>
+<p><img src="https://note.youdao.com/yws/api/personal/file/2200B3AF1AD249FD85F2101CC7F50213?method=download&shareKey=5ebe9bb0fea9178231e97a37e0f99383" alt></p>
+<p>其中$g_i,h_i$分别是在损失函数$l(y_i^t,\hat y_i^{(t-1)})$上对$\hat y_i^{(t-1)}$所求的一阶倒数和二阶导数。</p>
+<p>因此，我们的目标函数可以被转化为：</p>
+<p>$$Obj = \sum_{i=1}^m[f_t(x_i)g_i+\frac{1}{2}(f_t(x_i))^2h_i]+\Omega (f_t)$$</p>
+<p>这个式子中，$g_i,h_i$只与传统损失函数相关，核心的部分是我们需要决定的树$f_t$</p>
+<h4 id="3-3-3-参数化决策树-f-k-x"><a href="#3-3-3-参数化决策树-f-k-x" class="headerlink" title="3.3.3 参数化决策树$f_k(x)$"></a>3.3.3 参数化决策树$f_k(x)$</h4><p>对于回归树，通常来说每个叶子节点上的预测值是这个叶子节点上所有样本的标签的均值，但XGB作为普通回归树的改进算法，在$\hat y$上却有所不同。</p>
+<p>对于XGB来说，每个叶子节点上都会有一个预测分数，也称叶子权重，用$f_k(x)$或$w$来表示</p>
+<p>当有多课树的时候，集成模型的回归结果就是所有树的预测分数之和，假设这个集成模型中共有K棵决策树，则整个模型在这个样本$i$上给出的预测结果为:<br>$$\hat y_i^{(k)}=\sum_k^Kf_k(x_i)$$</p>
+<p>我们使用$q(x_i)$表示样本$x_i$所在的叶子节点，并且使用$w_{q(x_i)}$表示这个样本落到第$t$棵树上的第$q(x_i)$个叶子节点中所获得的分数，于是有：</p>
+<p>$$f_t(x_i)=w_q(x_i)$$</p>
+<p>设一棵树上总共包含了$T$个叶子节点，其中每个叶子节点的索引为$j$，则这个叶子节点上的样本权重是$w_j$，依据这个，我们定义模型的复杂度$\Omega(f)$为<br>$$\Omega(f)=\gamma T+正则项(Regularization)$$</p>
+<h4 id="3-3-4-寻找最佳树结构：求解-w-与-T"><a href="#3-3-4-寻找最佳树结构：求解-w-与-T" class="headerlink" title="3.3.4 寻找最佳树结构：求解$w$与$T$"></a>3.3.4 寻找最佳树结构：求解$w$与$T$</h4><p>我们定义了树和树的复杂度表达式：</p>
+<p>$$f_t(x_i)=w_q(x_i), \ \Omega(f_t)=\gamma T+\frac{1}{2}\lambda\sum_{j=1}^Tw_j^2$$</p>
+<p>假设现在第$t$棵树的结构已经被确定为q,可以将树的结构代入我们的损失函数，来继续转化我们的目标函数。转化目标函数的目的是：建立树的结构（叶子节点的数量）与目标函数的大小之间的直接联系，以求出在第$t$次迭代中需要求解的最优树$f_t$。</p>
+<p><img src="https://note.youdao.com/yws/api/personal/file/64A336827C294238BBE661A25CE488DF?method=download&shareKey=477b767da38b33f7f049ac795ad5f71a" alt></p>
+<p>对于橙色框的转化<br><img src="https://note.youdao.com/yws/api/personal/file/14DEB79D037D47E69496EE06E38D9930?method=download&shareKey=2ba7a8c972206128b62f304ef25f46aa" alt></p>
+<p>可以有：<br>$$\sum_{i=1}^m w_{q(x_i)} * g_i = w_{q(x_1)} * g_1 + w_{q(x_2)} * g_2+ w_{q(x_3)} * g_3$$<br>$$=w_1(g_1+g_2)+ w_2*g_3$$<br>$$=\sum_{j=1}^T(w_j\sum_{i\in I_j}g_i)$$</p>
+<p>我们定义：<br>$$G_j = \sum_{i\in I_j}g_i, \ H_j = \sum_{i\in I_j}h_i$$</p>
+<p>于是可以有：</p>
+<p>$$Obj^{(t)}=\sum_{j=1}^T[w_jG_j+\frac{1}{2}w_j^2(H_j+\lambda)]+\gamma T$$</p>
+<p>$$F^{*}(w_j)=w_jG_j+\frac{1}{2}w_j^2(H_j+\lambda)$$</p>
+<p>其中每个$j$取值下都是一个以$w_j$为自变量的二次函数$F^{<em>}$，我们的目标追求是让$Obj$最小，只要单独每一个叶子$j$取值下的二次函数都最小。于是在$F^{</em>}$对$w_j$求导，让一阶导数等于0，可得：</p>
+<p>$$\frac{\partial F^{*}(w_j)}{\partial w_j}=G_j+w_j(H_j+\lambda)$$<br>$$0=G_j+w_j(H_j+\lambda)$$<br>$$w_j = -\frac{G_j}{H_j+\lambda}$$</p>
+<p>代入目标函数，则有：<br>$$Obj^{(t)}=\sum_{j=1}^T[-\frac{G_j}{H_j+\lambda} * G_j + \frac{1}{2}(-\frac{G_j}{H_j+\lambda})]+\gamma T$$<br>$$=\sum_{j=1}^T[-\frac{G_j^2}{H_j+\lambda}+\frac{1}{2} * \frac{G_j^2}{H_j+\lambda}]+\gamma T$$<br>$$=-\frac{1}{2}\sum_{j=1}^T\frac{G_j^2}{H_j+\lambda}+\gamma T$$</p>
+<p>这样我们就建立了树的结构（叶子）和模型效果的直接联系</p>
+<p>下面来看一个例子：</p>
+<p><img src="https://note.youdao.com/yws/api/personal/file/9C5D143BEFCA42FC94E784306DFAA089?method=download&shareKey=5423ee0322a0c25fbdc19bfef02e51cb" alt></p>
+<p>$$Obj = -(\frac{g_1^2}{h_1+\lambda}+\frac{g_4^2}{h_4+\lambda}+\frac{(g_2+g_3+g_5)^2}{h_2+h_3+h_5+\lambda})+3\gamma$$</p>
+<h4 id="3-3-5-寻找最佳分枝：结构分数之差"><a href="#3-3-5-寻找最佳分枝：结构分数之差" class="headerlink" title="3.3.5 寻找最佳分枝：结构分数之差"></a>3.3.5 寻找最佳分枝：结构分数之差</h4><p>XGB使用贪婪算法，认为如果每片叶子都是最优的，则整体生成的树结构就是最优，可以避免枚举所有可能的树结构</p>
+<p><img src="https://note.youdao.com/yws/api/personal/file/40FD6184DB4342098CFA5C45D9053E81?method=download&shareKey=6fcc1916a4df5e8182cd835a0a0a20c0" alt></p>
+<h4 id="3-3-6-让树停止生长：重要参数gamma"><a href="#3-3-6-让树停止生长：重要参数gamma" class="headerlink" title="3.3.6 让树停止生长：重要参数gamma"></a>3.3.6 让树停止生长：重要参数gamma</h4><p>$\gamma$是对梯度提升树影响最大的参数之一，让树停止生长</p>
+<p>对于目标函数减小量的要求是：</p>
+<p>$$\frac{1}{2}[\frac{G^2_L}{H_L+\lambda}+\frac{G^2_R}{H_R+\lambda}-\frac{(G_L+G_R)^2}{H_L+H_R+\lambda}]&gt;\lambda$$</p>
+<h3 id="3-4-Lightgbm"><a href="#3-4-Lightgbm" class="headerlink" title="3.4 Lightgbm"></a>3.4 Lightgbm</h3><p>传统的Boost算法需要对每一个特征扫描所有的样本点来选择最好的切分点，非常耗时。为了解决这种在大样本高纬度数据的环境下耗时问题，Lightgbm使用了两种解决办法</p>
+<ol>
+<li>GOSS (Gradient-based One-Side Sampling, 基于梯度的单边采样)，不是使用所有的样本点来计算梯度，而是对样本进行采样计算梯度</li>
+<li>EFB（Exclusive Feature Bundling， 互斥特征捆绑）， 不是使用所有的特征来进行扫描获得最佳的切分点，而是将某些特征进行捆绑在一起来降低特征的维度，以减少寻找最佳切分点的耗时。 </li>
+</ol>
+<h4 id="3-4-1-GOSS算法"><a href="#3-4-1-GOSS算法" class="headerlink" title="3.4.1 GOSS算法"></a>3.4.1 GOSS算法</h4><p>每个样本的梯度对采样也提供了非常有用的信息，如果一个样本点的梯度小，那么该样本点的训练误差就小并且已经经过了很好的训练</p>
+<p>输入：训练数据，迭代步数$d$，大梯度数据的采样率$a$,小梯度的数据采样率$b$，损失函数和弱学习器的类型；</p>
+<p>输出：训练好的强学习器；</p>
+<ol>
+<li>根据样本点的梯度绝对值进行降序排序；</li>
+<li>对排序后的结果选取前$a * 100%$的样本生成一个大梯度样本点的子集；</li>
+<li>对剩下的样本$（1-a） * 100%$，随机选取$b * （1-a）* 100%$生成小梯度样本点的集合；</li>
+<li>将大梯度样本和采样的小梯度样本合并；</li>
+<li>将小梯度样本乘上一个权重系数$\frac{1-a}{b}$；</li>
+<li>使用上述的采样方法训练一个新的弱学习器；</li>
+<li>不断重复1-6步骤知道达到规定的迭代次数或者收敛</li>
+</ol>
+<p>通过GOSS算法，可以在不改变数据分布的前提下不损失学习器精度的同时大大减少模型的学习速率</p>
+<h4 id="3-4-2-EFB算法"><a href="#3-4-2-EFB算法" class="headerlink" title="3.4.2 EFB算法"></a>3.4.2 EFB算法</h4><p>Lightgbm实现中不仅进行了数据采样，也进行了特征抽样。但是该特征抽样与一般不同，将互斥特征绑定在一起从而减少特征维度。</p>
+<p>主要思想是，实际中高纬度数据往往都是稀疏数据，在稀疏特征空间中许多特征都是互斥的，可以基于直方图（histograms）的方法将互斥的特征捆绑形成一个特征，从而减少特征维度。</p>
+<p>并且允许小部分的冲突，使得模型的性能被影响$O([(1-\gamma)n]^{-2/3})$,这里的$\gamma$是每个绑定的最大冲突率。</p>
+<p>输入：特征F，最大冲突K，图G；<br>输出： 特征捆绑集合bundles;</p>
+<ol>
+<li>构造一个边带有权重的图，其权值对应于特征之间的总冲突；</li>
+<li>通过特征在图中的度来降序排序特征</li>
+<li>检查有序列表中的每个特征，并将其分配给具有小冲突的现有bunding或创建新bunding</li>
+</ol>
+<h4 id="3-4-3-合并互斥特征"><a href="#3-4-3-合并互斥特征" class="headerlink" title="3.4.3 合并互斥特征"></a>3.4.3 合并互斥特征</h4><p>Lightgbm关于互斥特征的合并用到了直方图（Histogram）算法。直方图算法的基本思想是先把连续的特征值离散化成k个整数，同时构造一个宽度为k的直方图。在遍历数据的时候，根据离散化后的值作为索引在直方图中累积统计量，当遍历一次数据后，直方图累积了需要的统计量，然后根据直方图的离散值，遍历寻找最优的分割点。</p>
+<p>由于基于直方图的算法存储的是离散的bins而不是连续的特征值，我们可以通过让互斥特征驻留在不同的bins中来构造feature bundle。这可以通过增加特征原始值的偏移量来实现。比如，假设我们有两个特征，特征A的取值范围是[0,10)，而特征B的取值范围是[0,20)，我们可以给特征B增加偏移量10，使得特征B的取值范围为[10, 30)，最后合并特征A和B，形成新的特征，取值范围为[0,30)来取代特征A和特征B。</p>
+<p>当然，Histogram算法并不是完美的。由于特征被离散化后，找到的并不是很精确的分割点，所以会对结果产生影响。但在不同的数据集上的结果表明，离散化的分割点对最终的精度影响并不是很大，甚至有时候会更好一点。原因是决策树本来就是弱模型，分割点是不是精确并不是太重要；差一点的切分点也有正则化的效果，可以有效地防止过拟合；即使单棵树的训练误差比精确分割的算法稍大，但在Gradient Boosting的框架下没有太大的影响。</p>
+<p><img src="https://note.youdao.com/yws/api/personal/file/BB4E003C937C441D80F12A44CEE7B01D?method=download&shareKey=6214970cf9c295e487ce3ed91422ef38" alt></p>
+<h3 id="3-5-Boosting算法优缺点对比"><a href="#3-5-Boosting算法优缺点对比" class="headerlink" title="3.5 Boosting算法优缺点对比"></a>3.5 Boosting算法优缺点对比</h3><h4 id="3-5-1-XGBoost-vs-GBDT"><a href="#3-5-1-XGBoost-vs-GBDT" class="headerlink" title="3.5.1 XGBoost vs GBDT"></a>3.5.1 XGBoost vs GBDT</h4><p>1）GBDT以传统CART作为基分类器，而XGBoost支持线性分类器，相当于引入L1和L2正则化项的逻辑回归（分类问题）和线性回归（回归问题）；</p>
+<p>2）GBDT在优化时只用到一阶导数，XGBoost对代价函数做了二阶Talor展开，引入了一阶导数和二阶导数。XGBoost支持自定义的损失函数，只要是能满足二阶连续可导的函数均可以作为损失函数；</p>
+<p>3）XGBoost在损失函数中引入正则化项，用于控制模型的复杂度。正则化项包含全部叶子节点的个数，每个叶子节点输出的score的L2模的平方和。从Bias-variance tradeoff角度考虑，正则项降低了模型的方差，防止模型过拟合，这也是xgboost优于传统GBDT的一个特性。</p>
+<p>4）当样本存在缺失值是，xgBoosting能自动学习分裂方向，即XGBoost对样本缺失值不敏感；</p>
+<p>5）XGBoost借鉴RF的做法，支持列抽样，这样不仅能防止过拟合，还能降低计算，这也是xgboost异于传统gbdt的一个特性。</p>
+<p>6）XGBoost在每次迭代之后，会将叶子节点的权重乘上一个学习率（相当于XGBoost中的eta，论文中的Shrinkage），主要是为了削弱每棵树的影响，让后面有更大的学习空间。实际应用中，一般把eta设置得小一点，然后迭代次数设置得大一点；</p>
+<p>7）XGBoost工具支持并行，但并行不是tree粒度的并行，XGBoost也是一次迭代完才能进行下一次迭代的（第t次迭代的代价函数里包含了前面t-1次迭代的预测值），XGBoost的并行是在特征粒度上的。XGBoost在训练之前，预先对数据进行了排序，然后保存为(block)结构，后面的迭代中重复地使用这个结构，大大减小计算量。这个块结构也使得并行成为了可能，在进行节点的分裂时，需要计算每个特征的增益，最终选增益最大的那个特征去做分裂，那么各个特征的增益计算就可以开多线程进行；</p>
+<p>8）可并行的近似直方图算法，树结点在进行分裂时，需要计算每个节点的增益，若数据量较大，对所有节点的特征进行排序，遍历的得到最优分割点，这种贪心法异常耗时，这时引进近似直方图算法，用于生成高效的分割点，即用分裂后的某种值减去分裂前的某种值，获得增益，为了限制树的增长，引入阈值，当增益大于阈值时，进行分裂；</p>
+<h4 id="3-5-2-XGboost-vs-LightGBM"><a href="#3-5-2-XGboost-vs-LightGBM" class="headerlink" title="3.5.2 XGboost vs LightGBM"></a>3.5.2 XGboost vs LightGBM</h4><p>1）XGBoost采用预排序，在迭代之前，对结点的特征做预排序，遍历选择最优分割点，数据量大时，贪心法耗时，LightGBM方法采用histogram算法，占用的内存低，数据分割的复杂度更低，但是不能找到最精确的数据分割点；</p>
+<p>2）XGBoost采用level-wise生成决策树策略，同时分裂同一层的叶子，从而进行多线程优化，不容易过拟合，但很多叶子节点的分裂增益较低，没必要进行更进一步的分裂，这就带来了不必要的开销；LightGBM采用leaf-wise生长策略，每次从当前叶子中选择增益最大的叶子进行分裂，如此循环，但会生长出更深的决策树，产生过拟合，因此 LightGBM 在leaf-wise之上增加了一个最大深度的限制，在保证高效率的同时防止过拟合）。另一个比较巧妙的优化是 histogram 做差加速。一个容易观察到的现象：一个叶子的直方图可以由它的父亲节点的直方图与它兄弟的直方图做差得到。</p>
+<h2 id="4-结合策略"><a href="#4-结合策略" class="headerlink" title="4 结合策略"></a>4 结合策略</h2><p>不同的结合策略也会影响集成模型性能，主要分为平均法、投票法和学习法，我们这里重点介绍学习法Stacking</p>
+<h3 id="4-1-平均法"><a href="#4-1-平均法" class="headerlink" title="4.1 平均法"></a>4.1 平均法</h3><ul>
+<li>简单平均法</li>
+<li>加权平均法</li>
+</ul>
+<h3 id="4-2-投票法"><a href="#4-2-投票法" class="headerlink" title="4.2 投票法"></a>4.2 投票法</h3><ul>
+<li>绝对多数投票法</li>
+<li>相对多数投票法</li>
+<li>加权投票法</li>
+</ul>
+<h3 id="4-3-学习法"><a href="#4-3-学习法" class="headerlink" title="4.3 学习法"></a>4.3 学习法</h3><p>当训练数据很多时，一种更为强大的结合策略是使用“学习法”，即通过另一个学习器来进行结合.Stacking是学习法的经典代表，这里我们吧个体学习器称为初级学习器，用于结合的学习器称为刺激学习器或元学习器。</p>
+<p><img src="https://note.youdao.com/yws/api/personal/file/119ABC7D390F428F8A036B925FD7C6E8?method=download&shareKey=85e6961c6b845acd5fab61326ede0493" alt></p>
+<p>次级学习器的输入属性表示和次级学习算法对Stacking集成的泛化性能有很大影响。研究表明，将初级学习器的输出类概率作为次级学习器的输入属性，用多响应线性回归（Multi-response Linear Regression，MLR）作为次级学算法效果较好。</p>
+]]></content>
+      <categories>
+        <category>机器学习</category>
+      </categories>
+      <tags>
+        <tag>机器学习</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>行测笔记：判断推理（二）类比推理</title>
+    <url>/2020/07/22/xingce2/</url>
+    <content><![CDATA[<h2 id="一、语义关系"><a href="#一、语义关系" class="headerlink" title="一、语义关系"></a>一、语义关系</h2><h3 id="（1）近义关系、反义关系"><a href="#（1）近义关系、反义关系" class="headerlink" title="（1）近义关系、反义关系"></a>（1）近义关系、反义关系</h3><p>如果一级关系（近反义关系）选不出答案——进行二级辨析</p>
+<p>常见的二级辨析：感情色彩（褒义、贬义、中性）</p>
+<a id="more"></a>
+
+<h3 id="（2）比喻义、象征义"><a href="#（2）比喻义、象征义" class="headerlink" title="（2）比喻义、象征义"></a>（2）比喻义、象征义</h3><h2 id="二、逻辑关系"><a href="#二、逻辑关系" class="headerlink" title="二、逻辑关系"></a>二、逻辑关系</h2><h3 id="（1）全同关系"><a href="#（1）全同关系" class="headerlink" title="（1）全同关系"></a>（1）全同关系</h3><h3 id="（2）并列关系"><a href="#（2）并列关系" class="headerlink" title="（2）并列关系"></a>（2）并列关系</h3><ol>
+<li>矛盾关系（只有两者）</li>
+<li>反对关系（有第三者）</li>
+</ol>
+<p><strong>并列的细分考点：并列关系+功能相同</strong></p>
+<h3 id="（3）包容关系"><a href="#（3）包容关系" class="headerlink" title="（3）包容关系"></a>（3）包容关系</h3><ol>
+<li>种属关系</li>
+<li>组成关系</li>
+</ol>
+<p><strong>区分：能用“谁是谁”造句的就是种属关系</strong></p>
+<h3 id="（4）交叉关系"><a href="#（4）交叉关系" class="headerlink" title="（4）交叉关系"></a>（4）交叉关系</h3><h3 id="（5）对应关系"><a href="#（5）对应关系" class="headerlink" title="（5）对应关系"></a>（5）对应关系</h3><ol>
+<li>材料</li>
+<li>工艺</li>
+<li>属性</li>
+<li>功能（二级辨析：主要功能、次要功能）</li>
+<li>时间顺序：多个行为同时出现</li>
+</ol>
+<p><strong>当出现多个选项符合时间顺序时，考虑动作主体</strong><br>6. 因果关系（方式目的）</p>
+<h2 id="三、语法关系"><a href="#三、语法关系" class="headerlink" title="三、语法关系"></a>三、语法关系</h2><h3 id="（1）主谓关系"><a href="#（1）主谓关系" class="headerlink" title="（1）主谓关系"></a>（1）主谓关系</h3><h3 id="（2）动宾关系"><a href="#（2）动宾关系" class="headerlink" title="（2）动宾关系"></a>（2）动宾关系</h3><h3 id="（3）主宾关系"><a href="#（3）主宾关系" class="headerlink" title="（3）主宾关系"></a>（3）主宾关系</h3><h2 id="四、词语拆分"><a href="#四、词语拆分" class="headerlink" title="四、词语拆分"></a>四、词语拆分</h2><h3 id="（1）单字拆分"><a href="#（1）单字拆分" class="headerlink" title="（1）单字拆分"></a>（1）单字拆分</h3><h3 id="（2）成语被拆分"><a href="#（2）成语被拆分" class="headerlink" title="（2）成语被拆分"></a>（2）成语被拆分</h3><h3 id="（3）两组词语之间没有明显逻辑关系"><a href="#（3）两组词语之间没有明显逻辑关系" class="headerlink" title="（3）两组词语之间没有明显逻辑关系"></a>（3）两组词语之间没有明显逻辑关系</h3><hr>
+<h2 id="五、词语、成语积累："><a href="#五、词语、成语积累：" class="headerlink" title="五、词语、成语积累："></a>五、词语、成语积累：</h2><ol>
+<li>马放南山：天下太平，不再用兵</li>
+<li>拾人牙慧：窃取别人的语言和文字</li>
+<li>如火如荼：军容之盛，形容大规模的行动气势旺盛</li>
+<li>犬牙交错：比喻交界线曲折，像狗牙参差不齐，也比喻情况复杂</li>
+<li>纷乱如麻：交错杂乱像一团乱麻，一般形容心情</li>
+<li>燕归巢：比喻客居在外的游子喜归故里</li>
+<li>睁眼瞎：比喻没有文化，不识字的人，缺乏知识的人</li>
+<li>得陇望蜀：比喻得寸进尺，贪心不知足</li>
+<li>纲举目张：比喻条理分明</li>
+<li>惩前毖后：批判以前所犯的错误，吸取教训，使以后谨慎些，不致再犯</li>
+</ol>
+]]></content>
+      <categories>
+        <category>行测笔试</category>
+      </categories>
+      <tags>
+        <tag>行测笔试</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>行测笔记：判断推理（三）定义判断</title>
+    <url>/2020/07/23/xingce3/</url>
+    <content><![CDATA[<h2 id="解题思维："><a href="#解题思维：" class="headerlink" title="解题思维："></a>解题思维：</h2><ol>
+<li>看提问——看清“属于/符合”,“不属于/不符合”定义等</li>
+<li>看题干——识别有效信息：找准关键词、关键句</li>
+<li>看选项——纠结时选项对比择优<a id="more"></a>
+
+</li>
+</ol>
+<h2 id="一、快速识别有效信息"><a href="#一、快速识别有效信息" class="headerlink" title="一、快速识别有效信息"></a>一、快速识别有效信息</h2><h3 id="（1）关键词——主体、客体"><a href="#（1）关键词——主体、客体" class="headerlink" title="（1）关键词——主体、客体"></a>（1）关键词——主体、客体</h3><ol>
+<li>主体——行为、活动的出发者</li>
+<li>客体——行为、活动作用的对象</li>
+</ol>
+<ul>
+<li>不是每题一定都有主题和客体，但是出现了要重点看</li>
+<li>主客体不符合的选项一定不符合定义</li>
+<li>范围越小、越明确的主/客体，越容易成为考点</li>
+</ul>
+<p><strong>常考主客体：</strong></p>
+<ol>
+<li>行政机关</li>
+<li>全力机关</li>
+<li>司法机关</li>
+<li>事业单位</li>
+<li>社会组织 </li>
+</ol>
+<h3 id="（2）句式引导词——引导的内容重点看"><a href="#（2）句式引导词——引导的内容重点看" class="headerlink" title="（2）句式引导词——引导的内容重点看"></a>（2）句式引导词——引导的内容重点看</h3><ol>
+<li>方式：通过/利用…</li>
+<li>目的：以/以达到…</li>
+<li>原因：因为/由于…</li>
+<li>结果：导致/从而/使得…</li>
+<li>时间：当…时/在…情况下</li>
+</ol>
+<h3 id="（3）优先看到定义所在的那句话的句号和补充说明"><a href="#（3）优先看到定义所在的那句话的句号和补充说明" class="headerlink" title="（3）优先看到定义所在的那句话的句号和补充说明"></a>（3）优先看到定义所在的那句话的句号和补充说明</h3><h3 id="（4）多定义：做题方法与单定义题目一致"><a href="#（4）多定义：做题方法与单定义题目一致" class="headerlink" title="（4）多定义：做题方法与单定义题目一致"></a>（4）多定义：做题方法与单定义题目一致</h3><ol>
+<li>问啥看啥：看清题干问的是哪个定义，重点看目标定义</li>
+<li>比较定义：纠结两个选项时，再与其他定义比较</li>
+</ol>
+<h2 id="二、小技巧"><a href="#二、小技巧" class="headerlink" title="二、小技巧"></a>二、小技巧</h2><h3 id="（1）拆词"><a href="#（1）拆词" class="headerlink" title="（1）拆词"></a>（1）拆词</h3><p>从定义本身找信息，如果定义名称有明确的限定语并简单易懂，可利用定义词快速破题</p>
+<h3 id="（2）同构选项排除法"><a href="#（2）同构选项排除法" class="headerlink" title="（2）同构选项排除法"></a>（2）同构选项排除法</h3><p>意思相似、结构相似的选项排除</p>
+<ol>
+<li>题干或下选项能够读不懂</li>
+<li>同构选项出现，可以一起排除</li>
+<li>同构有风险，使用需谨慎…</li>
+</ol>
+]]></content>
+      <categories>
+        <category>行测笔试</category>
+      </categories>
+      <tags>
+        <tag>行测笔试</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>行测笔记：判断推理（一）图形推理</title>
+    <url>/2020/07/15/xingce/</url>
+    <content><![CDATA[<h2 id="图形推理的命题形式"><a href="#图形推理的命题形式" class="headerlink" title="图形推理的命题形式"></a>图形推理的命题形式</h2><ol>
+<li>一组图：从左往右读题，找整体规律的共同点。或间隔跳跃观察</li>
+<li>两组图：找第一组规律，应用于第二组</li>
+<li>九宫格：横行（最多）、数列、对角线观察规律</li>
+<li>分组分类：找寻每组统一规律</li>
+<li>空间类：折纸盒，转化成平面思维（截面图、三视图、立体拼合）<a id="more"></a>
+
+</li>
+</ol>
+<h2 id="图形推理考什么？（学习重点：识别图形特征）"><a href="#图形推理考什么？（学习重点：识别图形特征）" class="headerlink" title="图形推理考什么？（学习重点：识别图形特征）"></a>图形推理考什么？（学习重点：识别图形特征）</h2><ol>
+<li>位置规律</li>
+<li>样式规律</li>
+<li>属性规律</li>
+<li>特殊规律</li>
+<li>数量规律</li>
+<li>空间规律</li>
+</ol>
+<h2 id="一、位置规律"><a href="#一、位置规律" class="headerlink" title="一、位置规律"></a>一、位置规律</h2><h3 id="位置类识别特征（各图元素组成相同）"><a href="#位置类识别特征（各图元素组成相同）" class="headerlink" title="位置类识别特征（各图元素组成相同）"></a>位置类识别特征（各图元素组成相同）</h3><h3 id="（1）平移："><a href="#（1）平移：" class="headerlink" title="（1）平移："></a>（1）平移：</h3><ol>
+<li>方向 ：直线（上下、左右、对角线）、绕圈（顺/逆时针）</li>
+<li>步数 ：恒定、递增（等差）、周期（考的少）</li>
+</ol>
+<p><strong>技巧：1.多个元素分开看，边做边排除 2.位置规律——就近走原则</strong></p>
+<h3 id="宫格型黑块平移"><a href="#宫格型黑块平移" class="headerlink" title="宫格型黑块平移"></a>宫格型黑块平移</h3><p><strong>1.个别黑块可重合</strong></p>
+<ul>
+<li>题干和选项大部分元素组成完全一致，个别一两幅图少黑块</li>
+<li>题干第一幅图的黑块一般不会重合</li>
+</ul>
+<p><strong>2.黑块走到头后怎么办？</strong></p>
+<ul>
+<li>循环走：从头开始</li>
+<li>折返走：直接弹回</li>
+</ul>
+<p><strong>3.“双胞胎”黑块们如何分辨</strong>：就近走原则</p>
+<h3 id="多宫格方向判定"><a href="#多宫格方向判定" class="headerlink" title="多宫格方向判定"></a>多宫格方向判定</h3><p>题型特征：16宫格图形多个黑块平移</p>
+<ol>
+<li>绕圈走：中间颜色数量相同，优先考虑内外圈分开看</li>
+<li>走直线：中间颜色数量不同，有限考虑走直线</li>
+</ol>
+<h3 id="（2）旋转："><a href="#（2）旋转：" class="headerlink" title="（2）旋转："></a>（2）旋转：</h3><ol>
+<li>方向：顺时针、逆时针</li>
+<li>常见角度：45、60、90、180度等</li>
+</ol>
+<p><strong>技巧：元素多，没思路？相邻比较走起来！</strong></p>
+<p><strong>钟表类：外面一个框，中心一个点，绕了一圈线——常考旋转</strong></p>
+<h3 id="（3）翻转"><a href="#（3）翻转" class="headerlink" title="（3）翻转"></a>（3）翻转</h3><ol>
+<li>左右翻转：竖轴对称</li>
+<li>上下翻转：横轴对称</li>
+</ol>
+<p><strong>元素组成相同优先看位置：对称通常是图形自身的规律，而不是两幅图之间的翻转</strong></p>
+<p><strong>技巧：先看容易看懂的，旋转180度看不出来就转卷子！</strong></p>
+<p><strong>如何区分旋转与翻转</strong><br>只有左右互换（上下不变）——左右翻<br>只有上下互换（左右不变）——上下翻<br>上下、左右都互换——旋转180度</p>
+<p><strong>思维导图</strong><br><img src="https://note.youdao.com/yws/api/personal/file/CC02E070330340E8880E45623154A7F9?method=download&shareKey=ab0d5ad994f7c4d39f8370b641a8faa8" alt></p>
+<h2 id="二、样式规律"><a href="#二、样式规律" class="headerlink" title="二、样式规律"></a>二、样式规律</h2><h3 id="样式类别识别特征：元素组成相似"><a href="#样式类别识别特征：元素组成相似" class="headerlink" title="样式类别识别特征：元素组成相似"></a>样式类别识别特征：元素组成相似</h3><h3 id="（1）加、减、同、异"><a href="#（1）加、减、同、异" class="headerlink" title="（1）加、减、同、异"></a>（1）加、减、同、异</h3><p><strong>识别特征：相同线条重复出现</strong></p>
+<ol>
+<li>相加、相减</li>
+<li>求异（保留不同）</li>
+<li>求同（保留相同）</li>
+</ol>
+<p><strong>技巧：对比选项，从特殊线条入手（横线、竖线、最长最短线）</strong></p>
+<p><strong>位置+样式类题目，先转谁呢？  谁搞特殊，先转谁！</strong></p>
+<ol>
+<li>图1与图2有相同部分——先求同求异再转</li>
+<li>图2与图3有相同部分——转图1</li>
+<li>图1与图3有想吐部分——转图2</li>
+</ol>
+<h3 id="（2）黑白运算"><a href="#（2）黑白运算" class="headerlink" title="（2）黑白运算"></a>（2）黑白运算</h3><p><strong>识别特征：图形轮廓和分割区域相同，内部的颜色不同</strong><br><strong>方法：相同位置颜色做加法（注意顺序）</strong></p>
+<p><strong>注意：</strong></p>
+<ol>
+<li>运算规则具体题目具体找</li>
+<li>黑+白 不等于 白+黑，要具体题目具体验证</li>
+<li>与黑块平移区分：黑块数量相同，优先平移；黑块数量不同，优先黑白运算</li>
+</ol>
+<p><strong>技巧：在确定可能考黑白运算后，从问好处着手解题更快，边找边验证</strong></p>
+<p><strong>思维导图</strong><br><img src="https://note.youdao.com/yws/api/personal/file/96D9D2A1C7614181B52F461B9C1872E7?method=download&shareKey=bb4bd7eaf38467812c12098b8c66fbff" alt></p>
+<h2 id="三、属性规律"><a href="#三、属性规律" class="headerlink" title="三、属性规律"></a>三、属性规律</h2><h3 id="属性类别识别特征-元素组成不相同、不相似——优先属性"><a href="#属性类别识别特征-元素组成不相同、不相似——优先属性" class="headerlink" title="属性类别识别特征: 元素组成不相同、不相似——优先属性"></a>属性类别识别特征: 元素组成不相同、不相似——优先属性</h3><h3 id="（1）对称性"><a href="#（1）对称性" class="headerlink" title="（1）对称性"></a>（1）对称性</h3><ol>
+<li>轴对称：”等腰”元素出现</li>
+<li>中心对称：平行四边形，N,Z,S变形图出现</li>
+<li>轴对称+中心对称：图形存在相互垂直的对称轴</li>
+<li>对称性的细化考法<ul>
+<li>对称轴的方向与数量</li>
+<li>对称轴与图形中线的位置关系：重合、垂直、交点</li>
+<li>角度：平行、垂直、交叉某角度</li>
+</ul>
+</li>
+</ol>
+<p><strong>优先考虑对称轴时，先画出图形对称轴！</strong></p>
+<p><strong>技巧：整体没有规律，分开看</strong></p>
+<h3 id="（2）曲直性"><a href="#（2）曲直性" class="headerlink" title="（2）曲直性"></a>（2）曲直性</h3><ol>
+<li>全直线图形</li>
+<li>全曲线图形</li>
+<li>曲+直图形</li>
+</ol>
+<p><strong>常见考法：三种情况均出现；与其他考点结合命题</strong></p>
+<p><strong>所有图形均有外框——分开看</strong></p>
+<h3 id="（3）开闭性"><a href="#（3）开闭性" class="headerlink" title="（3）开闭性"></a>（3）开闭性</h3><p><strong>题型特征：完整图的图形留了小开口，可以考虑开闭性</strong></p>
+<ol>
+<li>全封闭图形</li>
+<li>全开放图形</li>
+<li>半封闭图形</li>
+</ol>
+<p><strong>黑色粗线条，生活化元素/图形留有小开口——考虑开闭性</strong></p>
+<p><strong>思维导图</strong><br><img src="https://note.youdao.com/yws/api/personal/file/F59E60D6989F4394BE9C6BDDDC9887CF?method=download&shareKey=649c8319245813b64168677ca4240c22" alt></p>
+<h2 id="四、特殊规律"><a href="#四、特殊规律" class="headerlink" title="四、特殊规律"></a>四、特殊规律</h2><h3 id="（1）图形间关系"><a href="#（1）图形间关系" class="headerlink" title="（1）图形间关系"></a>（1）图形间关系</h3><p><strong>识别特征：两个或多个封闭图形连在一起</strong></p>
+<ol>
+<li>相离</li>
+<li>相交<ul>
+<li>相交于点</li>
+<li>相交于边（数量、样式：边的长短、整体还是部分）</li>
+<li>相较于面（形状）</li>
+</ul>
+</li>
+</ol>
+<p><strong>一根线牵出多个图形考虑相交于点，其他考虑相交于边或面</strong></p>
+<h3 id="（2）功能元素"><a href="#（2）功能元素" class="headerlink" title="（2）功能元素"></a>（2）功能元素</h3><p><strong>识别特征：黑点、白点、箭头、小图形</strong></p>
+<ol>
+<li>标记位置（上、下、左、右、内、外）</li>
+<li>标记图形<ul>
+<li>点：交点</li>
+<li>线：直线、曲线 / 最长边、最短边</li>
+<li>角：直角、锐角、钝角 / 最大角、最小角</li>
+<li>面：相交面 / 最大面、最小面 / 直线面、曲线面 / 特殊形状面</li>
+</ul>
+</li>
+</ol>
+<p><strong>思维导图</strong><br><img src="https://note.youdao.com/yws/api/personal/file/84A38B8255CA4301907F28ECCE456AEE?method=download&shareKey=b6b8b1a759af355f000b27566005c2c3" alt></p>
+<h2 id="五、数量规律"><a href="#五、数量规律" class="headerlink" title="五、数量规律"></a>五、数量规律</h2><p><strong>识别特征：元素组成不同、不相似、且属性没规律，数量规律明显</strong></p>
+<h3 id="（1）面数量"><a href="#（1）面数量" class="headerlink" title="（1）面数量"></a>（1）面数量</h3><p><strong>注意：只有封闭的白色区域才算面</strong><br><strong>识别特征</strong><br><strong>1.图形被分割，封闭面明显</strong><br><strong>2.生活化图形、粗线条图形中留空白区域</strong></p>
+<p>面的细化考法：数面特征图，但整体数面无答案</p>
+<ol>
+<li>面的形状：三角形、四边形</li>
+<li>相同面数量</li>
+<li>特殊面的形状：最大面、最小面、相交面</li>
+</ol>
+<h3 id="（2）线数量"><a href="#（2）线数量" class="headerlink" title="（2）线数量"></a>（2）线数量</h3><p><strong>识别特征</strong><br><strong>1.直线数特征图：多边形、单一直线</strong><br><strong>2.曲线数特征图：曲线图形（圆、弧、单一曲线）</strong></p>
+<p><strong>直线和曲线分开数</strong></p>
+<p><strong>线的细化考法</strong></p>
+<ol>
+<li>线的位置：边框线条、框内线条</li>
+<li>直线的细化：横线/竖线</li>
+</ol>
+<p><strong>大部分图形题中有曲线，优先考虑曲线规律</strong></p>
+<p><strong>3.线的特殊考点：笔画问题</strong><br><strong>识别特征</strong><br><strong>1.五角星、圆相切/相交、“日”变形、“田”变形</strong><br><strong>2.多端点、出头端点、圆相交(近年热点)</strong></p>
+<ol>
+<li>可以一笔画<ul>
+<li>线条之间连通</li>
+<li>奇点数量为0或2（奇点：以一个点为中心，发射出奇数条线）</li>
+</ul>
+</li>
+</ol>
+<p><strong>端点都是奇点，别忘了数！</strong></p>
+<ol start="2">
+<li>多笔画<ul>
+<li>笔画数 = 奇点数/2 (奇点数一定是偶数)</li>
+</ul>
+</li>
+</ol>
+<p><strong>不连通图直接数笔画</strong></p>
+<h3 id="（3）点数量"><a href="#（3）点数量" class="headerlink" title="（3）点数量"></a>（3）点数量</h3><p><strong>识别特征</strong><br>1.线条交叉明显（大树杈）<br>2.乱糟糟一团线交叉<br>3.相切较多<br><strong>注意：线与线的交点数量</strong><br>1.顶点、切点是交点<br>2.端点不是交点</p>
+<p><strong>点的细化考法：数点特征图，但整体点无规律</strong></p>
+<ol>
+<li><p>按线的属性细化：曲直交点</p>
+<ul>
+<li>特征：圆或弧多，且存在曲直相交</li>
+</ul>
+</li>
+<li><p>按线的位置细化：内外交点</p>
+<ul>
+<li>特征：图形都有外框（内外分开看思维）</li>
+</ul>
+</li>
+</ol>
+<h3 id="（4）素数量"><a href="#（4）素数量" class="headerlink" title="（4）素数量"></a>（4）素数量</h3><p><strong>识别特征：独立的小图形</strong></p>
+<ol>
+<li>元素种类</li>
+<li>元素个数</li>
+</ol>
+<p><strong>形状一致，大小不一致也看作一种元素</strong></p>
+<ol start="3">
+<li>部分数：连在一起的就是一部分</li>
+</ol>
+<p><strong>识别特征：生活化图形、黑色粗线条图形</strong></p>
+<p><strong>数量规律特征图总汇(按考频排序)</strong></p>
+<p><img src="https://note.youdao.com/yws/api/personal/file/56CAC826F4B14DAAB59B45411A39D32E?method=download&shareKey=1d6c6fbe4ab78574d6561879d6ab8f91" alt></p>
+<p><strong>思维导图</strong></p>
+<p><img src="https://note.youdao.com/yws/api/personal/file/99C081A3826E4102AC4C11414BEA5180?method=download&shareKey=e819a2b5c9eb4b8fa4c807d63b28184a" alt></p>
+<h3 id="六、空间规律"><a href="#六、空间规律" class="headerlink" title="六、空间规律"></a>六、空间规律</h3><h3 id="（1）相对面"><a href="#（1）相对面" class="headerlink" title="（1）相对面"></a>（1）相对面</h3><p>应用：一组相对面同时出现的选项排除</p>
+<ol>
+<li>同行同列相隔一个面</li>
+<li>Z字形紧邻中线的两端</li>
+</ol>
+<p><strong>出题可能会有无中生有的面</strong></p>
+<h3 id="（2）相邻面——公共边"><a href="#（2）相邻面——公共边" class="headerlink" title="（2）相邻面——公共边"></a>（2）相邻面——公共边</h3><p><strong>方法1：折叠前后相邻关系保持不变</strong></p>
+<ol>
+<li>平面图直接相邻的两个面的公共边</li>
+<li>平面图中构成直角的两个边是同一条边</li>
+<li>一排4个面，两头的两条边是同一条边（1-4-1）</li>
+</ol>
+<p><strong>方法2：画边法</strong></p>
+<ol>
+<li>结合选项，找一个特殊面的唯一点<ul>
+<li>特殊面：只出现一次，有可以区分的唯一点</li>
+<li>唯一点：是指该面中唯一的，没有与其一样的点</li>
+</ul>
+</li>
+<li>顺（逆）时针方向画边，并标出序号</li>
+</ol>
+<p><strong>注意：同一个面、同一个点、同方向</strong><br>3. 题干与选项对应：面不一致排除</p>
+<p><strong>思维导图</strong><br><img src="https://note.youdao.com/yws/api/personal/file/0E167A466553402EB97E034F3FA658C2?method=download&shareKey=0071ee3ee90162d908695fcb5c0c9bc4" alt></p>
+]]></content>
+      <categories>
+        <category>行测笔试</category>
+      </categories>
+      <tags>
+        <tag>行测笔试</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>行测笔记：判断推理（四）逻辑判断</title>
+    <url>/2020/07/24/xingce4/</url>
+    <content><![CDATA[<h2 id="一、翻译推理"><a href="#一、翻译推理" class="headerlink" title="一、翻译推理"></a>一、翻译推理</h2><p><strong>题目特征</strong></p>
+<ol>
+<li>题干和选项中存在明显的逻辑关联词</li>
+<li>提问方式为：可以推出/不能推出</li>
+</ol>
+<p><strong>解题思维</strong></p>
+<ol>
+<li>先翻译</li>
+<li>再推理<a id="more"></a>
+
+</li>
+</ol>
+<h3 id="（1）翻译规则之“前-rightarrow-后”"><a href="#（1）翻译规则之“前-rightarrow-后”" class="headerlink" title="（1）翻译规则之“前$\rightarrow$后”"></a>（1）翻译规则之“前$\rightarrow$后”</h3><ol>
+<li>若…则</li>
+<li>只要..就</li>
+<li>所有…都</li>
+<li>为了…一定</li>
+<li>…是…的充分条件</li>
+</ol>
+<p>（出现如果/就/都/一定）</p>
+<h3 id="（2）推理规则之“逆否等价”"><a href="#（2）推理规则之“逆否等价”" class="headerlink" title="（2）推理规则之“逆否等价”"></a>（2）推理规则之“逆否等价”</h3><p>符号表示：$A\rightarrow B = -B\rightarrow -A$</p>
+<p>文字表示:肯前比肯后、否后必否前</p>
+<p>否前、肯后无必然结论</p>
+<h3 id="（3）翻译规则之“后推前”"><a href="#（3）翻译规则之“后推前”" class="headerlink" title="（3）翻译规则之“后推前”"></a>（3）翻译规则之“后推前”</h3><ol>
+<li>只有…才…</li>
+<li>不…不…</li>
+<li>除非..否则不…</li>
+<li>…是…的基础/假设/前提/关键</li>
+<li>…是…的必要/必不可少条件</li>
+</ol>
+<p><strong>“否则不”是一个整体</strong><br>6. 基础/前提/关键;不可缺少/必不可少/必要条件</p>
+<p><strong>谁必不可少，谁在箭头后</strong></p>
+<p>都遵循递推原则：$A\rightarrow B，B\rightarrow C $可得$A\rightarrow B\rightarrow C$</p>
+<h3 id="（4）翻译规则之“且、或”"><a href="#（4）翻译规则之“且、或”" class="headerlink" title="（4）翻译规则之“且、或”"></a>（4）翻译规则之“且、或”</h3><p>A且B：二者同时成立</p>
+<ol>
+<li>和</li>
+<li>并且</li>
+<li>即…又…</li>
+<li>不仅…而且..</li>
+<li>…但是…</li>
+</ol>
+<p>A或B：二者至少一个成立</p>
+<ol>
+<li>或者</li>
+<li>或者…或者…</li>
+<li>至少有一个</li>
+</ol>
+<h3 id="（5）推理规则之“否一推一”"><a href="#（5）推理规则之“否一推一”" class="headerlink" title="（5）推理规则之“否一推一”"></a>（5）推理规则之“否一推一”</h3><p>“或”的翻译：否1$\rightarrow$1</p>
+<p>“或”关系为真，否定一项可以得到另一项</p>
+<p>题干中有确定信息，可由确定信息出发，排除法做题</p>
+<h3 id="（6）推理规则之“德-摩根定律”"><a href="#（6）推理规则之“德-摩根定律”" class="headerlink" title="（6）推理规则之“德*摩根定律”"></a>（6）推理规则之“德*摩根定律”</h3><ol>
+<li>-(A且B) = -A或-B</li>
+<li>-(A或B) = -A且-B</li>
+</ol>
+<p>“且”关系常考考点：缺一不可</p>
+<p>A$\rightarrow$B且C，可以得到：-B$\rightarrow$-A/-C$\rightarrow$-A</p>
+<h3 id="（7）推理方式"><a href="#（7）推理方式" class="headerlink" title="（7）推理方式"></a>（7）推理方式</h3><p>提问方式：</p>
+<p>一下哪项中的推理方式/结构与题干中的推理方式/结构相同</p>
+<p>重结构、轻内容——字母代入做题</p>
+<p>不考虑推理是否正确，只考虑与题干是否一致</p>
+<h2 id="二、组合排列"><a href="#二、组合排列" class="headerlink" title="二、组合排列"></a>二、组合排列</h2><ol>
+<li>两组及以上对象</li>
+<li>对象之间的关系</li>
+</ol>
+<h3 id="（1）排除法、代入法"><a href="#（1）排除法、代入法" class="headerlink" title="（1）排除法、代入法"></a>（1）排除法、代入法</h3><ol>
+<li>排除法：读一句，排一句<ul>
+<li>快速找到“谁”是“谁”</li>
+<li>快速确定“谁”不是“谁”</li>
+</ul>
+</li>
+</ol>
+<p>组合排列常用思维——谁一定不是谁</p>
+<ol start="2">
+<li>代入法：假设选项正确，代入题干验证是否符合题意<ul>
+<li>题干条件确定优先排除；题干条件不确定代入                                      </li>
+<li>设问中有“可能”、“不可能”考虑代入<br>只猜中一半（一对一错）——混搭来破题</li>
+</ul>
+</li>
+</ol>
+<h3 id="（2）辅助技巧"><a href="#（2）辅助技巧" class="headerlink" title="（2）辅助技巧"></a>（2）辅助技巧</h3><ol>
+<li>最大信息（题干条件中出现次数最多的信息）<br>以此作为推理起点</li>
+<li>符号：”&gt;”、“&lt;”、“=”<br>往往涉及年龄、成绩、收入、身高等大小比较</li>
+</ol>
+<p>比较大小技巧——极值做排除</p>
+<ol start="3">
+<li>画表格（4个及以上信息）<br>先填入确定信息</li>
+</ol>
+<h2 id="三、特殊题型——材料题"><a href="#三、特殊题型——材料题" class="headerlink" title="三、特殊题型——材料题"></a>三、特殊题型——材料题</h2><ol>
+<li>与非材料题解题方式一致——一则材料、多种技巧</li>
+<li>通过材料直接推出来的结论可以直接应用于所有题目</li>
+</ol>
+<p>当且仅当表示充要条件，即A$\rightarrow$B，且B$\rightarrow$A</p>
+]]></content>
+      <categories>
+        <category>行测笔试</category>
+      </categories>
+      <tags>
+        <tag>行测笔试</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>学习日志：2020华为云大数据挑战赛（正式赛）</title>
     <url>/2020/05/29/hello-world/</url>
     <content><![CDATA[<h2 id="2020-5-29-正式赛题解读"><a href="#2020-5-29-正式赛题解读" class="headerlink" title="2020.5.29 正式赛题解读"></a>2020.5.29 正式赛题解读</h2><h3 id="赛题背景：船运到达时间预测"><a href="#赛题背景：船运到达时间预测" class="headerlink" title="赛题背景：船运到达时间预测"></a>赛题背景：船运到达时间预测</h3><p>通过船运的历史数据构建模型，对目的港到达时间进行预测，预测时间简称为ETA（estimated time of arrival），目的港到达时间预测为ARRIVAL_ETA。</p>
@@ -2121,769 +3427,6 @@ print(&apos;runtime:&apos;, time.time() - start_t)</code></pre>]]></content>
       </categories>
       <tags>
         <tag>机器学习</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>机器学习笔记（三）线性回归</title>
-    <url>/2020/07/22/LinearRegression/</url>
-    <content><![CDATA[<h1 id="1-多元线性回归LinearRegression"><a href="#1-多元线性回归LinearRegression" class="headerlink" title="1 多元线性回归LinearRegression"></a>1 多元线性回归LinearRegression</h1><h2 id="1-1-多元线性回归的基本原理"><a href="#1-1-多元线性回归的基本原理" class="headerlink" title="1.1 多元线性回归的基本原理"></a>1.1 多元线性回归的基本原理</h2><p>对于一个$n$个特征的样本$i$而言，回归方程为：<br>$$\hat y_i = w_0 +w_1x_{i1}+w_2x_{i2}+\dots+w_nx_{in}$$</p>
-<p>$w_0$被称为截距，$w_1 \sim w_n$被称为回归系数，$w_{i1} \sim x_{in}$是样本$i$上的不同特征，如果考虑我们有m个样本，则回归可以被写作：<br>$$\hat y = w_0 +w_1x_{1}+w_2x_{2}+\dots+w_nx_{n}$$</p>
-<a id="more"></a>
-
-<p>其中$y$是包含了m个全部样本回归的列向量，$w$可以被看作是结构为$(n+1,1)$的列矩阵，$X$是一个结构为$(m,n+1)$的特征矩阵，则有：</p>
-<p>$$\begin{bmatrix}<br>\hat y_1 \\<br>\hat y_2\\<br>\hat y_3\\<br>\dots\\<br>\hat y_m\\<br>\end{bmatrix}=\begin{bmatrix}<br>1&amp; x_{11} &amp; x_{12} &amp; x_{13} &amp; \dots &amp; x_{1n} \\<br>1&amp; x_{21} &amp; x_{22} &amp; x_{23} &amp; \dots &amp; x_{2n}\\<br>1&amp; x_{31} &amp; x_{32} &amp; x_{33} &amp; \dots &amp; x_{3n}\\<br>\dots\\<br>1&amp; x_{m1} &amp; x_{m2} &amp; x_{m3} &amp; \dots &amp; x_{mn}\\<br>\end{bmatrix} * \begin{bmatrix}<br>w_0 \\<br>w_1 \\<br>w_2 \\<br>\dots\\<br>w_n \\<br>\end{bmatrix}$$</p>
-<p>$$\hat y = Xw$$</p>
-<p>在多元线性回归中，定义损失函数如下：</p>
-<p>$$\sum_{i=1}^m(y_i-\hat y_i)^2=\sum_{i=1}^m(y_i-X_iw)^2$$</p>
-<p>其中$y_i$是样本$i$对应的真实标签，$\hat y_i$，也就是$X_iw$样本$i$在一组参数$w$下的预测标签。</p>
-<p>因此，最小化损失，将求解目标转化为：<br>$$\min_w||y-Xw||^2_2$$</p>
-<p>我们称这个式子为SEE(Sum of Sqaured Error, 误差平方和)或者RSS(Residual Sum of Squares 残差平方和)</p>
-<h2 id="1-2-最小二乘法求解多元线性回归的参数"><a href="#1-2-最小二乘法求解多元线性回归的参数" class="headerlink" title="1.2 最小二乘法求解多元线性回归的参数"></a>1.2 最小二乘法求解多元线性回归的参数</h2><p>首先，我们对$w$求导：<br>$$<br>\begin{equation}\begin{split}<br>\frac{\partial RSS}{\partial w}&amp;=\frac{\partial ||y-Xw||^2_2}{\partial w} \\<br>&amp; =\frac{\partial (y-Xw)^T(y-Xw)}{\partial w}<br>\end{split}\end{equation}<br>$$<br>$$\because (A-B)^T = A^T-B^T 并且(AB)^T=B^T*A^T$$<br>$$\therefore =\frac{\partial (y^T-w^TX^T)(y-Xw)}{\partial w}$$<br>$$=\frac{\partial(y^Ty-w^TX^Ty-y^TXw+w^TX^TXw)}{\partial w}$$</p>
-<p>$\because$ 矩阵求导中，$a$为常数，有如下规则：<br>$$\frac{\partial a}{\partial A}=0,\frac{\partial A^TB^TC}{\partial A}=B^TC,\frac{\partial C^TBA}{\partial A}=B^TC,\frac{\partial A^TBA}{\partial A}=(B+B^T)A$$</p>
-<p>$$=0-X^Ty-X^Ty+2X^TXw$$<br>$$=X^TXw-X^Ty$$</p>
-<p>然后让一阶导数为0：<br>$$X^TXw-X^Ty=0$$<br>$$X^TXw=X^Ty$$<br>左乘一个$(X^TX)^{-1}$则有：<br>$$w=(X^TX)^{-1}X^Ty$$</p>
-<p>在这里，逆矩阵的充分必要条件是特征矩阵不存在多重共线性。并且在统计学中，使用最小二乘法求解线性回归方程式一种“无偏估计”的方法，也就是标签的分布必须服从正太分布。</p>
-<h2 id="1-3-linear-model-LinearRegression"><a href="#1-3-linear-model-LinearRegression" class="headerlink" title="1.3 linear_model.LinearRegression"></a>1.3 linear_model.LinearRegression</h2><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">class sklearn.linear_model.LinearRegression (ﬁt_intercept&#x3D;True, normalize&#x3D;False, copy_X&#x3D;True, n_jobs&#x3D;None)</span><br></pre></td></tr></table></figure>
-
-<table>
-<thead>
-<tr>
-<th align="left">参数</th>
-<th align="left">含义</th>
-</tr>
-</thead>
-<tbody><tr>
-<td align="left">ﬁt_intercept</td>
-<td align="left">布尔值，可不填，默认为True是否计算此模型的截距。如果设置为False，则不会计算截距</td>
-</tr>
-<tr>
-<td align="left">normalize</td>
-<td align="left">布尔值，可不填，默认为False当ﬁt_intercept设置为False时，将忽略此参数。如果为True，则特征矩阵X在进入回归之前将会被减去均值（中心化）并除以L2范式（缩放）。如果你希望进行标准化，请在ﬁt数据之前   使用preprocessing模块中的标准化专用类StandardScaler</td>
-</tr>
-<tr>
-<td align="left">copy_X</td>
-<td align="left">布尔值，可不填，默认为True如果为真，将在X.copy()上进行操作，否则的话原本的特征矩阵X可能被线性回归影响并覆盖</td>
-</tr>
-<tr>
-<td align="left">n_jobs</td>
-<td align="left">整数或者None，可不填，默认为None用于计算的作业数。只在多标签的回归和数据量足够大的时候才生效。除非None在joblib.parallel_backend上下文中，否则None统一表示为1。如果输入 -1，则表示使用全部的CPU来进行计算。</td>
-</tr>
-</tbody></table>
-<h1 id="2-多重共线性：岭回归与Lasso"><a href="#2-多重共线性：岭回归与Lasso" class="headerlink" title="2 多重共线性：岭回归与Lasso"></a>2 多重共线性：岭回归与Lasso</h1><h2 id="2-1-多重共线性"><a href="#2-1-多重共线性" class="headerlink" title="2.1 多重共线性"></a>2.1 多重共线性</h2><p><img src="https://note.youdao.com/yws/api/personal/file/A616BDB61AA6498B98A1A83048F5B23F?method=download&shareKey=8d479565cbc667165d0e688acf357ea0" alt></p>
-<ul>
-<li>多重共线性与相关性</li>
-</ul>
-<p>多重共线性如果存在，则线性回归就无法使用最小二乘法求解，但是不代表不能存在相关性——机器学习不要求特征之间必须独立，只要不是高度相关就好。</p>
-<h2 id="2-2-岭回归"><a href="#2-2-岭回归" class="headerlink" title="2.2 岭回归"></a>2.2 岭回归</h2><h3 id="2-2-1-岭回归解决多重共线性问题"><a href="#2-2-1-岭回归解决多重共线性问题" class="headerlink" title="2.2.1 岭回归解决多重共线性问题"></a>2.2.1 岭回归解决多重共线性问题</h3><p>岭回归在多元线性回归的损失函数上加了正则项，表达为系数$w$的$L_2$范式乘以正则化系数$\alpha$，岭回归的损失函数的完整表达式写作：<br>$$\min_w||Xw-y||^2_2+\alpha||w||_2^2$$</p>
-<p>现在对$w$进行求导：<br>$$\frac{\partial(RSS+\alpha||w||^2_2)}{\partial w}=\frac{\partial(||y-Xw||^2_2+\alpha||w||^2_2)}{\partial w}$$<br>$$=\frac{\partial(y-Xw)^T(y-Xw)}{\partial w}+\frac{\partial \alpha||w||^2_2}{\partial w}$$<br>$$=0-2X^Ty+2X^TXw+2\alpha$$<br>将含有$w$的项合并，其中$\alpha$为常数<br>为了实现矩阵相加，乘以一个结构为$n*n$的单位矩阵$I$:<br>$$=(X^TX+\alpha I)w-X^Ty$$<br>$$(X^TX+\alpha I)w=X^Ty$$</p>
-<p>现在，只要$(X^TX+\alpha I)$存在逆矩阵，就可以解出$w$。一个矩阵存在逆举证的充分必要条件是这个矩阵的行列式不为0.</p>
-<p>假设原本的特征矩阵$X^TX$不满秩：</p>
-<p>$$X^TX=\begin{vmatrix}<br>\alpha_{11} &amp; \alpha_{12} &amp;\alpha_{13}&amp;\dots &amp;\alpha_{1n} \\<br>0 &amp; \alpha_{22} &amp;\alpha_{23}&amp;\dots &amp;\alpha_{2n} \\<br>0 &amp; 0 &amp;\alpha_{33}&amp;\dots &amp;\alpha_{3n} \\<br>&amp; &amp; \dots &amp;\\<br>0 &amp; 0 &amp;0&amp;\dots &amp;0 \\<br>\end{vmatrix}$$</p>
-<p>然而，加上了$\alpha I$后：</p>
-<p>$$X^TX+\alpha I=\begin{vmatrix}<br>\alpha_{11}+\alpha &amp; \alpha_{12} &amp;\alpha_{13}&amp;\dots &amp;\alpha_{1n} \\<br>0 &amp; \alpha_{22} &amp;\alpha_{23}+\alpha&amp;\dots &amp;\alpha_{2n} \\<br>0 &amp; 0 &amp;\alpha_{33}&amp;\dots &amp;\alpha_{3n}+\alpha \\<br>&amp; &amp; \dots &amp;\\<br>0 &amp; 0 &amp;0&amp;\dots &amp;\alpha \\<br>\end{vmatrix}$$</p>
-<p>现在，这个行列式不存在全0行或者全0列了，除非：</p>
-<ol>
-<li>$\alpha=0$</li>
-<li>原本矩阵$X^TX$存在对角线上元素为$-\alpha$，其他元素都为0的行或者列</li>
-</ol>
-<p>因此，$w$就可以写作：<br>$$w=(X^TX+\alpha I)^{-1}X^Ty$$</p>
-<h3 id="2-2-2-linear-model-Ridge"><a href="#2-2-2-linear-model-Ridge" class="headerlink" title="2.2.2 linear_model.Ridge"></a>2.2.2 linear_model.Ridge</h3><p>在sklearn中，岭回归由线性模型库中的Ridge类来调用：</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">class sklearn.linear_model.Ridge (alpha&#x3D;1.0, ﬁt_intercept&#x3D;True, normalize&#x3D;False, copy_X&#x3D;True, max_iter&#x3D;None, tol&#x3D;0.001, solver&#x3D;’auto’, random_state&#x3D;None)</span><br></pre></td></tr></table></figure>
-
-<h2 id="2-3-Lasso"><a href="#2-3-Lasso" class="headerlink" title="2.3 Lasso"></a>2.3 Lasso</h2><h3 id="2-3-1-Lasso与多重共线性"><a href="#2-3-1-Lasso与多重共线性" class="headerlink" title="2.3.1 Lasso与多重共线性"></a>2.3.1 Lasso与多重共线性</h3><p>Lasso使用的是系数$w$的$L_1$范式乘以正则化系数$\alpha$，因此Lasso的损失函数表达式为：<br>$$\min_w||Xw-y||^2_2+\alpha||w||_1$$</p>
-<p>对损失函数进行求导：</p>
-<p>$$\frac{\partial(RSS+||w||_1)}{\partial w}=\frac{\partial(||y-Xw||^2_2)+\alpha||w||_1}{\partial w}$$<br>$$=\frac{\partial(y-Xw)^T(y-Xw)}{\partial w}+\frac{\partial \alpha||w||_1}{\partial w}$$<br>$$=0-2X^Ty+2X^TXw+\alpha$$<br>将含有$w$的项合并，其中$\alpha$为常数</p>
-<p>为实现矩阵相加，乘以一个结构为$n*n$的单位矩阵$I:$<br>$$=X^TXw-X^Ty+\frac{\alpha I}{2}$$<br>$$X^TXw=X^Ty-\frac{\alpha I}{2}$$</p>
-<p>而$L_1$范式所带的正则项$\alpha$在求导之后并不带有$w$这个项，因此<strong>Lasso无法解决特征之间“精确相关”的问题</strong></p>
-<p>假设方阵$X^TX$的逆是一定存在的，那我们可以有：<br>$$w=(X^TX)^{-1}(X^Ty-\frac{\alpha I}{2})$$</p>
-<p>通过增大$\alpha$，可以为$w$的计算增肌按一个负项，从而限制参数估计中$w$的大小，而防止多重共线性引起的失准问题。因此<strong>Lasso不是从根本上解决多重共线性问题，而是限制多重共线性带来的影响</strong></p>
-<p>$L_1,L_2$正则化一个核心差异就是他们对系数$w$的影响：两个正则化都会压缩系数$w$的大小，对标签贡献更少的特征系数会更小，也会更容易被压缩，不过$L_2$正则化只会将系数压缩到尽可能接近0，但$L_1$正则化主导稀疏性，会将系数压缩到0，这个性质让Lasso称为了线性模型中的特征选择工具首选。</p>
-<h3 id="2-3-2-Lasso的核心作用：特征选择"><a href="#2-3-2-Lasso的核心作用：特征选择" class="headerlink" title="2.3.2 Lasso的核心作用：特征选择"></a>2.3.2 Lasso的核心作用：特征选择</h3><figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">class sklearn.linear_model.Lasso (alpha&#x3D;1.0, ﬁt_intercept&#x3D;True, normalize&#x3D;False, precompute&#x3D;False, copy_X&#x3D;True, max_iter&#x3D;1000, tol&#x3D;0.0001, warm_start&#x3D;False, positive&#x3D;False, random_state&#x3D;None, selection&#x3D;’cyclic’)</span><br></pre></td></tr></table></figure>
-
-
-<h1 id="3-非线性问题：多项式回归"><a href="#3-非线性问题：多项式回归" class="headerlink" title="3 非线性问题：多项式回归"></a>3 非线性问题：多项式回归</h1><h2 id="3-1-“线性”概念"><a href="#3-1-“线性”概念" class="headerlink" title="3.1 “线性”概念"></a>3.1 “线性”概念</h2><h3 id="3-1-1-变量之间的线性关系"><a href="#3-1-1-变量之间的线性关系" class="headerlink" title="3.1.1 变量之间的线性关系"></a>3.1.1 变量之间的线性关系</h3><p>两个变量之间的关系可以展示为一条直线</p>
-<p><img src="https://note.youdao.com/yws/api/personal/file/97AE26C1073A4E8F862543C4AD9A3223?method=download&shareKey=e4b169f42f176d2c0e21bfa46b06d126" alt></p>
-<h3 id="3-1-2-数据的线性与非线性"><a href="#3-1-2-数据的线性与非线性" class="headerlink" title="3.1.2 数据的线性与非线性"></a>3.1.2 数据的线性与非线性</h3><p>一组数据由多个特征和标签组成。当这些特征分别与标签存在线性关系的时候，我们就说这一组数据是线性数据。当需要用三角函数，指数函数等来定义，则说这种数据叫作“非线性数据”</p>
-<p><img src="https://note.youdao.com/yws/api/personal/file/D4B139AFD9FA4DF19C2C2E9CA44526FC?method=download&shareKey=f750e469a64f7fe5ed9af4c120d7772c" alt></p>
-<h3 id="3-1-3-线性模型和非线性模型"><a href="#3-1-3-线性模型和非线性模型" class="headerlink" title="3.1.3 线性模型和非线性模型"></a>3.1.3 线性模型和非线性模型</h3><p>线性回归方程中，其自变量都是一次项，线性模型可以用来拟合非线性数据，而非线性模型也可以用来拟合线性数据，有的模型既可以使线性也可以使非线性模型。</p>
-<ul>
-<li>非线性模型拟合线性数据</li>
-</ul>
-<p>非线性模型几乎都可以在线性可分数据上有不逊于线性模型的表现<br><img src="https://note.youdao.com/yws/api/personal/file/1D70B4CDFF03423E97ABC37F0C1B8733?method=download&shareKey=f3b9556697932b23dedc04c06ae3a3cd" alt></p>
-<ul>
-<li>线性模型拟合非线性数据</li>
-</ul>
-<p>但是相反的，线性模型用来拟合非线性数据，通常表现糟糕。改善线性模型在非线性数据上的效果的方法之一是进行分箱，甚至可以搞过一些非线性模型。</p>
-<p><img src="https://note.youdao.com/yws/api/personal/file/A2F08F0D7A8D4761B16B779877453614?method=download&shareKey=36e49e3e63725e9534077264653e4574" alt></p>
-<ul>
-<li>即是线性，也是非线性的模型</li>
-</ul>
-<p>有一些模型，即可以处理线性数据又可以处理非线性数据，比如支持向量机。这个模型的线性和非线性取决于它的核函数。</p>
-<p><img src="https://note.youdao.com/yws/api/personal/file/19A7E95570314268BD269B76FF89ED2E?method=download&shareKey=5c1d7a4c6fd76e78ffad5e1fb8a91204" alt></p>
-<h2 id="3-2-使用分箱处理非线性问题"><a href="#3-2-使用分箱处理非线性问题" class="headerlink" title="3.2 使用分箱处理非线性问题"></a>3.2 使用分箱处理非线性问题</h2><p>让线性回归在非线性数据上表现提升的核心方法之一是对数据进行分箱，也就是离散化。</p>
-<p>在工业中，大量离散化变量与线性模型连用的实例很多，在深度学习出现之前，这种模式甚至一度统治一些工业中的机器学习应用场景，可见效果优秀，应用广泛。对于现在的很多工业场景而言，大量离散化特征的情况可能已经不是那么多了，不过大家依然需要对“分箱能够解决线性模型无法处理非线性数据的问题”有所了解。</p>
-<h2 id="3-3-多项式回归PolynomialFeatures"><a href="#3-3-多项式回归PolynomialFeatures" class="headerlink" title="3.3 多项式回归PolynomialFeatures"></a>3.3 多项式回归PolynomialFeatures</h2><h3 id="3-3-1-多项式对数据做了什么"><a href="#3-3-1-多项式对数据做了什么" class="headerlink" title="3.3.1 多项式对数据做了什么"></a>3.3.1 多项式对数据做了什么</h3><p>除了分箱之外，另一种更普遍的用于解决”线性回归只能处理线性数据“问题的手段，就是使用多项式回归对线性回归进行改进。这样的手法是机器学习研究者们从支持向量机中获得的：支持向量机通过升维可以将非线性可分数据转化为线性可分，然后使用核函数在低维空间中进行计算，这是一种“高维呈现，低维解释”的思维。那我们为什么不能让线性回归使用类似于升维的转换，将数据由非线性转换为线性，从而为线性回归赋予处理非线性数据的能力呢？当然可以。<br><img src="https://note.youdao.com/yws/api/personal/file/176FBDF502BB4D36ADAB608843183733?method=download&shareKey=0326e48215aac4f9a94d6ef3365e2d11" alt></p>
-<p>接下来，我们就来看看线性模型中的升维工具：多项式变化。这是一种通过增加自变量上的次数，而将数据映射到高维空间的方法，只要我们设定一个自变量上的次数（大于1），就可以相应地获得数据投影在高次方的空间中的结果。这种方法可以非常容易地通过sklearn中的类PolynomialFeatures来实现。我们先来简单看看这个类是如何使用的。</p>
-<figure class="highlight plain"><table><tr><td class="code"><pre><span class="line">class sklearn.preprocessing.PolyinomialFeatures(degree&#x3D;2, interaction_only&#x3D;False,include_bias&#x3D;True)</span><br></pre></td></tr></table></figure>
-
-<h3 id="3-3-2-多项式回归的可解释性"><a href="#3-3-2-多项式回归的可解释性" class="headerlink" title="3.3.2 多项式回归的可解释性"></a>3.3.2 多项式回归的可解释性</h3><p>多项式回归的可解释性还存在，并且我们可以通过这样的手段做特征工程——特征创造。多项式帮助我们进行了一些列特征之间相乘的结合，若讷讷够找出组合起来后对标签贡献巨大的特征，那我们就是创造了新的有效特征，对任何学科而言发现新特征都是非常有价值的。</p>
-]]></content>
-      <categories>
-        <category>机器学习</category>
-      </categories>
-      <tags>
-        <tag>机器学习</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>机器学习笔记（二）支持向量机（SVM）</title>
-    <url>/2020/07/16/svm/</url>
-    <content><![CDATA[<h1 id="1-支持向量机（SVM）原理"><a href="#1-支持向量机（SVM）原理" class="headerlink" title="1 支持向量机（SVM）原理"></a>1 支持向量机（SVM）原理</h1><p>从算法的功能来看，SVM几乎涵盖了机器学习的所有算法需求</p>
-<table>
-<thead>
-<tr>
-<th align="left"></th>
-<th align="left">功能</th>
-</tr>
-</thead>
-<tbody><tr>
-<td align="left">有监督学习</td>
-<td align="left">线性二分类与多分类（Linear Support Vector Classiﬁcation）</td>
-</tr>
-<tr>
-<td align="left"></td>
-<td align="left">非线性二分类与多分类（Support Vector Classiﬁcation, SVC）</td>
-</tr>
-<tr>
-<td align="left"></td>
-<td align="left">普通连续型变量的回归（Support Vector Regression）</td>
-</tr>
-<tr>
-<td align="left"></td>
-<td align="left">概率型连续变量的回归（Bayesian SVM）</td>
-</tr>
-<tr>
-<td align="left">无监督学习</td>
-<td align="left">支持向量聚类（Support Vector Clustering，SVC）</td>
-</tr>
-<tr>
-<td align="left"></td>
-<td align="left">异常值检测（One-class SVM）</td>
-</tr>
-<tr>
-<td align="left">半监督学习</td>
-<td align="left">转导支持向量机（Transductive Support Vector Machines，TSVM）</td>
-</tr>
-</tbody></table>
-<a id="more"></a>
-<h2 id="1-1-线性SVM用于分类的原理"><a href="#1-1-线性SVM用于分类的原理" class="headerlink" title="1.1 线性SVM用于分类的原理"></a>1.1 线性SVM用于分类的原理</h2><p>要理解SVM的损失函数，先定义决策边界，假设数据中共计有$N$个训练样本，每个训练样本$i$可以被表示为$(x_i,y_i)(i=1,2,\dots N)$，其中$x_i$是$(x_{1i},x_{2i}\dots x_{ni})^T$这样一个特征向量，每个样本总共包含$n$个特征。</p>
-<p>二分类标签$y_i$取值为${-1,1}$</p>
-<p>若$n=2$，则有$i=(x_{1i},x_{2i},y_i)^T$，在二维平面上，以$x_2$为横坐标，$x_1$为从坐标，$y$为颜色，来可视化所有的$N$个样本</p>
-<p><img src="https://note.youdao.com/yws/api/personal/file/A4A7E90B88454F098F8BDBDCCF02B27D?method=download&shareKey=a5c90f8c069094d544bacfbb471dbd02" alt></p>
-<p>所以要在这个数据集上找寻一个决策边界(超平面)，让紫色点的标签为1，红色点的标签为-1</p>
-<p>二维平面上，任意一条线可以表示为：<br>$$x_1 = ax_2+b$$</p>
-<p>将表达式变换：<br>$$0=ax_2-x_1+b$$<br>$$0=(a,-1)*\binom{x_2}{x_1}+b$$<br>$$0=w^Tx+b$$</p>
-<p>其中$(a,-1)$是参数向量$w$，$x$是特征向量，$b$是截距，在SVM中，使用这个表达式表示决策边界。</p>
-<p><strong>我们的目标是求解能够让边际最大化的决策边界</strong></p>
-<p>如果在决策边界上任意取两个点$x_a,x_b$，并代入决策边界的表达式，则有：<br>$$w^Tx_a+b=0$$<br>$$w^Tx_b+b=0$$<br>两式相减，可以得到：<br>$$w^T*(x_a-x_b)=0$$</p>
-<p>两个向量的点积为0，证明参数向量$w$的方向垂直与我们的决策边界</p>
-<p><img src="https://note.youdao.com/yws/api/personal/file/F29C776BA1854D9C87B9BA1EEFF2F3B9?method=download&shareKey=f6addba1a1e3223deb09059443ef2cf1" alt></p>
-<p>由于紫色的点代表标签$y=1，y=-1$，因此以下式判定：<br>$$<br>y=<br>\begin{cases}<br>1, &amp;if\ w*x_t+b&gt;0\\<br>-1, &amp;if\ w * x_t+b&lt;0<br>\end{cases}<br>$$</p>
-<p><strong>注意：决策边界以上的点都为正，以下的点都为负，是人为规定的，不会影响对参数$w$和截距$b$的求解</strong></p>
-<p>决策边界的两边要有两个超平面，两个超平面在二维空间中是两条平行线（虚线超平面），而他们之间的距离就是我们的边际$d$。<br>我们将这两条平行线表示为：</p>
-<p>$$w * x+b=k, w * x+b=-k$$</p>
-<p>两边同时除以$k$,则可以得到：</p>
-<p>$$w * x+b=1, w * x+b=-1$$</p>
-<p>表达式两边1和-1分别表示了两条平行决策边界的虚线到决策边界的相对距离。让这两条线分别过两类数据中距离决策边界最近的点，这些点被称为“支持向量”。</p>
-<p>令紫色类的点为$x_p$，红色类的点为$x_r$，则可以得到：</p>
-<p>$$w * x_p+b=1,w * x_r+b=-1$$</p>
-<p>两个式相减，则有：<br>$$w * (w_p-w_r)=2$$<br>如下图所示，$(x_p-x_r)$可以表示为两点之间的连线，而边际$d$是平行于$w$的。</p>
-<p>又因为以下数学性质：</p>
-<table>
-<thead>
-<tr>
-<th align="left">线性代数中模长的运用</th>
-</tr>
-</thead>
-<tbody><tr>
-<td align="left">向量$b$除以自身的模长可以得到$b$方向上的单位向量</td>
-</tr>
-<tr>
-<td align="left">向量a乘以向量b方向上的单位向量，可以得到向量a在向量b方向上的投影的长度。</td>
-</tr>
-</tbody></table>
-<p>所以，将上述式子两边同时除以$||w||$, 则可以得到：<br>$$\frac{w*(x_p-x_r)}{||w||}=\frac{2}{||w||}$$<br>$$d = \frac{2}{||w||}$$</p>
-<p><img src="https://note.youdao.com/yws/api/personal/file/B26C385AAC024C1791BBFDDF643F3D01?method=download&shareKey=aa3e06d8df0f9b472581aa1282400ae3" alt></p>
-<p>所以，求最大边界，对应的就是最大化d,求解以下函数的最小值：<br>$$f(w)=\frac{||w||^2}{2}$$</p>
-<p>对于任意样本，可以把决策函数写作：<br>$$w * x_i+b&gt;=1\   if\ y_i=1$$<br>$$w * x_i+b&lt;=-1 \  if\ y_i=-1$$<br>将两个式子整合：<br>$$y_i(w*x_i+b)&gt;=1, i=1,2,\dots N$$</p>
-<h2 id="1-2-线性SVM的拉格朗日对偶函数和决策函数"><a href="#1-2-线性SVM的拉格朗日对偶函数和决策函数" class="headerlink" title="1.2 线性SVM的拉格朗日对偶函数和决策函数"></a>1.2 线性SVM的拉格朗日对偶函数和决策函数</h2><p>损失函数分为两个部分：最要最小化的函数，以及参数求解后必须满足的约束条件</p>
-<h3 id="1-2-1-将损失函数从最初形态转换为拉格朗日乘数形态"><a href="#1-2-1-将损失函数从最初形态转换为拉格朗日乘数形态" class="headerlink" title="1.2.1 将损失函数从最初形态转换为拉格朗日乘数形态"></a>1.2.1 将损失函数从最初形态转换为拉格朗日乘数形态</h3><p><strong>1.为什么要进行转换？</strong></p>
-<p>我们的目标是求解让损失函数最小化的$w$，希望能够找出一种方式，能在满足条件$y_i(w*x_i+b)&gt;=1$，因此，一种业界认可的方式是使用拉格朗日乘数法(standard Lagrange multiplier method)</p>
-<p><strong>2.为什么可以进行转换</strong></p>
-<p>拉格朗日乘数法正好可以用来解决凸优化问题，使用拉格朗日乘数法将损失函数改写为考虑了约束条件的形式：<br>$$L(w,b,\alpha)=\frac{1}{2}||w||^2-\sum_{i=1}^N\alpha_i(y_i(w*x_i+b)-1) (\alpha_i&gt;=0)$$</p>
-<p>其中，$\alpha_i$叫作拉格朗日乘数。</p>
-<p><strong>3.怎样进行转换</strong></p>
-<p>拉格朗日函数分为两个部分，第一部分是原始损失函数，第二部分是约束条件。我们希望，$L(w,b,\alpha)$在满足约束条件下，最小化损失函数。所以要先以$\alpha$为参数，求解$L(w,b,\alpha)$的最大值，在以$w,b$为参数，求解$L(w,b,\alpha)$的最小值。</p>
-<p>因此，我们的目标可写作：</p>
-<p>$$\min_{w,b}\max_{\alpha_i&gt;=0}L(w,b,\alpha) (\alpha_i&gt;=0)$$</p>
-<p>首先，第一步执行max，即最大化$L(w,b,\alpha)$，有两种情况：</p>
-<ul>
-<li>当$y_i(w * x_i+b)&gt;1$，函数的第二部分$\sum_{i=1}^N\alpha_i(y_i(w*x_i+b)-1)$一定为正，式子$\frac{1}{2}||w||^2$就要减去一个正数，此时若需要最大化$L(w,b,\alpha)$,则$\alpha$必须取到0</li>
-<li>当$y_i(w * x_i+b)&lt;1$，函数的第二部分$\sum_{i=1}^N\alpha_i(y_i(w*x_i+b)-1)$一定为负，式子$\frac{1}{2}||w||^2$就要减去一个负数，此时若需要最大化$L(w,b,\alpha)$,则$\alpha$必须取到正无穷</li>
-</ul>
-<p>因此，可以把函数的第二部分当做一个惩罚项，只有当$y_i(w*x_i+b)&gt;1$时函数没有受到惩罚，从而在求解最小值的时候让约束条件满足</p>
-<p>现在，$L(w,b,\alpha)$是我们新的损失函数，目标要通过先最大化，再最小化求解$w，b$</p>
-<h3 id="1-2-2-将拉格朗日函数转换为拉格朗日对偶函数"><a href="#1-2-2-将拉格朗日函数转换为拉格朗日对偶函数" class="headerlink" title="1.2.2 将拉格朗日函数转换为拉格朗日对偶函数"></a>1.2.2 将拉格朗日函数转换为拉格朗日对偶函数</h3><p><strong>1.为什么要进行转换？</strong><br>求极值，最简单的方法是对参数求导后让一阶导数为0，这里对参数$w,b$分别求偏导并使其为0</p>
-<p>$$<br>\begin{equation}\begin{split}<br>L(w,b,\alpha)&amp;=\frac{1}{2}||w||^2-\sum_{i=1}^N\alpha_i(y_i(w * x_i+b)-1)\\<br>&amp;=\frac{1}{2}||w||^2-\sum_{i=1}^N(\alpha_iy_iw * x_i+\alpha_iy_ib-\alpha_i) \\<br>&amp; =\frac{1}{2}||w||^2-\sum_{i=1}^N(\alpha_iy_iw * x_i)-\sum_{i=1}^N\alpha_iy_ib+\sum_{i=1}^N\alpha_i\\<br>&amp;=\frac{1}{2}(w^Tw)^{\frac{1}{2}*2}-\sum_{i=1}^N(\alpha_iy_iw * x_i)-\sum_{i=1}^N\alpha_iy_ib+\sum_{i=1}^N\alpha_i<br>\end{split}\end{equation}<br>$$</p>
-<p>$$<br>\begin{equation}\begin{split}<br>\frac{\partial L(w,b,\alpha)}{\partial w}&amp;=\frac{1}{2}*2w-\sum_{i=1}^N\alpha_iy_ix_i \\<br>&amp;=w-\sum_{i=1}^N\alpha_iy_ix_i=0 \to w = \sum_{i=1}^N\alpha_iy_ix_i<br>\end{split}\end{equation}<br>$$</p>
-<p>$$<br>\begin{equation}\begin{split}<br>\frac{\partial L(w,b,\alpha)}{\partial b}&amp;=\sum_{i=1}^N\alpha_iy_i=0 \to \sum_{i=1}^N\alpha_iy_i=0 \\<br>\end{split}\end{equation}<br>$$</p>
-<p>由于两个求偏导结果中都带有未知的拉格朗日乘数$\alpha_i$，因此需要有一种方法来求解拉格朗日乘数，而拉格朗日对偶函数，是只带有$alpha_i$而不带有$w,b$的形式，可以求解$\alpha_i$然后再代入（2）、（3）式中来求解参数$w,b$</p>
-<p><strong>2.为什么能够进行转换</strong></p>
-<p>对于任意一个拉格朗日函数$L(x,\alpha)=f(x)+\sum_{i=1}^q\alpha_ih_i(x)$，都存在一个与它对应的对偶函数$g(\alpha)$，只带有拉格朗日乘数$\alpha$作为唯一参数。如果$L(x,\alpha)$存在最优解并可以表示为$\min_xL(x,\alpha)$，并且对偶函数的最优解也存在并可以表示为$\max_\alpha g(\alpha)$，则可以定义对偶差异(dual gap)<br>$$\Delta = \min_{x}L(x,\alpha)-\max_\alpha g(\alpha)$$</p>
-<p>如果$\Delta=0$,则称$L(x,\alpha)$与其对偶函数之间存在强对偶关系，此时可以通过求其对偶函数的最优解来代替原始函数。</p>
-<p>强对偶关系存在需要满足KKT(Karush-Kuhn-Tucker)条件：<br>$$<br>\begin{equation}\begin{split}<br>\frac{\partial L}{\partial x_i}=0,\forall_i = 1,2,\dots,d \\<br>h_i(x)&lt;=0,\forall_i = 1,2,\dots,q \\<br>\alpha_i&gt;=0,\forall_i = 1,2,\dots,q \\<br>\alpha_ih_i(x)=0,\forall_i = 1,2,\dots,q \\<br>\end{split}\end{equation}<br>$$</p>
-<p>如果我们可以让KKT条件全部成立，则可以求解出$L(w,b,\alpha)$的对偶函数来求解$\alpha$</p>
-<p>之前求偏导时，得到<br>$$w = \sum_{i=1}^N\alpha_iy_ix_i$$<br>$$\sum_{i=1}^N\alpha_iy_i=0$$</p>
-<p>并且满足：<br>$$-(y(w*x_i+b)-1)&lt;=0, \alpha_i&gt;=0$$</p>
-<p>接下来，只需要满足：<br>$$\alpha_i(y_i(w*x_i+b)-1)=0$$</p>
-<p>当这个条件满足时，能够让$y_i(w*x_i+b)-1=0$是在虚线的超平面上的样本点，即我们的支持向量，其余样本点必须满足$\alpha_i=0$。</p>
-<p>现在KKT的五个条件都得到了满足，可以使用对偶函数求解。</p>
-<p><strong>3.怎样进行转换</strong></p>
-<p>首先将求导为0代入原始：<br>$$<br>\begin{equation}\begin{split}<br>L(w,b,\alpha)&amp;=\frac{1}{2}||w||^2-\sum_{i=1}^N\alpha_i(y_i(w * x_i+b)-1)\\<br>&amp;=\frac{1}{2}||w||^2-\sum_{i=1}^N(\alpha_iy_iw * x_i+\alpha_iy_ib-\alpha_i) \\<br>&amp; =\frac{1}{2}||w||^2-\sum_{i=1}^N(\alpha_iy_iw * x_i)-\sum_{i=1}^N\alpha_iy_ib+\sum_{i=1}^N\alpha_i\\<br>&amp;=\frac{1}{2}(w^Tw)^{\frac{1}{2}*2}-w\sum_{i=1}^N(\alpha_iy_i * x_i)-b\sum_{i=1}^N\alpha_iy_i+\sum_{i=1}^N\alpha_i \\<br>\end{split}\end{equation}</p>
-<p>将（2）、（3）式代入则有<br>$$=\frac{1}{2}w^Tw-w^Tw+\sum_{i=1}^N\alpha_i $$</p>
-<p>$$=-\frac{1}{2}w^Tw+\sum_{i=1}^N\alpha_i$$</p>
-<p>将（2）式代入，则有：<br>$$=-\frac{1}{2}\sum_{i=1}^N\alpha_iy_ix_i^T * \sum_{i=1}^N\alpha_iy_ix_i+\sum_{i=1}^N\alpha_i$$</p>
-<p>令这两个$w$源于不同的特征和标签：<br>$$=-\frac{1}{2}\sum_{i=1,j=1}^N\alpha_iy_ix_i^T\alpha_iy_ix_i+\sum_{i=1}^N\alpha_i$$</p>
-<p>$$=\sum_{i=1}^N\alpha_i-\frac{1}{2}\sum_{i=1,j=1}^N\alpha_i\alpha_jy_iy_jx_i^Tx_j$$</p>
-<p>将矩阵相乘转换为内积形式：<br>$$L_d = \sum_{i=1}^N\alpha_i-\frac{1}{2}\sum_{i=1,j=1}^N\alpha_i\alpha_jy_iy_jx_i * x_j$$</p>
-<p>函数$L_d$就是对偶函数，其对偶差异$L(w,b,\alpha)$和$L_d$，则有：<br>$$\Delta = \min_{w,b}\max_{\alpha_i&gt;=0}L(w,b,\alpha)-\max_{\alpha_i&gt;=0}L_d$$</p>
-<p>又因为在推导$L_d$时，对$L(w,b,\alpha)$偏导为0，所以可以把公式写成：<br>$$\Delta = \min_{w,b}\max_{\alpha_i&gt;=0}L(w,b,\alpha)-\max_{\alpha_i&gt;=0}\min_{w,b}L(w,b,\alpha)$$</p>
-<p>又因为所有KKT条件满足，所以：<br>$$ \min_{w,b}\max_{\alpha_i&gt;=0}L(w,b,\alpha)=\max_{\alpha_i&gt;=0}\min_{w,b}L(w,b,\alpha)$$</p>
-<p>所以，我们只需要求解对偶函数的最大值就可以了，最终，目标函数变化为：<br>$$\max_{\alpha_i&gt;=0}(\sum_{i=1}^N\alpha_i-\frac{1}{2}\sum_{i=1,j=1}^N\alpha_i\alpha_jy_iy_jx_i * x_j)$$</p>
-<h3 id="1-2-3-求解拉格朗日对偶函数极值及其后续过程"><a href="#1-2-3-求解拉格朗日对偶函数极值及其后续过程" class="headerlink" title="1.2.3 求解拉格朗日对偶函数极值及其后续过程"></a>1.2.3 求解拉格朗日对偶函数极值及其后续过程</h3><p>需要使用梯度下降、SMO或者二次规划(QP, quadratic programming)来求解，但是这一过程对数学要求的程度已经远远超出了需要的程度，因此不再深入了解。</p>
-<p>只需要知道，一旦求到了$\alpha$值，就可以求得决策边界参数$w,b$</p>
-<p>当求得参数后，就可以得到决策边界的表达式：<br>$$f(x_{test})=sign(w*x_{test}+b)$$</p>
-<p>其中$x_{test}$是任意测试样本，$sign(h)$是符号函数。</p>
-<p>至此，我们对SVM的原理已经有了一个比较深刻的理解。</p>
-<h2 id="1-3-非线性SVM与核函数"><a href="#1-3-非线性SVM与核函数" class="headerlink" title="1.3 非线性SVM与核函数"></a>1.3 非线性SVM与核函数</h2><h3 id="1-3-1-SVC在非线性数据上的推广"><a href="#1-3-1-SVC在非线性数据上的推广" class="headerlink" title="1.3.1 SVC在非线性数据上的推广"></a>1.3.1 SVC在非线性数据上的推广</h3><p>为了找出非线性数据的线性决策边界，我们需要将数据从原始空间$x$，投射到新空间$\Phi(x)$中，$\Phi(x)$是一个映射函数，代表某种非线性变换。线性SVM的原理可以很容易推广到非线性情况下，推导过程和逻辑都与线性SVM一样，只是在定义决策边界之前，需要对数据升维，将原始的$x$，转换成$\Phi(x)$</p>
-<p>因此，非线性SVM的损失函数初始形态为：<br>$$\min_{w,b}\frac{||w||^2}{2}$$<br>$$subject\  to\  y_i(w * \Phi(x)+b&gt;=1), i=1,2,\dots,N$$<br>拉格朗日和拉格朗日对偶函数也可得：<br>$$L(w,b,\alpha)=\frac{1}{2}||w||^2-\sum_{i=1}^N\alpha_i(y_i(w * \Phi(x)+b)-1)$$<br>$$L_d = \sum_{i=1}^N\alpha_i - \frac{1}{2}\sum_{i,j}\alpha_i\alpha_j y_i y_j\Phi(x_i)\Phi(x_j)$$</p>
-<p>同理可以使用相同的推导方式让拉格朗日函数满足KKT条件，并且对每个参数求导，再使用梯度下降或SMO等方式求解，最终得到决策边界函数：<br>$$f(x_{test})=sign(w*\Phi(x_{test})+b)$$</p>
-<h3 id="1-3-2-重要参数kernel"><a href="#1-3-2-重要参数kernel" class="headerlink" title="1.3.2 重要参数kernel"></a>1.3.2 重要参数kernel</h3><p>但是，我们不清楚什么样的数据应该使用什么类型的映射函数确保在变换空间中可以找出决策边界。</p>
-<table>
-<thead>
-<tr>
-<th align="left">关键概念：核函数</th>
-</tr>
-</thead>
-<tbody><tr>
-<td align="left">解决这个问题的数学方式，叫作“核技巧”(Kernel Trick)，是一种讷讷够使用数据原始空间中的向量计算表示生维后的空间中的点积结果的数学方式$K(u,v)=\Phi(u)*\Phi(v)$,而这个点积函数$K(u,v)$，就被叫作“核函数”(Kernel Funciton)</td>
-</tr>
-</tbody></table>
-<p>选用不同的核函数，就可以解决不同数据分布下寻找超平面的问题。以下是“kernel”在Sklearn中的几种选项：</p>
-<p><img src="https://note.youdao.com/yws/api/personal/file/0D76DD0804FD486EA95C591CDF1335C5?method=download&shareKey=c5e8aae3bd6137b2f4c315008302565b" alt></p>
-<h3 id="1-3-3-核函数的优势和缺陷"><a href="#1-3-3-核函数的优势和缺陷" class="headerlink" title="1.3.3 核函数的优势和缺陷"></a>1.3.3 核函数的优势和缺陷</h3><ol>
-<li>线性核，尤其是多项式核：在高次项计算非常缓慢</li>
-<li>rbf和多项式核不擅长处理量纲不统一的数据集</li>
-</ol>
-<p><strong>因此，SVM执行之前，推荐先进行数据的无量纲化处理</strong></p>
-<h3 id="1-3-4-核函数相关的参数：degree-amp-gamma-amp-coef0"><a href="#1-3-4-核函数相关的参数：degree-amp-gamma-amp-coef0" class="headerlink" title="1.3.4 核函数相关的参数：degree &amp; gamma &amp; coef0"></a>1.3.4 核函数相关的参数：degree &amp; gamma &amp; coef0</h3><ul>
-<li>gamma是表达式中的$\gamma$</li>
-<li>degree是多项式核函数的次数$d$</li>
-<li>ceof0是常数项</li>
-</ul>
-<table>
-<thead>
-<tr>
-<th align="left">参数</th>
-<th align="left">含义</th>
-</tr>
-</thead>
-<tbody><tr>
-<td align="left">degree</td>
-<td align="left">整数，可不填，默认3</td>
-</tr>
-<tr>
-<td align="left"></td>
-<td align="left">多项式核函数的次数（’poly’），如果核函数没有选择”poly”，这个参数会被忽略</td>
-</tr>
-<tr>
-<td align="left">gamma</td>
-<td align="left">浮点数，可不填，默认“auto”</td>
-</tr>
-<tr>
-<td align="left"></td>
-<td align="left">核函数的系数，仅在参数Kernel的选项为”rbf”,”poly”和”sigmoid”的时候有效</td>
-</tr>
-<tr>
-<td align="left"></td>
-<td align="left">输入“auto”，自动使用1/(n_features)作为gamma的取值</td>
-</tr>
-<tr>
-<td align="left"></td>
-<td align="left">输入”scale”，则使用1/(n_features * X.std())作为gamma的取值</td>
-</tr>
-<tr>
-<td align="left">ceof0</td>
-<td align="left">浮点数，可不填，默认=0.0</td>
-</tr>
-<tr>
-<td align="left"></td>
-<td align="left">核函数中的常数项，它只在参数kernel为’poly’和’sigmoid’的时候有效。</td>
-</tr>
-</tbody></table>
-<h2 id="1-4-硬间隔与软间隔：重要参数C"><a href="#1-4-硬间隔与软间隔：重要参数C" class="headerlink" title="1.4 硬间隔与软间隔：重要参数C"></a>1.4 硬间隔与软间隔：重要参数C</h2><h3 id="1-4-1-SVM在软间隔数据上的推广"><a href="#1-4-1-SVM在软间隔数据上的推广" class="headerlink" title="1.4.1 SVM在软间隔数据上的推广"></a>1.4.1 SVM在软间隔数据上的推广</h3><p>我们可以通过调整我们对决策边界的定义，将硬间隔时得出的数学结论推广到软间隔的情况上，让决策边界能够忍  受一小部分训练误差。这个时候，我们的决策边界就不是单纯地寻求最大边际了，因为对于软间隔地数据来说，边  际越大被分错的样本也就会越多，因此我们需要找出一个”最大边际“与”被分错的样本数量“之间的平衡<br>|关键概念：硬间隔与软间隔|<br>|:–|<br>|当两组数据是完全线性可分，我们可以找出一个决策边界使得训练集上的分类误差为0，这两种数据就被称为  是存在”硬间隔“的。当两组数据几乎是完全线性可分的，但决策边界在训练集上存在较小的训练误差，这两种数据就被称为是存在”软间隔“。|</p>
-<p><img src="https://note.youdao.com/yws/api/personal/file/C2FFA1AA25854902ACF46B5A0C5D3410?method=download&shareKey=95be7710c6d12317d6fbda16a8bd436e" alt></p>
-<p>由上图可知，超平面无法让数据上的训练误差为0，因此需要放松判别函数的条件，引入松弛系数$\zeta$来帮助优化判别函数：<br>$$w<em>x_i +b&gt;=1-\zeta_i if\ y_i = 1$$<br>$$w</em>x_i +b&lt;=-1+\zeta_i if\ y_i = -1$$</p>
-<p>其中$\zeta_i&gt;0$，在求解最大边际的损失函数中加上一个惩罚项，我们的拉格朗日函数，拉格朗日对偶函数也因此被松弛系数改变：<br>$$\min_{w,b,\zeta}\frac{||w||^2}{2}+C\sum_{i=1}^n\zeta_i$$<br>$$subject to y_i(w* \Phi(x_i)+b&gt;=1-\zeta_i)$$<br>$$\zeta_i&gt;=0,i=1,2,\dots,N$$</p>
-<p>其中，$C$是用来控制惩罚力度的系数</p>
-<p>拉格朗日函数为(其中$\mu$是第二个拉格朗日乘数)：<br>$$L(w,b,\alpha,\zeta)= \frac{1}{2}||w||^2+C\sum_{i=1}^N\zeta_i-\sum_{i=1}^N\alpha_i(y_i(w*\zeta(x_i)+b)-1+\zeta_i)-\sum_{i=1}^N\mu_i\zeta_i$$</p>
-<p>需要满足的KKT条件为：<br>$$\frac{\partial L(w,b,\alpha,\zeta)}{\partial w}=\frac{\partial L(w,b,\alpha,\zeta)}{\partial b}=\frac{\partial L(w,b,\alpha,\zeta)}{\partial \zeta}=0$$</p>
-<p>$$\zeta_i&gt;=0,\alpha_i&gt;=0,\mu_i&gt;=0$$<br>$$\alpha_i(y_i(w*\Phi(x_i)+b)-1+\zeta_i)=0$$<br>$$\mu_i\zeta_i=0$$</p>
-<p>拉格朗日对偶函数为：<br>$$L_D = \sum_{i=1}^N\alpha_i - \frac{1}{2}\sum_{i,j}\alpha_i\alpha_jy_iy_j\Phi(x_i)\Phi(x_j)$$<br>$$subject\  to\  C &gt;=\alpha_i&gt;=0$$<br>公式中唯一出现的新变量，松弛系数惩罚力度$C$。由参数$C$来进行控制</p>
-<h3 id="1-4-2-重要参数C"><a href="#1-4-2-重要参数C" class="headerlink" title="1.4.2 重要参数C"></a>1.4.2 重要参数C</h3><p>参数C用于权衡”训练样本的正确分类“与”决策函数的边际最大化“两个不可同时完成的目标，希望找出一个平衡点来让模型的效果最佳。</p>
-<table>
-<thead>
-<tr>
-<th align="left">参数</th>
-<th align="left">含义</th>
-</tr>
-</thead>
-<tbody><tr>
-<td align="left">C</td>
-<td align="left">浮点数，默认1，必须大于等于0，可不填</td>
-</tr>
-<tr>
-<td align="left"></td>
-<td align="left">松弛系数的惩罚项系数。如果C值设定比较大，那SVC可能会选择边际较小的，能够更好地分类所有训练点的决策边界，不过模型的训练时间也会更长。如果C的设定值较小，那SVC会尽量最大化边界，决策功能会更简单，但代价是训练的准确度。换句话说，C在SVM中的影响就像正则化参数对逻辑回归的影响。</td>
-</tr>
-</tbody></table>
-]]></content>
-      <categories>
-        <category>机器学习</category>
-      </categories>
-      <tags>
-        <tag>机器学习</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>行测笔记：判断推理（一）图形推理</title>
-    <url>/2020/07/15/xingce/</url>
-    <content><![CDATA[<h2 id="图形推理的命题形式"><a href="#图形推理的命题形式" class="headerlink" title="图形推理的命题形式"></a>图形推理的命题形式</h2><ol>
-<li>一组图：从左往右读题，找整体规律的共同点。或间隔跳跃观察</li>
-<li>两组图：找第一组规律，应用于第二组</li>
-<li>九宫格：横行（最多）、数列、对角线观察规律</li>
-<li>分组分类：找寻每组统一规律</li>
-<li>空间类：折纸盒，转化成平面思维（截面图、三视图、立体拼合）<a id="more"></a>
-
-</li>
-</ol>
-<h2 id="图形推理考什么？（学习重点：识别图形特征）"><a href="#图形推理考什么？（学习重点：识别图形特征）" class="headerlink" title="图形推理考什么？（学习重点：识别图形特征）"></a>图形推理考什么？（学习重点：识别图形特征）</h2><ol>
-<li>位置规律</li>
-<li>样式规律</li>
-<li>属性规律</li>
-<li>特殊规律</li>
-<li>数量规律</li>
-<li>空间规律</li>
-</ol>
-<h2 id="一、位置规律"><a href="#一、位置规律" class="headerlink" title="一、位置规律"></a>一、位置规律</h2><h3 id="位置类识别特征（各图元素组成相同）"><a href="#位置类识别特征（各图元素组成相同）" class="headerlink" title="位置类识别特征（各图元素组成相同）"></a>位置类识别特征（各图元素组成相同）</h3><h3 id="（1）平移："><a href="#（1）平移：" class="headerlink" title="（1）平移："></a>（1）平移：</h3><ol>
-<li>方向 ：直线（上下、左右、对角线）、绕圈（顺/逆时针）</li>
-<li>步数 ：恒定、递增（等差）、周期（考的少）</li>
-</ol>
-<p><strong>技巧：1.多个元素分开看，边做边排除 2.位置规律——就近走原则</strong></p>
-<h3 id="宫格型黑块平移"><a href="#宫格型黑块平移" class="headerlink" title="宫格型黑块平移"></a>宫格型黑块平移</h3><p><strong>1.个别黑块可重合</strong></p>
-<ul>
-<li>题干和选项大部分元素组成完全一致，个别一两幅图少黑块</li>
-<li>题干第一幅图的黑块一般不会重合</li>
-</ul>
-<p><strong>2.黑块走到头后怎么办？</strong></p>
-<ul>
-<li>循环走：从头开始</li>
-<li>折返走：直接弹回</li>
-</ul>
-<p><strong>3.“双胞胎”黑块们如何分辨</strong>：就近走原则</p>
-<h3 id="多宫格方向判定"><a href="#多宫格方向判定" class="headerlink" title="多宫格方向判定"></a>多宫格方向判定</h3><p>题型特征：16宫格图形多个黑块平移</p>
-<ol>
-<li>绕圈走：中间颜色数量相同，优先考虑内外圈分开看</li>
-<li>走直线：中间颜色数量不同，有限考虑走直线</li>
-</ol>
-<h3 id="（2）旋转："><a href="#（2）旋转：" class="headerlink" title="（2）旋转："></a>（2）旋转：</h3><ol>
-<li>方向：顺时针、逆时针</li>
-<li>常见角度：45、60、90、180度等</li>
-</ol>
-<p><strong>技巧：元素多，没思路？相邻比较走起来！</strong></p>
-<p><strong>钟表类：外面一个框，中心一个点，绕了一圈线——常考旋转</strong></p>
-<h3 id="（3）翻转"><a href="#（3）翻转" class="headerlink" title="（3）翻转"></a>（3）翻转</h3><ol>
-<li>左右翻转：竖轴对称</li>
-<li>上下翻转：横轴对称</li>
-</ol>
-<p><strong>元素组成相同优先看位置：对称通常是图形自身的规律，而不是两幅图之间的翻转</strong></p>
-<p><strong>技巧：先看容易看懂的，旋转180度看不出来就转卷子！</strong></p>
-<p><strong>如何区分旋转与翻转</strong><br>只有左右互换（上下不变）——左右翻<br>只有上下互换（左右不变）——上下翻<br>上下、左右都互换——旋转180度</p>
-<p><strong>思维导图</strong><br><img src="https://note.youdao.com/yws/api/personal/file/CC02E070330340E8880E45623154A7F9?method=download&shareKey=ab0d5ad994f7c4d39f8370b641a8faa8" alt></p>
-<h2 id="二、样式规律"><a href="#二、样式规律" class="headerlink" title="二、样式规律"></a>二、样式规律</h2><h3 id="样式类别识别特征：元素组成相似"><a href="#样式类别识别特征：元素组成相似" class="headerlink" title="样式类别识别特征：元素组成相似"></a>样式类别识别特征：元素组成相似</h3><h3 id="（1）加、减、同、异"><a href="#（1）加、减、同、异" class="headerlink" title="（1）加、减、同、异"></a>（1）加、减、同、异</h3><p><strong>识别特征：相同线条重复出现</strong></p>
-<ol>
-<li>相加、相减</li>
-<li>求异（保留不同）</li>
-<li>求同（保留相同）</li>
-</ol>
-<p><strong>技巧：对比选项，从特殊线条入手（横线、竖线、最长最短线）</strong></p>
-<p><strong>位置+样式类题目，先转谁呢？  谁搞特殊，先转谁！</strong></p>
-<ol>
-<li>图1与图2有相同部分——先求同求异再转</li>
-<li>图2与图3有相同部分——转图1</li>
-<li>图1与图3有想吐部分——转图2</li>
-</ol>
-<h3 id="（2）黑白运算"><a href="#（2）黑白运算" class="headerlink" title="（2）黑白运算"></a>（2）黑白运算</h3><p><strong>识别特征：图形轮廓和分割区域相同，内部的颜色不同</strong><br><strong>方法：相同位置颜色做加法（注意顺序）</strong></p>
-<p><strong>注意：</strong></p>
-<ol>
-<li>运算规则具体题目具体找</li>
-<li>黑+白 不等于 白+黑，要具体题目具体验证</li>
-<li>与黑块平移区分：黑块数量相同，优先平移；黑块数量不同，优先黑白运算</li>
-</ol>
-<p><strong>技巧：在确定可能考黑白运算后，从问好处着手解题更快，边找边验证</strong></p>
-<p><strong>思维导图</strong><br><img src="https://note.youdao.com/yws/api/personal/file/96D9D2A1C7614181B52F461B9C1872E7?method=download&shareKey=bb4bd7eaf38467812c12098b8c66fbff" alt></p>
-<h2 id="三、属性规律"><a href="#三、属性规律" class="headerlink" title="三、属性规律"></a>三、属性规律</h2><h3 id="属性类别识别特征-元素组成不相同、不相似——优先属性"><a href="#属性类别识别特征-元素组成不相同、不相似——优先属性" class="headerlink" title="属性类别识别特征: 元素组成不相同、不相似——优先属性"></a>属性类别识别特征: 元素组成不相同、不相似——优先属性</h3><h3 id="（1）对称性"><a href="#（1）对称性" class="headerlink" title="（1）对称性"></a>（1）对称性</h3><ol>
-<li>轴对称：”等腰”元素出现</li>
-<li>中心对称：平行四边形，N,Z,S变形图出现</li>
-<li>轴对称+中心对称：图形存在相互垂直的对称轴</li>
-<li>对称性的细化考法<ul>
-<li>对称轴的方向与数量</li>
-<li>对称轴与图形中线的位置关系：重合、垂直、交点</li>
-<li>角度：平行、垂直、交叉某角度</li>
-</ul>
-</li>
-</ol>
-<p><strong>优先考虑对称轴时，先画出图形对称轴！</strong></p>
-<p><strong>技巧：整体没有规律，分开看</strong></p>
-<h3 id="（2）曲直性"><a href="#（2）曲直性" class="headerlink" title="（2）曲直性"></a>（2）曲直性</h3><ol>
-<li>全直线图形</li>
-<li>全曲线图形</li>
-<li>曲+直图形</li>
-</ol>
-<p><strong>常见考法：三种情况均出现；与其他考点结合命题</strong></p>
-<p><strong>所有图形均有外框——分开看</strong></p>
-<h3 id="（3）开闭性"><a href="#（3）开闭性" class="headerlink" title="（3）开闭性"></a>（3）开闭性</h3><p><strong>题型特征：完整图的图形留了小开口，可以考虑开闭性</strong></p>
-<ol>
-<li>全封闭图形</li>
-<li>全开放图形</li>
-<li>半封闭图形</li>
-</ol>
-<p><strong>黑色粗线条，生活化元素/图形留有小开口——考虑开闭性</strong></p>
-<p><strong>思维导图</strong><br><img src="https://note.youdao.com/yws/api/personal/file/F59E60D6989F4394BE9C6BDDDC9887CF?method=download&shareKey=649c8319245813b64168677ca4240c22" alt></p>
-<h2 id="四、特殊规律"><a href="#四、特殊规律" class="headerlink" title="四、特殊规律"></a>四、特殊规律</h2><h3 id="（1）图形间关系"><a href="#（1）图形间关系" class="headerlink" title="（1）图形间关系"></a>（1）图形间关系</h3><p><strong>识别特征：两个或多个封闭图形连在一起</strong></p>
-<ol>
-<li>相离</li>
-<li>相交<ul>
-<li>相交于点</li>
-<li>相交于边（数量、样式：边的长短、整体还是部分）</li>
-<li>相较于面（形状）</li>
-</ul>
-</li>
-</ol>
-<p><strong>一根线牵出多个图形考虑相交于点，其他考虑相交于边或面</strong></p>
-<h3 id="（2）功能元素"><a href="#（2）功能元素" class="headerlink" title="（2）功能元素"></a>（2）功能元素</h3><p><strong>识别特征：黑点、白点、箭头、小图形</strong></p>
-<ol>
-<li>标记位置（上、下、左、右、内、外）</li>
-<li>标记图形<ul>
-<li>点：交点</li>
-<li>线：直线、曲线 / 最长边、最短边</li>
-<li>角：直角、锐角、钝角 / 最大角、最小角</li>
-<li>面：相交面 / 最大面、最小面 / 直线面、曲线面 / 特殊形状面</li>
-</ul>
-</li>
-</ol>
-<p><strong>思维导图</strong><br><img src="https://note.youdao.com/yws/api/personal/file/84A38B8255CA4301907F28ECCE456AEE?method=download&shareKey=b6b8b1a759af355f000b27566005c2c3" alt></p>
-<h2 id="五、数量规律"><a href="#五、数量规律" class="headerlink" title="五、数量规律"></a>五、数量规律</h2><p><strong>识别特征：元素组成不同、不相似、且属性没规律，数量规律明显</strong></p>
-<h3 id="（1）面数量"><a href="#（1）面数量" class="headerlink" title="（1）面数量"></a>（1）面数量</h3><p><strong>注意：只有封闭的白色区域才算面</strong><br><strong>识别特征</strong><br><strong>1.图形被分割，封闭面明显</strong><br><strong>2.生活化图形、粗线条图形中留空白区域</strong></p>
-<p>面的细化考法：数面特征图，但整体数面无答案</p>
-<ol>
-<li>面的形状：三角形、四边形</li>
-<li>相同面数量</li>
-<li>特殊面的形状：最大面、最小面、相交面</li>
-</ol>
-<h3 id="（2）线数量"><a href="#（2）线数量" class="headerlink" title="（2）线数量"></a>（2）线数量</h3><p><strong>识别特征</strong><br><strong>1.直线数特征图：多边形、单一直线</strong><br><strong>2.曲线数特征图：曲线图形（圆、弧、单一曲线）</strong></p>
-<p><strong>直线和曲线分开数</strong></p>
-<p><strong>线的细化考法</strong></p>
-<ol>
-<li>线的位置：边框线条、框内线条</li>
-<li>直线的细化：横线/竖线</li>
-</ol>
-<p><strong>大部分图形题中有曲线，优先考虑曲线规律</strong></p>
-<p><strong>3.线的特殊考点：笔画问题</strong><br><strong>识别特征</strong><br><strong>1.五角星、圆相切/相交、“日”变形、“田”变形</strong><br><strong>2.多端点、出头端点、圆相交(近年热点)</strong></p>
-<ol>
-<li>可以一笔画<ul>
-<li>线条之间连通</li>
-<li>奇点数量为0或2（奇点：以一个点为中心，发射出奇数条线）</li>
-</ul>
-</li>
-</ol>
-<p><strong>端点都是奇点，别忘了数！</strong></p>
-<ol start="2">
-<li>多笔画<ul>
-<li>笔画数 = 奇点数/2 (奇点数一定是偶数)</li>
-</ul>
-</li>
-</ol>
-<p><strong>不连通图直接数笔画</strong></p>
-<h3 id="（3）点数量"><a href="#（3）点数量" class="headerlink" title="（3）点数量"></a>（3）点数量</h3><p><strong>识别特征</strong><br>1.线条交叉明显（大树杈）<br>2.乱糟糟一团线交叉<br>3.相切较多<br><strong>注意：线与线的交点数量</strong><br>1.顶点、切点是交点<br>2.端点不是交点</p>
-<p><strong>点的细化考法：数点特征图，但整体点无规律</strong></p>
-<ol>
-<li><p>按线的属性细化：曲直交点</p>
-<ul>
-<li>特征：圆或弧多，且存在曲直相交</li>
-</ul>
-</li>
-<li><p>按线的位置细化：内外交点</p>
-<ul>
-<li>特征：图形都有外框（内外分开看思维）</li>
-</ul>
-</li>
-</ol>
-<h3 id="（4）素数量"><a href="#（4）素数量" class="headerlink" title="（4）素数量"></a>（4）素数量</h3><p><strong>识别特征：独立的小图形</strong></p>
-<ol>
-<li>元素种类</li>
-<li>元素个数</li>
-</ol>
-<p><strong>形状一致，大小不一致也看作一种元素</strong></p>
-<ol start="3">
-<li>部分数：连在一起的就是一部分</li>
-</ol>
-<p><strong>识别特征：生活化图形、黑色粗线条图形</strong></p>
-<p><strong>数量规律特征图总汇(按考频排序)</strong></p>
-<p><img src="https://note.youdao.com/yws/api/personal/file/56CAC826F4B14DAAB59B45411A39D32E?method=download&shareKey=1d6c6fbe4ab78574d6561879d6ab8f91" alt></p>
-<p><strong>思维导图</strong></p>
-<p><img src="https://note.youdao.com/yws/api/personal/file/99C081A3826E4102AC4C11414BEA5180?method=download&shareKey=e819a2b5c9eb4b8fa4c807d63b28184a" alt></p>
-<h3 id="六、空间规律"><a href="#六、空间规律" class="headerlink" title="六、空间规律"></a>六、空间规律</h3><h3 id="（1）相对面"><a href="#（1）相对面" class="headerlink" title="（1）相对面"></a>（1）相对面</h3><p>应用：一组相对面同时出现的选项排除</p>
-<ol>
-<li>同行同列相隔一个面</li>
-<li>Z字形紧邻中线的两端</li>
-</ol>
-<p><strong>出题可能会有无中生有的面</strong></p>
-<h3 id="（2）相邻面——公共边"><a href="#（2）相邻面——公共边" class="headerlink" title="（2）相邻面——公共边"></a>（2）相邻面——公共边</h3><p><strong>方法1：折叠前后相邻关系保持不变</strong></p>
-<ol>
-<li>平面图直接相邻的两个面的公共边</li>
-<li>平面图中构成直角的两个边是同一条边</li>
-<li>一排4个面，两头的两条边是同一条边（1-4-1）</li>
-</ol>
-<p><strong>方法2：画边法</strong></p>
-<ol>
-<li>结合选项，找一个特殊面的唯一点<ul>
-<li>特殊面：只出现一次，有可以区分的唯一点</li>
-<li>唯一点：是指该面中唯一的，没有与其一样的点</li>
-</ul>
-</li>
-<li>顺（逆）时针方向画边，并标出序号</li>
-</ol>
-<p><strong>注意：同一个面、同一个点、同方向</strong><br>3. 题干与选项对应：面不一致排除</p>
-<p><strong>思维导图</strong><br><img src="https://note.youdao.com/yws/api/personal/file/0E167A466553402EB97E034F3FA658C2?method=download&shareKey=0071ee3ee90162d908695fcb5c0c9bc4" alt></p>
-]]></content>
-      <categories>
-        <category>行测笔试</category>
-      </categories>
-      <tags>
-        <tag>行测笔试</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>行测笔记：判断推理（四）逻辑判断</title>
-    <url>/2020/07/24/xingce4/</url>
-    <content><![CDATA[<h2 id="一、翻译推理"><a href="#一、翻译推理" class="headerlink" title="一、翻译推理"></a>一、翻译推理</h2><p><strong>题目特征</strong></p>
-<ol>
-<li>题干和选项中存在明显的逻辑关联词</li>
-<li>提问方式为：可以推出/不能推出</li>
-</ol>
-<p><strong>解题思维</strong></p>
-<ol>
-<li>先翻译</li>
-<li>再推理<a id="more"></a>
-
-</li>
-</ol>
-<h3 id="（1）翻译规则之“前-rightarrow-后”"><a href="#（1）翻译规则之“前-rightarrow-后”" class="headerlink" title="（1）翻译规则之“前$\rightarrow$后”"></a>（1）翻译规则之“前$\rightarrow$后”</h3><ol>
-<li>若…则</li>
-<li>只要..就</li>
-<li>所有…都</li>
-<li>为了…一定</li>
-<li>…是…的充分条件</li>
-</ol>
-<p>（出现如果/就/都/一定）</p>
-<h3 id="（2）推理规则之“逆否等价”"><a href="#（2）推理规则之“逆否等价”" class="headerlink" title="（2）推理规则之“逆否等价”"></a>（2）推理规则之“逆否等价”</h3><p>符号表示：$A\rightarrow B = -B\rightarrow -A$</p>
-<p>文字表示:肯前比肯后、否后必否前</p>
-<p>否前、肯后无必然结论</p>
-<h3 id="（3）翻译规则之“后推前”"><a href="#（3）翻译规则之“后推前”" class="headerlink" title="（3）翻译规则之“后推前”"></a>（3）翻译规则之“后推前”</h3><ol>
-<li>只有…才…</li>
-<li>不…不…</li>
-<li>除非..否则不…</li>
-<li>…是…的基础/假设/前提/关键</li>
-<li>…是…的必要/必不可少条件</li>
-</ol>
-<p><strong>“否则不”是一个整体</strong><br>6. 基础/前提/关键;不可缺少/必不可少/必要条件</p>
-<p><strong>谁必不可少，谁在箭头后</strong></p>
-<p>都遵循递推原则：$A\rightarrow B，B\rightarrow C $可得$A\rightarrow B\rightarrow C$</p>
-<h3 id="（4）翻译规则之“且、或”"><a href="#（4）翻译规则之“且、或”" class="headerlink" title="（4）翻译规则之“且、或”"></a>（4）翻译规则之“且、或”</h3><p>A且B：二者同时成立</p>
-<ol>
-<li>和</li>
-<li>并且</li>
-<li>即…又…</li>
-<li>不仅…而且..</li>
-<li>…但是…</li>
-</ol>
-<p>A或B：二者至少一个成立</p>
-<ol>
-<li>或者</li>
-<li>或者…或者…</li>
-<li>至少有一个</li>
-</ol>
-<h3 id="（5）推理规则之“否一推一”"><a href="#（5）推理规则之“否一推一”" class="headerlink" title="（5）推理规则之“否一推一”"></a>（5）推理规则之“否一推一”</h3><p>“或”的翻译：否1$\rightarrow$1</p>
-<p>“或”关系为真，否定一项可以得到另一项</p>
-<p>题干中有确定信息，可由确定信息出发，排除法做题</p>
-<h3 id="（6）推理规则之“德-摩根定律”"><a href="#（6）推理规则之“德-摩根定律”" class="headerlink" title="（6）推理规则之“德*摩根定律”"></a>（6）推理规则之“德*摩根定律”</h3><ol>
-<li>-(A且B) = -A或-B</li>
-<li>-(A或B) = -A且-B</li>
-</ol>
-<p>“且”关系常考考点：缺一不可</p>
-<p>A$\rightarrow$B且C，可以得到：-B$\rightarrow$-A/-C$\rightarrow$-A</p>
-<h3 id="（7）推理方式"><a href="#（7）推理方式" class="headerlink" title="（7）推理方式"></a>（7）推理方式</h3><p>提问方式：</p>
-<p>一下哪项中的推理方式/结构与题干中的推理方式/结构相同</p>
-<p>重结构、轻内容——字母代入做题</p>
-<p>不考虑推理是否正确，只考虑与题干是否一致</p>
-<h2 id="二、组合排列"><a href="#二、组合排列" class="headerlink" title="二、组合排列"></a>二、组合排列</h2><ol>
-<li>两组及以上对象</li>
-<li>对象之间的关系</li>
-</ol>
-<h3 id="（1）排除法、代入法"><a href="#（1）排除法、代入法" class="headerlink" title="（1）排除法、代入法"></a>（1）排除法、代入法</h3><ol>
-<li>排除法：读一句，排一句<ul>
-<li>快速找到“谁”是“谁”</li>
-<li>快速确定“谁”不是“谁”</li>
-</ul>
-</li>
-</ol>
-<p>组合排列常用思维——谁一定不是谁</p>
-<ol start="2">
-<li>代入法：假设选项正确，代入题干验证是否符合题意<ul>
-<li>题干条件确定优先排除；题干条件不确定代入                                      </li>
-<li>设问中有“可能”、“不可能”考虑代入<br>只猜中一半（一对一错）——混搭来破题</li>
-</ul>
-</li>
-</ol>
-<h3 id="（2）辅助技巧"><a href="#（2）辅助技巧" class="headerlink" title="（2）辅助技巧"></a>（2）辅助技巧</h3><ol>
-<li>最大信息（题干条件中出现次数最多的信息）<br>以此作为推理起点</li>
-<li>符号：”&gt;”、“&lt;”、“=”<br>往往涉及年龄、成绩、收入、身高等大小比较</li>
-</ol>
-<p>比较大小技巧——极值做排除</p>
-<ol start="3">
-<li>画表格（4个及以上信息）<br>先填入确定信息</li>
-</ol>
-<h2 id="三、特殊题型——材料题"><a href="#三、特殊题型——材料题" class="headerlink" title="三、特殊题型——材料题"></a>三、特殊题型——材料题</h2><ol>
-<li>与非材料题解题方式一致——一则材料、多种技巧</li>
-<li>通过材料直接推出来的结论可以直接应用于所有题目</li>
-</ol>
-<p>当且仅当表示充要条件，即A$\rightarrow$B，且B$\rightarrow$A</p>
-]]></content>
-      <categories>
-        <category>行测笔试</category>
-      </categories>
-      <tags>
-        <tag>行测笔试</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>行测笔记：判断推理（二）类比推理</title>
-    <url>/2020/07/22/xingce2/</url>
-    <content><![CDATA[<h2 id="一、语义关系"><a href="#一、语义关系" class="headerlink" title="一、语义关系"></a>一、语义关系</h2><h3 id="（1）近义关系、反义关系"><a href="#（1）近义关系、反义关系" class="headerlink" title="（1）近义关系、反义关系"></a>（1）近义关系、反义关系</h3><p>如果一级关系（近反义关系）选不出答案——进行二级辨析</p>
-<p>常见的二级辨析：感情色彩（褒义、贬义、中性）</p>
-<a id="more"></a>
-
-<h3 id="（2）比喻义、象征义"><a href="#（2）比喻义、象征义" class="headerlink" title="（2）比喻义、象征义"></a>（2）比喻义、象征义</h3><h2 id="二、逻辑关系"><a href="#二、逻辑关系" class="headerlink" title="二、逻辑关系"></a>二、逻辑关系</h2><h3 id="（1）全同关系"><a href="#（1）全同关系" class="headerlink" title="（1）全同关系"></a>（1）全同关系</h3><h3 id="（2）并列关系"><a href="#（2）并列关系" class="headerlink" title="（2）并列关系"></a>（2）并列关系</h3><ol>
-<li>矛盾关系（只有两者）</li>
-<li>反对关系（有第三者）</li>
-</ol>
-<p><strong>并列的细分考点：并列关系+功能相同</strong></p>
-<h3 id="（3）包容关系"><a href="#（3）包容关系" class="headerlink" title="（3）包容关系"></a>（3）包容关系</h3><ol>
-<li>种属关系</li>
-<li>组成关系</li>
-</ol>
-<p><strong>区分：能用“谁是谁”造句的就是种属关系</strong></p>
-<h3 id="（4）交叉关系"><a href="#（4）交叉关系" class="headerlink" title="（4）交叉关系"></a>（4）交叉关系</h3><h3 id="（5）对应关系"><a href="#（5）对应关系" class="headerlink" title="（5）对应关系"></a>（5）对应关系</h3><ol>
-<li>材料</li>
-<li>工艺</li>
-<li>属性</li>
-<li>功能（二级辨析：主要功能、次要功能）</li>
-<li>时间顺序：多个行为同时出现</li>
-</ol>
-<p><strong>当出现多个选项符合时间顺序时，考虑动作主体</strong><br>6. 因果关系（方式目的）</p>
-<h2 id="三、语法关系"><a href="#三、语法关系" class="headerlink" title="三、语法关系"></a>三、语法关系</h2><h3 id="（1）主谓关系"><a href="#（1）主谓关系" class="headerlink" title="（1）主谓关系"></a>（1）主谓关系</h3><h3 id="（2）动宾关系"><a href="#（2）动宾关系" class="headerlink" title="（2）动宾关系"></a>（2）动宾关系</h3><h3 id="（3）主宾关系"><a href="#（3）主宾关系" class="headerlink" title="（3）主宾关系"></a>（3）主宾关系</h3><h2 id="四、词语拆分"><a href="#四、词语拆分" class="headerlink" title="四、词语拆分"></a>四、词语拆分</h2><h3 id="（1）单字拆分"><a href="#（1）单字拆分" class="headerlink" title="（1）单字拆分"></a>（1）单字拆分</h3><h3 id="（2）成语被拆分"><a href="#（2）成语被拆分" class="headerlink" title="（2）成语被拆分"></a>（2）成语被拆分</h3><h3 id="（3）两组词语之间没有明显逻辑关系"><a href="#（3）两组词语之间没有明显逻辑关系" class="headerlink" title="（3）两组词语之间没有明显逻辑关系"></a>（3）两组词语之间没有明显逻辑关系</h3><hr>
-<h2 id="五、词语、成语积累："><a href="#五、词语、成语积累：" class="headerlink" title="五、词语、成语积累："></a>五、词语、成语积累：</h2><ol>
-<li>马放南山：天下太平，不再用兵</li>
-<li>拾人牙慧：窃取别人的语言和文字</li>
-<li>如火如荼：军容之盛，形容大规模的行动气势旺盛</li>
-<li>犬牙交错：比喻交界线曲折，像狗牙参差不齐，也比喻情况复杂</li>
-<li>纷乱如麻：交错杂乱像一团乱麻，一般形容心情</li>
-<li>燕归巢：比喻客居在外的游子喜归故里</li>
-<li>睁眼瞎：比喻没有文化，不识字的人，缺乏知识的人</li>
-<li>得陇望蜀：比喻得寸进尺，贪心不知足</li>
-<li>纲举目张：比喻条理分明</li>
-<li>惩前毖后：批判以前所犯的错误，吸取教训，使以后谨慎些，不致再犯</li>
-</ol>
-]]></content>
-      <categories>
-        <category>行测笔试</category>
-      </categories>
-      <tags>
-        <tag>行测笔试</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>行测笔记：判断推理（三）定义判断</title>
-    <url>/2020/07/23/xingce3/</url>
-    <content><![CDATA[<h2 id="解题思维："><a href="#解题思维：" class="headerlink" title="解题思维："></a>解题思维：</h2><ol>
-<li>看提问——看清“属于/符合”,“不属于/不符合”定义等</li>
-<li>看题干——识别有效信息：找准关键词、关键句</li>
-<li>看选项——纠结时选项对比择优<a id="more"></a>
-
-</li>
-</ol>
-<h2 id="一、快速识别有效信息"><a href="#一、快速识别有效信息" class="headerlink" title="一、快速识别有效信息"></a>一、快速识别有效信息</h2><h3 id="（1）关键词——主体、客体"><a href="#（1）关键词——主体、客体" class="headerlink" title="（1）关键词——主体、客体"></a>（1）关键词——主体、客体</h3><ol>
-<li>主体——行为、活动的出发者</li>
-<li>客体——行为、活动作用的对象</li>
-</ol>
-<ul>
-<li>不是每题一定都有主题和客体，但是出现了要重点看</li>
-<li>主客体不符合的选项一定不符合定义</li>
-<li>范围越小、越明确的主/客体，越容易成为考点</li>
-</ul>
-<p><strong>常考主客体：</strong></p>
-<ol>
-<li>行政机关</li>
-<li>全力机关</li>
-<li>司法机关</li>
-<li>事业单位</li>
-<li>社会组织 </li>
-</ol>
-<h3 id="（2）句式引导词——引导的内容重点看"><a href="#（2）句式引导词——引导的内容重点看" class="headerlink" title="（2）句式引导词——引导的内容重点看"></a>（2）句式引导词——引导的内容重点看</h3><ol>
-<li>方式：通过/利用…</li>
-<li>目的：以/以达到…</li>
-<li>原因：因为/由于…</li>
-<li>结果：导致/从而/使得…</li>
-<li>时间：当…时/在…情况下</li>
-</ol>
-<h3 id="（3）优先看到定义所在的那句话的句号和补充说明"><a href="#（3）优先看到定义所在的那句话的句号和补充说明" class="headerlink" title="（3）优先看到定义所在的那句话的句号和补充说明"></a>（3）优先看到定义所在的那句话的句号和补充说明</h3><h3 id="（4）多定义：做题方法与单定义题目一致"><a href="#（4）多定义：做题方法与单定义题目一致" class="headerlink" title="（4）多定义：做题方法与单定义题目一致"></a>（4）多定义：做题方法与单定义题目一致</h3><ol>
-<li>问啥看啥：看清题干问的是哪个定义，重点看目标定义</li>
-<li>比较定义：纠结两个选项时，再与其他定义比较</li>
-</ol>
-<h2 id="二、小技巧"><a href="#二、小技巧" class="headerlink" title="二、小技巧"></a>二、小技巧</h2><h3 id="（1）拆词"><a href="#（1）拆词" class="headerlink" title="（1）拆词"></a>（1）拆词</h3><p>从定义本身找信息，如果定义名称有明确的限定语并简单易懂，可利用定义词快速破题</p>
-<h3 id="（2）同构选项排除法"><a href="#（2）同构选项排除法" class="headerlink" title="（2）同构选项排除法"></a>（2）同构选项排除法</h3><p>意思相似、结构相似的选项排除</p>
-<ol>
-<li>题干或下选项能够读不懂</li>
-<li>同构选项出现，可以一起排除</li>
-<li>同构有风险，使用需谨慎…</li>
-</ol>
-]]></content>
-      <categories>
-        <category>行测笔试</category>
-      </categories>
-      <tags>
-        <tag>行测笔试</tag>
       </tags>
   </entry>
 </search>
