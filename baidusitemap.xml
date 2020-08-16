@@ -1,16 +1,34 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>https://liangggggg.github.io/2020/07/24/xingce4/</loc>
-    <lastmod>2020-08-12</lastmod>
+    <loc>https://liangggggg.github.io/2020/07/23/xingce3/</loc>
+    <lastmod>2020-08-16</lastmod>
   </url>  <url>
     <loc>https://liangggggg.github.io/2020/08/11/leetcode/</loc>
+    <lastmod>2020-08-16</lastmod>
+  </url>  <url>
+    <loc>https://liangggggg.github.io/2020/08/15/Data4/</loc>
+    <lastmod>2020-08-16</lastmod>
+  </url>  <url>
+    <loc>https://liangggggg.github.io/2020/08/14/Data3/</loc>
+    <lastmod>2020-08-15</lastmod>
+  </url>  <url>
+    <loc>https://liangggggg.github.io/2020/07/22/xingce2/</loc>
+    <lastmod>2020-08-14</lastmod>
+  </url>  <url>
+    <loc>https://liangggggg.github.io/2020/07/15/xingce/</loc>
+    <lastmod>2020-08-13</lastmod>
+  </url>  <url>
+    <loc>https://liangggggg.github.io/2020/08/13/Data2/</loc>
+    <lastmod>2020-08-13</lastmod>
+  </url>  <url>
+    <loc>https://liangggggg.github.io/2020/08/13/network2/</loc>
+    <lastmod>2020-08-13</lastmod>
+  </url>  <url>
+    <loc>https://liangggggg.github.io/2020/08/11/network/</loc>
     <lastmod>2020-08-12</lastmod>
   </url>  <url>
-    <loc>https://liangggggg.github.io/2020/08/11/computer%20network/</loc>
-    <lastmod>2020-08-12</lastmod>
-  </url>  <url>
-    <loc>https://liangggggg.github.io/2020/08/11/Data%20Structure/</loc>
+    <loc>https://liangggggg.github.io/2020/08/11/Data/</loc>
     <lastmod>2020-08-12</lastmod>
   </url>  <url>
     <loc>https://liangggggg.github.io/2020/08/05/Unsupervised/</loc>
@@ -28,20 +46,11 @@
     <loc>https://liangggggg.github.io/2020/07/24/LogisticRegression/</loc>
     <lastmod>2020-07-25</lastmod>
   </url>  <url>
-    <loc>https://liangggggg.github.io/2020/07/23/xingce3/</loc>
-    <lastmod>2020-07-23</lastmod>
-  </url>  <url>
-    <loc>https://liangggggg.github.io/2020/07/22/xingce2/</loc>
-    <lastmod>2020-07-23</lastmod>
-  </url>  <url>
     <loc>https://liangggggg.github.io/2020/07/22/LinearRegression/</loc>
     <lastmod>2020-07-23</lastmod>
   </url>  <url>
     <loc>https://liangggggg.github.io/2020/07/15/tree/</loc>
     <lastmod>2020-07-22</lastmod>
-  </url>  <url>
-    <loc>https://liangggggg.github.io/2020/07/15/xingce/</loc>
-    <lastmod>2020-07-21</lastmod>
   </url>  <url>
     <loc>https://liangggggg.github.io/2020/07/16/svm/</loc>
     <lastmod>2020-07-18</lastmod>
