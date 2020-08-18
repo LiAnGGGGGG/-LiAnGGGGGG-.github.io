@@ -1,0 +1,853 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/L.jpg">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/L.jpg">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"liangggggg.github.io","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="1 查找的基本概念查找有两种基本形态：静态查找和动态查找  静态查找：在查找时只对数据元素进行查询或检索，查找表称为静态查找表 动态查找：在实施查找的同时，插入查找表中不存在的记录，或从查找表中删除已存在的某个记录  根据存储结构的不同，查找方法分为三大类：  顺序表和链表的查找：将给定的K值与查找表中记录的关键字逐个进行比较，找到要查找的记录 散列表的查找：根据给定的K值直接访问查找表，从而找到">
+<meta property="og:type" content="article">
+<meta property="og:title" content="数据结构总结（五）：查找">
+<meta property="og:url" content="https://liangggggg.github.io/2020/08/17/Data5/index.html">
+<meta property="og:site_name" content="LiAnG&#39;s Blog">
+<meta property="og:description" content="1 查找的基本概念查找有两种基本形态：静态查找和动态查找  静态查找：在查找时只对数据元素进行查询或检索，查找表称为静态查找表 动态查找：在实施查找的同时，插入查找表中不存在的记录，或从查找表中删除已存在的某个记录  根据存储结构的不同，查找方法分为三大类：  顺序表和链表的查找：将给定的K值与查找表中记录的关键字逐个进行比较，找到要查找的记录 散列表的查找：根据给定的K值直接访问查找表，从而找到">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://note.youdao.com/yws/api/personal/file/D88D43B8E643426EAB6B2364BFF63C6F?method=download&shareKey=3fa93bd5fbe81e5e524c115bc248e942">
+<meta property="og:image" content="https://note.youdao.com/yws/api/personal/file/E743781A41C048FBACF19AEA3B46CDE3?method=download&shareKey=fff65bef129a9f6c2e47f8fb66bd770a">
+<meta property="og:image" content="https://note.youdao.com/yws/api/personal/file/2C8523525D4F45C494DF2BDD9E038DD6?method=download&shareKey=bb0f372b7208953b8ef2e463e228d3ac">
+<meta property="og:image" content="https://note.youdao.com/yws/api/personal/file/97818282DD604A05B09196BEAD6539F0?method=download&shareKey=c6f362679dd80a67908a2d6ca93ef7a4">
+<meta property="og:image" content="https://note.youdao.com/yws/api/personal/file/1814D7A4B1B64A8F8C2DE97653835F25?method=download&shareKey=5296f5cd12ff30a14d50fb00a0eaa204">
+<meta property="article:published_time" content="2020-08-17T00:12:59.000Z">
+<meta property="article:modified_time" content="2020-08-17T08:23:26.484Z">
+<meta property="article:author" content="LiAnG">
+<meta property="article:tag" content="计算机基础知识">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://note.youdao.com/yws/api/personal/file/D88D43B8E643426EAB6B2364BFF63C6F?method=download&shareKey=3fa93bd5fbe81e5e524c115bc248e942">
+
+<link rel="canonical" href="https://liangggggg.github.io/2020/08/17/Data5/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>数据结构总结（五）：查找 | LiAnG's Blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/atom.xml" title="LiAnG's Blog" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">LiAnG's Blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">Stay hungry, stay foolish</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://liangggggg.github.io/2020/08/17/Data5/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/timg.jpg">
+      <meta itemprop="name" content="LiAnG">
+      <meta itemprop="description" content="Stay hungry, stay foolish">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="LiAnG's Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          数据结构总结（五）：查找
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2020-08-17 08:12:59 / 修改时间：16:23:26" itemprop="dateCreated datePublished" datetime="2020-08-17T08:12:59+08:00">2020-08-17</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/" itemprop="url" rel="index"><span itemprop="name">计算机基础知识</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2020/08/17/Data5/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2020/08/17/Data5/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>5k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>5 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="1-查找的基本概念"><a href="#1-查找的基本概念" class="headerlink" title="1 查找的基本概念"></a>1 查找的基本概念</h1><p>查找有两种基本形态：静态查找和动态查找</p>
+<ul>
+<li>静态查找：在查找时只对数据元素进行查询或检索，查找表称为静态查找表</li>
+<li>动态查找：在实施查找的同时，插入查找表中不存在的记录，或从查找表中删除已存在的某个记录</li>
+</ul>
+<p>根据存储结构的不同，查找方法分为三大类：</p>
+<ol>
+<li>顺序表和链表的查找：将给定的K值与查找表中记录的关键字逐个进行比较，找到要查找的记录</li>
+<li>散列表的查找：根据给定的K值直接访问查找表，从而找到要查找的记录</li>
+<li>索引查找表的查找：首先根据索引确定待查找记录所在的块，然后再从块中找到要查找的记录</li>
+</ol>
+<a id="more"></a>
+
+<p>平均查找长度</p>
+<p>为确定数据元素在列表中的位置，需给定值进行比较的关键字个数的期望值</p>
+<p>$$ASL = \sum_{i=1}^n p_i * C_i, \  \sum_{i=1}^n p_i = 1$$</p>
+<p>$p_i$：查找第$i$个记录的概率<br>$C_i$：查找第$i$个记录需要进行比较的次数</p>
+<h1 id="2-顺序查找法"><a href="#2-顺序查找法" class="headerlink" title="2. 顺序查找法"></a>2. 顺序查找法</h1><p>将查找表作为一个线性表，可以是顺序表，也可以使链表，依次进行比较</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">#define MAX_SIZE	100 typedef	struct	SSTable</span><br><span class="line">&#123;	RecType	elem[MAX_SIZE]；&#x2F;*	顺序表	*&#x2F;</span><br><span class="line">int	length ；	&#x2F;*	实际元素个数	*&#x2F;</span><br><span class="line">&#125;SSTable ；</span><br><span class="line">int	Seq_Search(SSTable	ST，KeyType key)</span><br><span class="line">&#123;	int p ；</span><br><span class="line">ST. elem[0].key&#x3D;key；&#x2F;*设置监视哨兵，失败返回 0 *&#x2F; </span><br><span class="line">for(p&#x3D;ST.length；ST. elem[p].key!&#x3D; key；p--)</span><br><span class="line">return(p)；</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>设查找每个记录的概率相等，即$P_i = 1/n$，查找第$i$个元素成功的比较次数$C_i  = n-i+1$</p>
+<p>查找成功时：<br>$$ASL = \sum_{i=1}^n P_i * C_i = \frac{1}{n}\sum_{i=1}^n(n-i+1)=\frac{n+1}{2}$$</p>
+<p>查找不成功时：比较次数为$n+1$，概率为$P_1 = 1/(2n)$</p>
+<p>$$ASL = \sum_{i=1}^n P_i * C_i = \frac{1}{2n}\sum_{i=1}^n(n-i+1)+\frac{n+1}{2}=\frac{3(n+1)}{4}$$</p>
+<h1 id="3-分块查找法"><a href="#3-分块查找法" class="headerlink" title="3 分块查找法"></a>3 分块查找法</h1><p>分块查找的基本思想是：将表分成n块，每一块中的关键字不一定有序，但前一块中最大关键字必须小于后一块的最小关键字，即要求表示“分块有序的”。首先查找索引表，因为索引表是有序表，确定待查结点是在哪一块，然后再已确定的块中进行顺序查找</p>
+<p>线性表中共有$n$个结点，分成大小相等的$b$块，每块有$s=n/b$个结点，假定对索引表也采用顺序查找，值考虑查找成功的情况，并假定对每个结点的查找概率是相等的</p>
+<p>$$E_b = \sum_{i=1}^b(i* \frac{1}{b})=\frac{b+1}{2}$$</p>
+<p>$$E_w = \sum_{i=1}^s(i*\frac{1}{s})=\frac{s+1}{2}$$</p>
+<p>所以：</p>
+<p>$$E(n)=E_b+E_w = \frac{b+1}{2}+\frac{s+1}{2}=\frac{n+s^2}{2s}+1$$</p>
+<p>当$s=\sqrt{n}，E(n)取最小值$</p>
+<p>$$E(n)=\sqrt{n}+1\approx \sqrt{n}$$</p>
+<h1 id="4-折半查找法"><a href="#4-折半查找法" class="headerlink" title="4 折半查找法"></a>4 折半查找法</h1><p>折半查找要求查找表顺序存储结构且各数据元素按关键字有序排序，也就是说折半查找只适用于对有序顺序表进行查找</p>
+<p>（1）查找思想<br>用Low、High和Mid表示待查找区间的下界、上届和中间位置指针，初值为Low=1,High=n</p>
+<p>取中间位置Mid: Mid = floor[(Low+High)/2]</p>
+<p>比较中间位置记录的关键字与给定的K值</p>
+<ol>
+<li>相等:查找成功</li>
+<li>大于：待查找记录在区间的前半段，修改上界指针：High = Mid -1,转1</li>
+<li>小于：待查记录在区间的后半段，修改下界指针：Low = Mid +1，转1</li>
+</ol>
+<p>直到越界(Low&gt;High)，查找失败 </p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">int	Bin_Search(SSTable	ST，KeyType	key)</span><br><span class="line">&#123;	int	Low&#x3D;1，High&#x3D;ST.length，Mid ；</span><br><span class="line">while (Low&lt;&#x3D;High)</span><br><span class="line">&#123;	Mid&#x3D;(Low+High)&#x2F;2 ；</span><br><span class="line">if	(ST. elem[Mid].key&#x3D;&#x3D; key) return(Mid)；</span><br><span class="line">else if (ST. elem[Mid].key&lt; key)</span><br><span class="line">Low&#x3D;Mid+1 ；</span><br><span class="line">else</span><br><span class="line">High&#x3D;Mid-1 ；&#125;</span><br><span class="line">return(0)；	&#x2F;*	查找失败	*&#x2F;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>（2）算法分析<br>经过每一次查找，查找范围就缩小一半，该过程可用一颗二叉树表示，所得到的二叉树为判定书</p>
+<p><img src="https://note.youdao.com/yws/api/personal/file/D88D43B8E643426EAB6B2364BFF63C6F?method=download&shareKey=3fa93bd5fbe81e5e524c115bc248e942" alt></p>
+<p>ASL成功 = $(1+2<em>2+4</em>3+4<em>4)/11$<br>ASL不成功 = $(4</em>3 +8*4)/12$</p>
+<p>将二叉判定书的第$\lfloor log2n \rfloor+1$层上的结点补齐就称为一颗满二叉树，深度不变，$\lfloor log2(n+1) \rfloor+1$</p>
+<p>由满二叉树性质知，第$i$层上的结点数为$2i-1(i&lt;=h)$，设表中每个记录的查找概率相等，即$P_1 = \frac{1}{n}$，查找成功时的平均查找长度ASL：</p>
+<p>$$ASL = \sum_{i=1}^n P_i * C_i = \frac{1}{n}\sum_{j=1}^h j* 2^{j-1}=\frac{n+1}{n}log_2(n+1)-1$$</p>
+<p>当$n$很大$(n&gt;50)$，$ASL\approx log_2(n+1)-1$</p>
+<h1 id="5-B树及其基本操作、B-树的基本概念"><a href="#5-B树及其基本操作、B-树的基本概念" class="headerlink" title="5 B树及其基本操作、B+树的基本概念"></a>5 B树及其基本操作、B+树的基本概念</h1><p>一颗度m的B树称为m阶的B树，是一颗平衡（平衡因子为0）的查找树（排序树）</p>
+<h2 id="5-1-B树"><a href="#5-1-B树" class="headerlink" title="5.1 B树"></a>5.1 B树</h2><p>（1）B树的定义</p>
+<p>一棵m阶的B树，或者为空树，或为满足下列特性的m叉树：</p>
+<ol>
+<li>分枝的数量$\lceil m/2 \rceil&lt;=n&lt;=m$</li>
+<li>关键码的数量$\lceil m/2 \rceil-1&lt;=n&lt;=m-1$</li>
+</ol>
+<p>（2）B树的查找</p>
+<p>类似二叉排序树的查找，所不同的是B树每个节点是多关键码的有序表，在到达某个结点时，先在有序表中查找，若找到，则查找成功；否则，按照对应的指针信息指向的子树中查找，当到达叶子节点时，则说明树中没有对应的关键码，查找失败</p>
+<p>（3）B树的插入</p>
+<ol>
+<li>在B树中查找关键字$K$，若找到，表明关键字已存在，返回，否则$K$的查找操作失败于某个叶子结点，转2</li>
+<li>将$K$插入到该叶子结点中，插入时，若：<ul>
+<li>叶子节点的关键字数$&lt;m-1$:直接插入；</li>
+<li>叶子节点的关键字数$=m-1$：将结点“分裂”</li>
+</ul>
+</li>
+</ol>
+<p>分裂的方法：</p>
+<p>设待“分裂”结点包含信息为：<br>$(m,A_0,K_1,A_1,K_2,A_2,\dots,K_m,A_m)$，从其中间位置分为两个结点：</p>
+<p>$$(\lceil m/2 \rceil -1,A_0,K_1,A_1,\dots,K_{\lceil m/2 \rceil-1},A_{\lceil m/2 \rceil-1})$$<br>$$(m-\lceil m/2 \rceil,A_{\lceil m/2 \rceil},K_{\lceil m/2 \rceil+1},A_{\lceil m/2 \rceil+1},\dots,K_{m},A_{m})$$</p>
+<p>并将中间关键字$K_{\lceil m/2 \rceil}$插入到父节点中，以分裂后的两个结点作为其子结点</p>
+<p><img src="https://note.youdao.com/yws/api/personal/file/E743781A41C048FBACF19AEA3B46CDE3?method=download&shareKey=fff65bef129a9f6c2e47f8fb66bd770a" alt></p>
+<p>（4）B树的删除</p>
+<p>在$B$树上删除一个关键字$K$，首先找到关键字所在的结点$N$，然后再$N$中进行关键字$K$的删除操作。</p>
+<p>若$N$b不是叶子结点，设$K$是$N$的第$i$个关键字，将指针$A_{i-1}$所指子树中的最大关键字（或最小关键字）$K^{‘}$放在$(k)$的位置，然后删除$K^{‘}$，而$K^{‘}$一定在叶子结点上</p>
+<p>从叶子结点中删除一个关键字的情况是：<br>（兄弟可借）</p>
+<ol>
+<li>若结点$N$中的关键字个数$&gt;\lceil m/2 \rceil-1$，在结点直接删除关键字K</li>
+<li>若结点$N$中的关键字个数$=\lceil m/2 \rceil-1$，若结点$N$的左（右）兄弟结点中的关键字个数$&gt;\lceil m/2 \rceil-1$，则将节点$N$的左（或右）兄弟结点中的最大（或最小）关键字移到其父结点中，而父结点中大于（或小于）且紧靠上移关键字的关键字下移到结点$N$</li>
+</ol>
+<p><img src="https://note.youdao.com/yws/api/personal/file/2C8523525D4F45C494DF2BDD9E038DD6?method=download&shareKey=bb0f372b7208953b8ef2e463e228d3ac" alt></p>
+<p>（兄弟不可借——合并结点）<br>3. 若结点$N$和其兄弟结点中的关键字$=\lceil m/2 \rceil-1$：删除结点$N$中的关键字，再将结点$N$中的关键字、指针域其兄弟结点以及分割二者的父结点的某个关键字$K_i$，合并为一个结点，若因此使父结点中的关键个数$&lt;=\lceil m/2 \rceil-1$，则以此类推<br>4. 若所删关键字为非终端结点中的$k_i$，则可以指针$A_i$所指子树中最小关键字$Y$替代$K_i$，然后再相应的结点中删去$Y$</p>
+<p><img src="https://note.youdao.com/yws/api/personal/file/97818282DD604A05B09196BEAD6539F0?method=download&shareKey=c6f362679dd80a67908a2d6ca93ef7a4" alt></p>
+<h2 id="5-2-B-树"><a href="#5-2-B-树" class="headerlink" title="5.2 $B+$树"></a>5.2 $B+$树</h2><p>$B+$树是文件系统所需要的一种$B$树的变形树，一棵$m$阶的$B+,B$树主要差异在于：</p>
+<ol>
+<li>有$n$棵子树的结点中含有$n$个关键码；</li>
+<li>所有叶子结点中包含了全部关键码的信息，以及指向含有这些关键码记录的指针，且叶子结点本身依赖关键码的大小自小而大的顺序链接</li>
+<li>所有的非终端结点可以看成是索引部分，结点中仅含有其子树根结点中最大（或最小）关键码</li>
+</ol>
+<p><img src="https://note.youdao.com/yws/api/personal/file/1814D7A4B1B64A8F8C2DE97653835F25?method=download&shareKey=5296f5cd12ff30a14d50fb00a0eaa204" alt></p>
+<h1 id="6-哈希表"><a href="#6-哈希表" class="headerlink" title="6 哈希表"></a>6 哈希表</h1><h2 id="6-1-常用的哈希函数"><a href="#6-1-常用的哈希函数" class="headerlink" title="6.1 常用的哈希函数"></a>6.1 常用的哈希函数</h2><p>哈希函数“好坏”的主要评价因素有：散列函数的构造简单；能“均匀”地将散列表中的关键字映射到地址空间（发生冲突的可能性最少）</p>
+<p>（1）直接定址法</p>
+<p>$$H(key)=key, \ H(key)=a*key+b$$</p>
+<p>此方法仅适用于：地址集合的大小等于关键字集合的大小</p>
+<p>（2）数字分析法<br>假设关键字集合的每个关键字都是由$s$位数字组成$(k_1,k_2,\dots,k_n)$，分析关键字集中的全体，并从中提取分布均匀的若干位或他们的组合作为地址</p>
+<p>（3）平方取中法</p>
+<p>若关键字的每一位都有某些数字重复出现频度很高的现象，则先求关键字的平方值，以扩大差别</p>
+<p>（4）折叠法</p>
+<p>若关键字的位数特别多，则可将其分割成几部分，然后取他们的叠加和为散列地址</p>
+<ol>
+<li>位移法：将各部分的最后一位对齐相加</li>
+<li>间界叠加法：从一端向另一端沿各个部分分界来回折叠后，最后一位对齐相加</li>
+</ol>
+<p>适用于关键字的数字位数特别多</p>
+<p>（5）除留余数法</p>
+<p>$$H(key)=key\  MOD\  p\ p&lt;=m$$</p>
+<p>选取适合的$p$很重要，一般选取质数</p>
+<p>（6）随机数法</p>
+<p>$$H(key)= Random(key)$$</p>
+<h2 id="6-2-处理冲突的方法"><a href="#6-2-处理冲突的方法" class="headerlink" title="6.2 处理冲突的方法"></a>6.2 处理冲突的方法</h2><p>（1）开放定址法</p>
+<p>一旦产生了冲突，就去寻找下一个空的散列地址，只要散列表足够大，空的散列地址总能找到，并将数据元素存入</p>
+<ol>
+<li>线性探测法</li>
+</ol>
+<p>$$H_i = (Hash(key)+d_i)\ mod\ m\ (1&lt;=i&lt;m)$$</p>
+<p>这种方法的特点是：发生冲突，顺序表看表中下一单元，直接找出一个空单元或查遍全表。因此，可能出现很多元素在相邻的散列地址上“堆积”起来，大大降低了查找效率。为此，可采用二次探测法改善</p>
+<ol start="2">
+<li>二次探测法</li>
+</ol>
+<p>$$H_i = (Hash(key)\pm d_i)\ mod\ m\ (1&lt;=i&lt;m)$$</p>
+<p>其中：$Hash(key)$为散列函数，$m$为散列表长度，$m$要求是某个$4k+3$的质数，$d_i$为增量序列$1^2,-1^2,2^2,-2^2,\dots,q^2,-q^2,\ q&lt;=m/2$</p>
+<ol start="3">
+<li>拉链法</li>
+</ol>
+<p>将所有散列表地址为$i$的元素构成一个同义词链的单链表，并将单链表的头指针存在散列表的第$i$个单元中</p>
+<ol start="4">
+<li>建立公共溢出区</li>
+</ol>
+<p>建立一个溢出表保存与基本表中记录冲突的所有记录</p>
+<h2 id="6-3-散列表的查找"><a href="#6-3-散列表的查找" class="headerlink" title="6.3 散列表的查找"></a>6.3 散列表的查找</h2><p>查找过程与造表一致，假设采用开放定址处理冲突，则查找过程：</p>
+<ol>
+<li>对给定值$K$，计算散列地址$i=H(K)$</li>
+<li>若$r[i]=NULL$，则查找不成功</li>
+<li>若$r[i].key=k$，则查找成功</li>
+<li>否则求下一地址$H_i$，直至$r[H_i]=NULL$（查找不成功），或$r[H_i].key=k$（查找成功）</li>
+</ol>
+<p>哈希表的填满因子<br>$$\alpha=\frac{表中填入的记录数}{哈希表长度}$$</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/" rel="tag"># 计算机基础知识</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2020/08/15/Data4/" rel="prev" title="数据结构总结（四）：图">
+      <i class="fa fa-chevron-left"></i> 数据结构总结（四）：图
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2020/08/18/Data6/" rel="next" title="数据结构总结（六）：排序">
+      数据结构总结（六）：排序 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    <div class="comments" id="valine-comments"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#1-查找的基本概念"><span class="nav-text">1 查找的基本概念</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#2-顺序查找法"><span class="nav-text">2. 顺序查找法</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#3-分块查找法"><span class="nav-text">3 分块查找法</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#4-折半查找法"><span class="nav-text">4 折半查找法</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#5-B树及其基本操作、B-树的基本概念"><span class="nav-text">5 B树及其基本操作、B+树的基本概念</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#5-1-B树"><span class="nav-text">5.1 B树</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#5-2-B-树"><span class="nav-text">5.2 $B+$树</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#6-哈希表"><span class="nav-text">6 哈希表</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#6-1-常用的哈希函数"><span class="nav-text">6.1 常用的哈希函数</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#6-2-处理冲突的方法"><span class="nav-text">6.2 处理冲突的方法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#6-3-散列表的查找"><span class="nav-text">6.3 散列表的查找</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="LiAnG"
+      src="/images/timg.jpg">
+  <p class="site-author-name" itemprop="name">LiAnG</p>
+  <div class="site-description" itemprop="description">Stay hungry, stay foolish</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">22</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">5</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">5</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/LiAnGGGGGG" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;LiAnGGGGGG" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:1318457129@qq.com" title="E-Mail → mailto:1318457129@qq.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="/atom.xml" title="rss → &#x2F;atom.xml"><i class="fa fa-rss fa-fw"></i>rss</a>
+      </span>
+  </div>
+  <div class="cc-license motion-element" itemprop="license">
+    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" class="cc-opacity" rel="noopener" target="_blank"><img src="/images/cc-by-nc-sa.svg" alt="Creative Commons"></a>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        <script
+  async
+  src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"
+></script>
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">LiAnG</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-area"></i>
+    </span>
+      <span class="post-meta-item-text">站点总字数：</span>
+    <span title="站点总字数">173k</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+      <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
+    <span title="站点阅读时长">2:37</span>
+</div>
+<!-- 网站运行时间的设置 -->
+<span id="timeDate">载入天数...</span>
+<span id="times">载入时分秒...</span>
+<script>
+    var now = new Date();
+    function createtime() {
+        var grt= new Date("05/30/2020 13:14:21");//此处修改你的建站时间或者网站上线时间
+        now.setTime(now.getTime()+250);
+        days = (now - grt ) / 1000 / 60 / 60 / 24; dnum = Math.floor(days);
+        hours = (now - grt ) / 1000 / 60 / 60 - (24 * dnum); hnum = Math.floor(hours);
+        if(String(hnum).length ==1 ){hnum = "0" + hnum;} minutes = (now - grt ) / 1000 /60 - (24 * 60 * dnum) - (60 * hnum);
+        mnum = Math.floor(minutes); if(String(mnum).length ==1 ){mnum = "0" + mnum;}
+        seconds = (now - grt ) / 1000 - (24 * 60 * 60 * dnum) - (60 * 60 * hnum) - (60 * mnum);
+        snum = Math.round(seconds); if(String(snum).length ==1 ){snum = "0" + snum;}
+        document.getElementById("timeDate").innerHTML = "本站已安全运行 "+dnum+" 天 ";
+        document.getElementById("times").innerHTML = hnum + " 小时 " + mnum + " 分 " + snum + " 秒";
+    }
+setInterval("createtime()",250);
+</script>
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+      
+
+<script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      loader: {
+        source: {
+          '[tex]/amsCd': '[tex]/amscd',
+          '[tex]/AMScd': '[tex]/amscd'
+        }
+      },
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              let target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    (function () {
+      var script = document.createElement('script');
+      script.src = '//cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';
+      script.defer = true;
+      document.head.appendChild(script);
+    })();
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
+
+  
+
+  
+  <script src="/js/src/wobblewindow.js"></script>
+  <script>
+    //只在桌面版网页启用特效
+    if (window.innerWidth > 768) {
+      $(document).ready(function () {
+        
+        // 根据类名获取，而不是id
+        $('.header').wobbleWindow({
+          radius: 50,
+          movementTop: false,
+          movementLeft: false,
+          movementRight: false,
+          debug: false,
+        });
+        
+
+        
+         // 根据类名获取，而不是id
+        $('.sidebar').wobbleWindow({
+          radius: 50,
+          movementLeft: false,
+          movementTop: false,
+          movementBottom: false,
+          position: 'fixed',
+          debug: false,
+        });
+        
+
+        
+         // 根据类名获取，而不是id
+        $('.footer').wobbleWindow({
+          radius: 50,
+          movementBottom: false,
+          movementLeft: false,
+          movementRight: false,
+          
+          position: 'absolute',
+          debug: false,
+        });
+        
+      });
+    }
+  </script>
+
+
+ 
+<script>
+  var OriginTitile = document.title;
+  var titleTime;
+  document.addEventListener("visibilitychange", function() {
+    if (document.hidden) {
+      document.title = "(つェ⊂)我藏好了哦~" + OriginTitile;
+      clearTimeout(titleTime);
+    } else {
+      document.title = "(*´∇｀*) 被你发现啦~" + OriginTitile;
+      titleTime = setTimeout(function() {
+        document.title = OriginTitile;
+      }, 2000);
+    }
+  });
+</script>
+
+
+
+
+
+
+  <script async src="/js/cursor/fireworks.js"></script>
+
+
+
+<script>
+NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
+  NexT.utils.getScript('//unpkg.com/valine/dist/Valine.min.js', () => {
+    var GUEST = ['nick', 'mail', 'link'];
+    var guest = 'nick,mail,link';
+    guest = guest.split(',').filter(item => {
+      return GUEST.includes(item);
+    });
+    new Valine({
+      el         : '#valine-comments',
+      verify     : false,
+      notify     : false,
+      appId      : 'rueYojQYHpaShC9b3zwCTcgt-gzGzoHsz',
+      appKey     : 'SuFkJxmzL9eehU2FBrkopQlJ',
+      placeholder: "Just go go",
+      avatar     : 'mm',
+      meta       : guest,
+      pageSize   : '10' || 10,
+      visitor    : false,
+      lang       : '' || 'zh-cn',
+      path       : location.pathname,
+      recordIP   : false,
+      serverURLs : ''
+    });
+  }, window.Valine);
+});
+</script>
+
+
+</body>
+</html>
