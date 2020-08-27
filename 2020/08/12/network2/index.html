@@ -20,17 +20,22 @@
     var CONFIG = {"hostname":"liangggggg.github.io","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
   </script>
 
-  <meta name="description" content="Stay hungry, stay foolish">
-<meta property="og:type" content="website">
-<meta property="og:title" content="LiAnG&#39;s Blog">
-<meta property="og:url" content="https://liangggggg.github.io/categories/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/index.html">
+  <meta name="description" content="1 通信基础时延：是指数据（一个报文或者分组，甚至比特）从网络（或链路）的一端传送到另一端所需的时间，网络中的时延由以下几个不同部分组成  传输时延&#x3D;发送时延：发送数据时，数据块从结点进入到传输媒体所需要的时间 传播时延：电磁波在信道中需要传播一定的距离而花费的时间 处理时延：交换结点为储存转发而进行一些必要的处理所花费的时间 排序时延：结点缓存队列中分组排序所经历的时延">
+<meta property="og:type" content="article">
+<meta property="og:title" content="计算机网络总结（二）：物理层">
+<meta property="og:url" content="https://liangggggg.github.io/2020/08/12/network2/index.html">
 <meta property="og:site_name" content="LiAnG&#39;s Blog">
-<meta property="og:description" content="Stay hungry, stay foolish">
+<meta property="og:description" content="1 通信基础时延：是指数据（一个报文或者分组，甚至比特）从网络（或链路）的一端传送到另一端所需的时间，网络中的时延由以下几个不同部分组成  传输时延&#x3D;发送时延：发送数据时，数据块从结点进入到传输媒体所需要的时间 传播时延：电磁波在信道中需要传播一定的距离而花费的时间 处理时延：交换结点为储存转发而进行一些必要的处理所花费的时间 排序时延：结点缓存队列中分组排序所经历的时延">
 <meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://note.youdao.com/yws/api/personal/file/DDD4CD39869743DE8A80130BC9D21D21?method=download&shareKey=e60a924c7b234f947269dd2c1f6e99e1">
+<meta property="article:published_time" content="2020-08-12T01:47:42.000Z">
+<meta property="article:modified_time" content="2020-08-26T13:56:05.078Z">
 <meta property="article:author" content="LiAnG">
+<meta property="article:tag" content="计算机网络">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://note.youdao.com/yws/api/personal/file/DDD4CD39869743DE8A80130BC9D21D21?method=download&shareKey=e60a924c7b234f947269dd2c1f6e99e1">
 
-<link rel="canonical" href="https://liangggggg.github.io/categories/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/">
+<link rel="canonical" href="https://liangggggg.github.io/2020/08/12/network2/">
 
 
 <script id="page-configurations">
@@ -38,12 +43,12 @@
   CONFIG.page = {
     sidebar: "",
     isHome : false,
-    isPost : false,
+    isPost : true,
     lang   : 'zh-CN'
   };
 </script>
 
-  <title>分类: 机器学习 | LiAnG's Blog</title>
+  <title>计算机网络总结（二）：物理层 | LiAnG's Blog</title>
   
 
 
@@ -186,197 +191,161 @@
         <div class="content-wrap">
           
 
-          <div class="content category">
+          <div class="content post posts-expand">
             
 
+    
   
   
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://liangggggg.github.io/2020/08/12/network2/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/timg.jpg">
+      <meta itemprop="name" content="LiAnG">
+      <meta itemprop="description" content="Stay hungry, stay foolish">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="LiAnG's Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          计算机网络总结（二）：物理层
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2020-08-12 09:47:42" itemprop="dateCreated datePublished" datetime="2020-08-12T09:47:42+08:00">2020-08-12</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-08-26 21:56:05" itemprop="dateModified" datetime="2020-08-26T21:56:05+08:00">2020-08-26</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/" itemprop="url" rel="index"><span itemprop="name">计算机网络</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span>
   
-  <div class="post-block">
-    <div class="posts-collapse">
-      <div class="collection-title">
-        <h2 class="collection-header">机器学习
-          <small>分类</small>
-        </h2>
-      </div>
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2020/08/12/network2/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2020/08/12/network2/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>717</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>1 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
 
       
-    <div class="collection-year">
-      <span class="collection-header">2020</span>
-    </div>
+        <h1 id="1-通信基础"><a href="#1-通信基础" class="headerlink" title="1 通信基础"></a>1 通信基础</h1><p>时延：是指数据（一个报文或者分组，甚至比特）从网络（或链路）的一端传送到另一端所需的时间，网络中的时延由以下几个不同部分组成</p>
+<ol>
+<li>传输时延=发送时延：发送数据时，数据块从结点进入到传输媒体所需要的时间</li>
+<li>传播时延：电磁波在信道中需要传播一定的距离而花费的时间</li>
+<li>处理时延：交换结点为储存转发而进行一些必要的处理所花费的时间</li>
+<li>排序时延：结点缓存队列中分组排序所经历的时延</li>
+</ol>
+<p><img src="https://note.youdao.com/yws/api/personal/file/DDD4CD39869743DE8A80130BC9D21D21?method=download&shareKey=e60a924c7b234f947269dd2c1f6e99e1" alt></p>
+<a id="more"></a>
 
-  <article itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-
-      <div class="post-meta">
-        <time itemprop="dateCreated"
-              datetime="2020-08-09T09:47:42+08:00"
-              content="2020-08-09">
-          08-09
-        </time>
-      </div>
-
-      <div class="post-title">
-          <a class="post-title-link" href="/2020/08/09/Feat/" itemprop="url">
-            <span itemprop="name">机器学习笔记（八）数据预处理与特征工程</span>
-          </a>
-      </div>
-
-    </header>
-  </article>
-
-  <article itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-
-      <div class="post-meta">
-        <time itemprop="dateCreated"
-              datetime="2020-08-05T09:47:42+08:00"
-              content="2020-08-05">
-          08-05
-        </time>
-      </div>
-
-      <div class="post-title">
-          <a class="post-title-link" href="/2020/08/05/Unsupervised/" itemprop="url">
-            <span itemprop="name">机器学习笔记（七）无监督学习</span>
-          </a>
-      </div>
-
-    </header>
-  </article>
-
-  <article itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-
-      <div class="post-meta">
-        <time itemprop="dateCreated"
-              datetime="2020-08-03T09:47:42+08:00"
-              content="2020-08-03">
-          08-03
-        </time>
-      </div>
-
-      <div class="post-title">
-          <a class="post-title-link" href="/2020/08/03/Bayes/" itemprop="url">
-            <span itemprop="name">机器学习笔记（六）朴素贝叶斯</span>
-          </a>
-      </div>
-
-    </header>
-  </article>
-
-  <article itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-
-      <div class="post-meta">
-        <time itemprop="dateCreated"
-              datetime="2020-07-26T09:47:42+08:00"
-              content="2020-07-26">
-          07-26
-        </time>
-      </div>
-
-      <div class="post-title">
-          <a class="post-title-link" href="/2020/07/26/ensemble/" itemprop="url">
-            <span itemprop="name">机器学习笔记（五）集成学习</span>
-          </a>
-      </div>
-
-    </header>
-  </article>
-
-  <article itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-
-      <div class="post-meta">
-        <time itemprop="dateCreated"
-              datetime="2020-07-24T08:38:18+08:00"
-              content="2020-07-24">
-          07-24
-        </time>
-      </div>
-
-      <div class="post-title">
-          <a class="post-title-link" href="/2020/07/24/LogisticRegression/" itemprop="url">
-            <span itemprop="name">机器学习笔记（四）逻辑回归</span>
-          </a>
-      </div>
-
-    </header>
-  </article>
-
-  <article itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-
-      <div class="post-meta">
-        <time itemprop="dateCreated"
-              datetime="2020-07-22T09:53:28+08:00"
-              content="2020-07-22">
-          07-22
-        </time>
-      </div>
-
-      <div class="post-title">
-          <a class="post-title-link" href="/2020/07/22/LinearRegression/" itemprop="url">
-            <span itemprop="name">机器学习笔记（三）线性回归</span>
-          </a>
-      </div>
-
-    </header>
-  </article>
-
-  <article itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-
-      <div class="post-meta">
-        <time itemprop="dateCreated"
-              datetime="2020-07-16T21:24:13+08:00"
-              content="2020-07-16">
-          07-16
-        </time>
-      </div>
-
-      <div class="post-title">
-          <a class="post-title-link" href="/2020/07/16/svm/" itemprop="url">
-            <span itemprop="name">机器学习笔记（二）支持向量机（SVM）</span>
-          </a>
-      </div>
-
-    </header>
-  </article>
-
-  <article itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-
-      <div class="post-meta">
-        <time itemprop="dateCreated"
-              datetime="2020-07-15T16:04:19+08:00"
-              content="2020-07-15">
-          07-15
-        </time>
-      </div>
-
-      <div class="post-title">
-          <a class="post-title-link" href="/2020/07/15/tree/" itemprop="url">
-            <span itemprop="name">机器学习笔记（一）决策树</span>
-          </a>
-      </div>
-
-    </header>
-  </article>
+<h1 id="2-电路交换、报文交换与分组交换"><a href="#2-电路交换、报文交换与分组交换" class="headerlink" title="2 电路交换、报文交换与分组交换"></a>2 电路交换、报文交换与分组交换</h1><p>（1）电路交换</p>
+<p>在使用电路交换通话前，必须先拨号请求建立连接，当被叫用户听到交换机送来的震铃音并摘机后，从主叫端到被叫端建立了一条连接，也就是一条专用的物理通路，通话完毕后，交换机释放刚才使用的这条专用的物理通路。这种必须经过建立连接、通话和释放连接三个步骤的交换方式称为电路交换</p>
+<p>（2）报文交换</p>
+<p>传输单位是报文，一次性发送的数据块，当一个站要发送报文时，将一个目的地址附加到报文上，网络结点根据报文上的目的地址信息，把报文发送到下一节点，一直逐个节点地转送到目的节点，无需通过呼叫建立连接</p>
+<p>（3）分组交换</p>
+<p>分组交换是报文交换的一种改进，将报文分成若干个组，可以存储在内存中，提高了交换速度</p>
+<h1 id="3-数据报与虚电路"><a href="#3-数据报与虚电路" class="headerlink" title="3 数据报与虚电路"></a>3 数据报与虚电路</h1><p>当两台计算机进行通信时，应当先建立连接（虚电路），预留双方通信所需要的一切网络资源，然后双方就沿着已建立的虚电路发送分组。这样分组的首部不需要填写完整的目的主机地址，只需要填写这条虚电路的编号，减少了分组的开销。</p>
+<h1 id="4-传输介质"><a href="#4-传输介质" class="headerlink" title="4 传输介质"></a>4 传输介质</h1><p>1、双绞线<br>2、同轴电缆<br>3、光缆<br>4、无线通信</p>
+<h1 id="5-物理层设备"><a href="#5-物理层设备" class="headerlink" title="5 物理层设备"></a>5 物理层设备</h1><p>（1）中继器</p>
+<p>过去广泛使用粗缆或细缆以太网，常用工作在物理层的中继器又称转发器来扩展以太网的地理覆盖范围</p>
+<p>（2）集线器</p>
+<p>集线器是多端口的中继器，用多个集线器可以连成更大的局域网</p>
 
     </div>
-  </div>
-  
-  
-  
 
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/" rel="tag"># 计算机网络</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2020/08/11/leetcode/" rel="prev" title="LeetCode学习笔记">
+      <i class="fa fa-chevron-left"></i> LeetCode学习笔记
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2020/08/13/Data2/" rel="next" title="数据结构总结（二）：栈、队列和数组">
+      数据结构总结（二）：栈、队列和数组 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
   
 
 
 
           </div>
           
+    <div class="comments" id="valine-comments"></div>
 
 <script>
   window.addEventListener('tabs:register', () => {
@@ -423,6 +392,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#1-通信基础"><span class="nav-text">1 通信基础</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#2-电路交换、报文交换与分组交换"><span class="nav-text">2 电路交换、报文交换与分组交换</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#3-数据报与虚电路"><span class="nav-text">3 数据报与虚电路</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#4-传输介质"><span class="nav-text">4 传输介质</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#5-物理层设备"><span class="nav-text">5 物理层设备</span></a></li></ol></div>
       </div>
       <!--/noindex-->
 
@@ -607,6 +577,59 @@ setInterval("createtime()",250);
   
 
   
+      
+
+<script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      loader: {
+        source: {
+          '[tex]/amsCd': '[tex]/amscd',
+          '[tex]/AMScd': '[tex]/amscd'
+        }
+      },
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              let target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    (function () {
+      var script = document.createElement('script');
+      script.src = '//cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';
+      script.defer = true;
+      document.head.appendChild(script);
+    })();
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
 
   
 

@@ -1,0 +1,908 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/L.jpg">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/L.jpg">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"liangggggg.github.io","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="1 网络层的功能1.1 异构网络互联由于参加互联的计算机网络都使用相同的网际协议IP，因此可以把互联以后的计算机网络看作一个虚拟互联网络，所谓虚拟互联网络也就是逻辑互联网络，互联起来的各个捂脸网络的异构性本来是客观存在的，但是我们利用IP协议就可以使这些性能各异的网络在网络层上看起来好像是一个统一的网络。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="计算机网络总结（四）：网络层">
+<meta property="og:url" content="https://liangggggg.github.io/2020/08/15/network4/index.html">
+<meta property="og:site_name" content="LiAnG&#39;s Blog">
+<meta property="og:description" content="1 网络层的功能1.1 异构网络互联由于参加互联的计算机网络都使用相同的网际协议IP，因此可以把互联以后的计算机网络看作一个虚拟互联网络，所谓虚拟互联网络也就是逻辑互联网络，互联起来的各个捂脸网络的异构性本来是客观存在的，但是我们利用IP协议就可以使这些性能各异的网络在网络层上看起来好像是一个统一的网络。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://note.youdao.com/yws/api/personal/file/587F26252FD94B0A8E49E55E40988A0F?method=download&shareKey=d8379ce9bacd34421d0217526f1108b3">
+<meta property="og:image" content="https://note.youdao.com/yws/api/personal/file/27C68544341842C9A1439F6AF31EC516?method=download&shareKey=dff0f29f2e04b88dca9d17e7bf85a20c">
+<meta property="og:image" content="https://note.youdao.com/yws/api/personal/file/15B0A407CC8747CAAB1084D4E6EA4484?method=download&shareKey=c11b3faa3b315d7e7c0b52a797c0fdb9">
+<meta property="og:image" content="https://note.youdao.com/yws/api/personal/file/C6F0B28F52FA4CBB8912A657C5DA19A7?method=download&shareKey=e71d81b3e28fa6b144aaac0811d2ff5a">
+<meta property="article:published_time" content="2020-08-15T01:47:42.000Z">
+<meta property="article:modified_time" content="2020-08-27T12:24:53.834Z">
+<meta property="article:author" content="LiAnG">
+<meta property="article:tag" content="计算机网络">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://note.youdao.com/yws/api/personal/file/587F26252FD94B0A8E49E55E40988A0F?method=download&shareKey=d8379ce9bacd34421d0217526f1108b3">
+
+<link rel="canonical" href="https://liangggggg.github.io/2020/08/15/network4/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>计算机网络总结（四）：网络层 | LiAnG's Blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/atom.xml" title="LiAnG's Blog" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">LiAnG's Blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">Stay hungry, stay foolish</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://liangggggg.github.io/2020/08/15/network4/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/timg.jpg">
+      <meta itemprop="name" content="LiAnG">
+      <meta itemprop="description" content="Stay hungry, stay foolish">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="LiAnG's Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          计算机网络总结（四）：网络层
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2020-08-15 09:47:42" itemprop="dateCreated datePublished" datetime="2020-08-15T09:47:42+08:00">2020-08-15</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-08-27 20:24:53" itemprop="dateModified" datetime="2020-08-27T20:24:53+08:00">2020-08-27</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/" itemprop="url" rel="index"><span itemprop="name">计算机网络</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2020/08/15/network4/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2020/08/15/network4/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>5k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>5 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="1-网络层的功能"><a href="#1-网络层的功能" class="headerlink" title="1 网络层的功能"></a>1 网络层的功能</h1><h2 id="1-1-异构网络互联"><a href="#1-1-异构网络互联" class="headerlink" title="1.1 异构网络互联"></a>1.1 异构网络互联</h2><p>由于参加互联的计算机网络都使用相同的网际协议IP，因此可以把互联以后的计算机网络看作一个虚拟互联网络，所谓虚拟互联网络也就是逻辑互联网络，互联起来的各个捂脸网络的异构性本来是客观存在的，但是我们利用IP协议就可以使这些性能各异的网络在网络层上看起来好像是一个统一的网络。</p>
+<a id="more"></a>
+
+<h2 id="1-2-路由与转发"><a href="#1-2-路由与转发" class="headerlink" title="1.2 路由与转发"></a>1.2 路由与转发</h2><p>在路由表中，对每一条路由最主要的是以下两个信息：目的网络地址、下一跳地址</p>
+<p>我们根据目的网络地址来确定下一跳路由器，这样可得出以下结果</p>
+<p>（1）IP数据报最终一定可以找到目的主机所在目的网络上的路由器</p>
+<p>（2）只有到达最后一个路由器时，才视图向目的主机进行直接交付</p>
+<p>分组转发算法：</p>
+<p>（1）从数据报的首部提取目的主机IP地址D，得出目的网络地址为N</p>
+<p>（2）若N就是与此路由器直接相连的某个网络地址，则进行直接交付，不需要再经过其他的路由器，直接把数据报交付目的主机（这里包括把目的主机地址D转换为具体的硬件地址）；否则就是间接交付，执行（3）</p>
+<p>（3）若路由表中有目的地址为D的特定主机路由，则把数据报传送给路由表中所指明的下一跳路由器，否则执行（4）</p>
+<p>（4）路由表中有到达网络N的路由，则把数据报传送给路由表中所指明的下一跳路由器：否则，执行（5）</p>
+<p>（5）若路由表中有一个默认路由，则把数据表传送给路由表中所指明的默认路由器；否则执行（6）</p>
+<p>（6）报告转发分组出错</p>
+<p>路由表想主要字段：目的网络、子网掩码、下一跳路由器、经由接口</p>
+<p>默认路由：若匹配路由表中其它项都不匹配，则走默认路由指明的路由</p>
+<p>若路由表项都不匹配且无默认路由，则向源主机发送错的ICMP包</p>
+<p>主机路由：IP地址，255.255.255.255 下一跳 接口</p>
+<h2 id="1-3-拥塞控制"><a href="#1-3-拥塞控制" class="headerlink" title="1.3 拥塞控制"></a>1.3 拥塞控制</h2><p>1、拥塞现象是指到达通信子网中某一部分的分组数量过多，使得该网络来不及处理以致引起这部分乃至整个网络性能下降的现象，严重时会出现死锁。拥塞现象产生的原因主要有三个方面：路由器缓冲区不够；通信线路的带宽不够；处理器速度慢</p>
+<p>2、拥塞控制：目的是确保子网能够承载所有到达流量，是全局问题，涉及节点包括：主机、路由器</p>
+<p>3、流量控制：目的是确保发送端的发送速度小于接受端的接收速度，使接收端来得及正确接收。流量控制只与发送和接收端有关系，是局部问题</p>
+<h1 id="2-路由算法"><a href="#2-路由算法" class="headerlink" title="2 路由算法"></a>2 路由算法</h1><h2 id="2-1-静态路由与动态路由"><a href="#2-1-静态路由与动态路由" class="headerlink" title="2.1 静态路由与动态路由"></a>2.1 静态路由与动态路由</h2><p>静态路由选择也叫做非自适应路由选择，其特点是简单和开销较小，但不能及时适应网络状态的变化。对于很简单的小网络，完全可以采用静态路由选择，用人工配置每一条路由</p>
+<p>动态路由选择也叫自适应路由选择，其特点是能较好地自适应网络状态的变化，但实现起来较为复杂，开销也较大，因此，适用于较复杂的大网络。</p>
+<h2 id="2-2-距离-向量路由算法"><a href="#2-2-距离-向量路由算法" class="headerlink" title="2.2 距离-向量路由算法"></a>2.2 距离-向量路由算法</h2><h2 id="2-3-链路状态路由算法"><a href="#2-3-链路状态路由算法" class="headerlink" title="2.3 链路状态路由算法"></a>2.3 链路状态路由算法</h2><h2 id="2-4-层次路由"><a href="#2-4-层次路由" class="headerlink" title="2.4 层次路由"></a>2.4 层次路由</h2><p>（1）互联网的规模非常大，如果让所有路由器知道所有网络应该怎样到达，则这种路由表将非常大</p>
+<p>（2）许多单位不愿意外界了解自己单位网络的布局细节和本部分所采用的路由选择协议</p>
+<p>为此，将整个互联网划分成许多较小的自治系统</p>
+<h1 id="3-IPv4"><a href="#3-IPv4" class="headerlink" title="3 IPv4"></a>3 IPv4</h1><h2 id="3-1-IPv4分组"><a href="#3-1-IPv4分组" class="headerlink" title="3.1 IPv4分组"></a>3.1 IPv4分组</h2><p>IP数据报的格式能够说明IP协议都具有什么功能，在TCP/IP的标准中，各种数据格式常常以32位（4字节）为单位来表述</p>
+<p><img src="https://note.youdao.com/yws/api/personal/file/587F26252FD94B0A8E49E55E40988A0F?method=download&shareKey=d8379ce9bacd34421d0217526f1108b3" alt></p>
+<p>（1）IP数据报首部的固定部分中的各字段</p>
+<ol>
+<li>版本占4位，指IP协议的版本，通信双方使用的IP协议版本必须一致，目前广泛使用的为4（即IPv4）</li>
+<li>首部长度占4位</li>
+<li>区分服务占8位，用来获得更好的服务</li>
+<li>总长度指首部和数据之和的长度</li>
+<li>标识占16位</li>
+<li>标志占3位</li>
+<li>片偏移占13位。较长的分组在分片后，某片在原分组中的相对位置</li>
+<li>生存时间占8位</li>
+<li>协议占8位，指出此数据报携带的数据是使用何种协议，以便使目的主机的IP层知道应将数据部分上交给哪个协议进行处理</li>
+<li>首部检验和占16位</li>
+</ol>
+<h2 id="3-2-IPv4地址与NAT"><a href="#3-2-IPv4地址与NAT" class="headerlink" title="3.2 IPv4地址与NAT"></a>3.2 IPv4地址与NAT</h2><p>（1）IP地址及其表示方法</p>
+<p>IP地址就是给互联网上的每一台主机（或路由器）的每一个接口分配以个在全世界范围内是唯一的32位标识符，具有以下重要特点</p>
+<ol>
+<li>每一个IP地址都由网络号和主机号两部分组成</li>
+<li>实际上IP地址标志一台主机（或路由器）和一条链路的接口。路由器至少应当有两个不同的IP地址</li>
+<li>一个网络是指具有相同网络号net-id的主机的集合，因此用转发器或网桥连接起来的若干个局域网仍为一个网络</li>
+<li>在IP地址中，所有分配到网络号的网络都是平等的</li>
+</ol>
+<p><img src="https://note.youdao.com/yws/api/personal/file/27C68544341842C9A1439F6AF31EC516?method=download&shareKey=dff0f29f2e04b88dca9d17e7bf85a20c" alt></p>
+<p>主机号全0，或全1不使用</p>
+<p>A类地址：网络号：0-127，主机地址24位：$2^24-2$个</p>
+<p>B类地址：网络号：128.0-191.255,主机地址16位：$2^16-2$个</p>
+<p>C类地址：网络号：192.0.0-223.255.255，主机地址8位：$2^8-2$</p>
+<p>D类地址：网络号：224~239之间，一般用于多路广播用户</p>
+<p>E类地址：网络号：240~250之间，保留地址</p>
+<p>（2）NAT技术</p>
+<p>网络地址转换NAT需要在专用网连接到互联网的路由器上安装NAT软件，装有NAT软件的路由器叫作NAT路由器，至少有一个有效的外部全球IP地址，这样，所有使用本地地址的主机和外界通信时，都要在NAT路由器上讲本地地址转换成全球IP地址，才能和互联网连接。</p>
+<h2 id="3-3-子网划分、路由聚集、子网掩码、CIDR"><a href="#3-3-子网划分、路由聚集、子网掩码、CIDR" class="headerlink" title="3.3 子网划分、路由聚集、子网掩码、CIDR"></a>3.3 子网划分、路由聚集、子网掩码、CIDR</h2><p>（1）从两级IP地址到三级IP地址</p>
+<p>划分子网的基本思路如下：</p>
+<ol>
+<li>一个拥有许多物理网络的单位，可将所属的物理网络划分为若干个子网。</li>
+<li>划分子网的方法是从网络的主机号借用若干位作为子网号，当然主机号也就相应减少了同样的位数，IP地址在单位内部变为三级IP地址：网络号、子网号、主机号</li>
+<li>范式从其他网络发送给本单位某台主机的IP数据报，仍是根据IP数据报的目的网络号找到链接在本单位网络上的路由器。但此路由器在收到IP数据报后，再按目的网络号和子网号找到目的子网，吧IP数据报交付目的主机</li>
+</ol>
+<p>（2）子网掩码</p>
+<p>使用子网掩码的好处就是，不管网络有没有划分子网，只要把子网掩码和IP地址进行逐位的与运算，就立即得出网络地址来。</p>
+<p><img src="https://note.youdao.com/yws/api/personal/file/15B0A407CC8747CAAB1084D4E6EA4484?method=download&shareKey=c11b3faa3b315d7e7c0b52a797c0fdb9" alt></p>
+<p>（3）使用子网分组的转发</p>
+<p>在划分子网的情况下，分组转发的算法必须做相应的改动，使用子网划分后，路由表必须包括以下三项内容：目的网络地址、子网掩码和下一跳地址，下划分子网情况下，路由转发分组的算法如下：</p>
+<ol>
+<li>从收到的数据报的首部提取目的IP地址D</li>
+<li>先判断是否为直接交付，用各网络的子网掩码和D逐位相与，看结果是否和相应的网络地址匹配，若匹配进行直接交付，否则间接交付，执行（3）</li>
+<li>若路由表中有目的地址为D的特点主机路由，则把数据报传送给路由表中所指明的下一跳路由器，否则执行（4）</li>
+<li>对路由表中的每一行（目的网络地址，子网掩码，下一跳地址），用其中的子网掩码和D逐位相与，其结果为N，若N与该行的目的网络地址匹配，则把数据报传送给该行指明的下一跳路由器，否则执行5</li>
+<li>路由表中有一个默认路由，则把数据报传送给路由表中指明的默认路由器，否则执行6</li>
+<li>报告转发分组出错</li>
+</ol>
+<h2 id="3-4-无分类编址CIDR（构造超网）"><a href="#3-4-无分类编址CIDR（构造超网）" class="headerlink" title="3.4 无分类编址CIDR（构造超网）"></a>3.4 无分类编址CIDR（构造超网）</h2><p>CIDR最主要的特点有两个：</p>
+<p>（1）CIDR消除了传统的A类、B类和C类地址以及划分子网的概念，把32位的IP地址划分为前后两个部分，前面部分是“网络前缀”，用来指明网络，后面部分则用来指明主机。因此CIDR使IP地址从三级编址回到了两级编址：IP地址=网络前缀、主机号，在IP地址后面加上斜线，然后写上网络前缀所占的位数</p>
+<p>（2）CIDR把网络前缀都相同的连续的IP地址组成一个CIDR地址块。我们只要知道CIDR地址块中的任何一个地址，就可以知道这个地址块的起始地址（即最小地址）和最大地址，以及地址块中的地址数</p>
+<p>路由聚合</p>
+<p>这个ISP共拥有64个C类网络，如果不采用CIDR技术，则与该ISP的路由器交换路由信息的每一个路由器的路由表中，就需要有64个项目，但采用地址聚合后，就只需用路由聚合后的一个项目206.0.64.0/18就能找到该ISP</p>
+<p><img src="https://note.youdao.com/yws/api/personal/file/C6F0B28F52FA4CBB8912A657C5DA19A7?method=download&shareKey=e71d81b3e28fa6b144aaac0811d2ff5a" alt></p>
+<p>最长前缀匹配</p>
+<p>每个项目由网络前缀和下一跳地址组成，但是在查找路由表时可能会得到不止一个匹配结果，应当从匹配结果中选择具有最长网络前缀的路由</p>
+<h2 id="3-5-ARP协议、DHCP协议与ICMP协议"><a href="#3-5-ARP协议、DHCP协议与ICMP协议" class="headerlink" title="3.5 ARP协议、DHCP协议与ICMP协议"></a>3.5 ARP协议、DHCP协议与ICMP协议</h2><h3 id="3-5-1-地址解析协议ARP"><a href="#3-5-1-地址解析协议ARP" class="headerlink" title="3.5.1 地址解析协议ARP"></a>3.5.1 地址解析协议ARP</h3><p>从网络层使用的IP地址，解析出在数据链路层使用的硬件地址</p>
+<ul>
+<li>ARP请求分组：包含发送方硬件地址和IP地址，目标方硬件地址（未知填0），目标方IP地址</li>
+<li>本地广播ARP请求（路由器不转发ARP请求）</li>
+<li>ARP相应分组：发送方硬件地址、发送方IP地址、目标方硬件地址、目标方IP地址</li>
+<li>ARP分组封装在物理网络的帧中传输</li>
+</ul>
+<h3 id="3-5-2-网络控制报文协议ICMP"><a href="#3-5-2-网络控制报文协议ICMP" class="headerlink" title="3.5.2 网络控制报文协议ICMP"></a>3.5.2 网络控制报文协议ICMP</h3><ul>
+<li>为了提高IP数据交付成功的机会</li>
+<li>允许主机或路由器报告差错情况和提供有关异常情况的报告</li>
+<li>不是高层协议而是IP层的协议</li>
+<li>作为IP层数据报的数据</li>
+<li>有差错报告和询问报文</li>
+<li>前4个字节是统一的格式，共有三个字段：即类型、代码和校验和，接着的4个字节的内容与ICMP的类型有关</li>
+</ul>
+<h3 id="3-5-3-动态主机设置协议DHCP"><a href="#3-5-3-动态主机设置协议DHCP" class="headerlink" title="3.5.3 动态主机设置协议DHCP"></a>3.5.3 动态主机设置协议DHCP</h3><ul>
+<li>动态主机配置协议DHCP提供了即插即用连网的机制</li>
+<li>这种机制允许一台计算机加入新的网络和获取IP地址而不用手工参加</li>
+<li>需要IP地址的主机在启动时就向DHCP服务器广播发送发现报文，这时该主机就称为DHCP客户</li>
+<li>本地网络上所有主机都能收到此广播报文，但只有DHCP服务器才回答此广播报文</li>
+<li>DHCP服务器先在其数据库中查找该计算机的配置信息，若找到，则返回找到的信息，若找不到，则从服务器IP地址池中取一个地址分配给该计算机。DHCP服务器的回答报文叫做提供报文</li>
+</ul>
+<h1 id="4-IPv6"><a href="#4-IPv6" class="headerlink" title="4 IPv6"></a>4 IPv6</h1><h2 id="4-1-IPv6的主要特点"><a href="#4-1-IPv6的主要特点" class="headerlink" title="4.1 IPv6的主要特点"></a>4.1 IPv6的主要特点</h2><p>（1）地址从IPv4的32位增加到128位</p>
+<p>（2）扩展地址层次结构</p>
+<p>（3）灵活的首部格式</p>
+<p>（4）改进的选项</p>
+<p>（5）允许协议继续扩充</p>
+<p>（6）支持资源的预分配</p>
+<p>（7）支持即插即用</p>
+<p>（8）首部8字节对齐</p>
+<h2 id="4-2-IPv6的地址"><a href="#4-2-IPv6的地址" class="headerlink" title="4.2 IPv6的地址"></a>4.2 IPv6的地址</h2><p>（1）单播：传统的点到点通信</p>
+<p>（2）组播：一点对多点通信</p>
+<p>（3）任播：终点是一组计算机，但数据报只交付其中的一个，通常是距离最近的一个</p>
+<p>为了使地址再稍简洁，使用冒号十六进制法</p>
+<h1 id="5-路由协议"><a href="#5-路由协议" class="headerlink" title="5 路由协议"></a>5 路由协议</h1><h2 id="5-1-自治系统"><a href="#5-1-自治系统" class="headerlink" title="5.1 自治系统"></a>5.1 自治系统</h2><ul>
+<li>核心是路由寻址的“自治”</li>
+<li>自治系统内部的路由器了解内部全部网路的路由信息</li>
+<li>自治系统内部的路由器要向主干路由器报告内部路由信息</li>
+</ul>
+<h2 id="5-2-域内路由与域间路由"><a href="#5-2-域内路由与域间路由" class="headerlink" title="5.2 域内路由与域间路由"></a>5.2 域内路由与域间路由</h2><ul>
+<li>内部网关协议IGP，如RIP,OSPF协议</li>
+<li>外部网关协议EGP，如BGP-4</li>
+</ul>
+<h2 id="5-3-RIP路由协议"><a href="#5-3-RIP路由协议" class="headerlink" title="5.3 RIP路由协议"></a>5.3 RIP路由协议</h2><p>1、工作原理</p>
+<ul>
+<li>内部网关协议</li>
+<li>分布式的基于距离向量</li>
+<li>要求网络中的每一个路由器都要维护从它自己到其他每一个目的网络的距离记录</li>
+</ul>
+<p>距离的定义：</p>
+<ol>
+<li>路由器到直接连接的网络距离定义为1</li>
+<li>路由器到非直连的网络的距离为所经过的路由器加1</li>
+<li>RIP协议的距离也称为跳数</li>
+<li>距离指的是最短距离</li>
+<li>允许一条路径最多只包含15个路由器</li>
+<li>16个路由器则不可达，可见RIP适用于小型网络</li>
+<li>不能再两个网络之间同时使用多条路由</li>
+</ol>
+<p>RIP三个要点：</p>
+<ul>
+<li>仅和相邻路由交换信息</li>
+<li>交换的信息是当前本路由器所知道的全部信息，即自己的路由表</li>
+<li>按固定的时间间隔交换路由信息</li>
+</ul>
+<p>2、距离向量算法</p>
+<p>对每一个相邻路由器发送过来的RIP报文，进行以下步骤：</p>
+<ol>
+<li><p>对地址为X相邻路由器发来的RIP报文，先修改此报文中的所有项目：把下一跳字段中的地址都改为X，并把所有距离字段的值都加1，每一项目都有三个关键数据，即：目的网络N，距离d,下一跳路由X</p>
+</li>
+<li><p>对修改后的RIP报文中的每一个项目，进行以下步骤:若原来的路由表中没有目的网络N，则把该项目添加到路由表中，否则（即在路由表中有目的网络N，这时就再查看下一跳路由地址）</p>
+<ul>
+<li>若下一跳路由器地址是X，则把收到的项目替换原路由表中的项目，否则</li>
+<li>若收到项目中的距离小于路由表中的距离，则进行更新，否则什么都不做</li>
+</ul>
+</li>
+<li><p>若3分钟还没有收到相邻路由器的更新路由表，则把此相邻路由器记为不可达路由器</p>
+</li>
+</ol>
+<h2 id="5-4-OSPF路由协议"><a href="#5-4-OSPF路由协议" class="headerlink" title="5.4 OSPF路由协议"></a>5.4 OSPF路由协议</h2><p>1、OSPF的三个要点</p>
+<ul>
+<li>向本自治系统中所有路由器发送信息</li>
+<li>发送的信息就是与本路由器相邻的所有路由器的链路状态，但这只是路由器所知道的部分信息</li>
+<li>只有当链路状态发生变化时，路由器才想所有路由器用洪泛法发送此信息</li>
+</ul>
+<p>2、OSPF的五种分组类型</p>
+<ul>
+<li>问候分组</li>
+<li>数据库描述</li>
+<li>链路状态请求</li>
+<li>链路状态更新</li>
+<li>链路状态确认</li>
+</ul>
+<h2 id="5-5-BGP路由协议"><a href="#5-5-BGP路由协议" class="headerlink" title="5.5 BGP路由协议"></a>5.5 BGP路由协议</h2><ul>
+<li>因特网的规模太大，寻找最佳路径不现实，只交换可达性的信息</li>
+<li>自治系统之间的路由必须考虑有关策略</li>
+<li>边界网关协议BGP只能是力求寻找一条能够到达目的地网络且比较好的路由</li>
+</ul>
+<h1 id="6-IP组播"><a href="#6-IP组播" class="headerlink" title="6 IP组播"></a>6 IP组播</h1><h2 id="6-1-组播的概念"><a href="#6-1-组播的概念" class="headerlink" title="6.1 组播的概念"></a>6.1 组播的概念</h2><p>在一对多的通信中，组播可大大节约网络资源，组播组的标识符就是IP地址的D类地址</p>
+<h1 id="7-移动IP"><a href="#7-移动IP" class="headerlink" title="7 移动IP"></a>7 移动IP</h1><h2 id="7-1-移动IP的概念"><a href="#7-1-移动IP的概念" class="headerlink" title="7.1 移动IP的概念"></a>7.1 移动IP的概念</h2><p>这种技术允许计算机移动到外地时，仍然保留原来的IP地址，使用户的移动性对上层的网络应用是透明的</p>
+<h1 id="8-网络层设备"><a href="#8-网络层设备" class="headerlink" title="8 网络层设备"></a>8 网络层设备</h1><ul>
+<li>路由器</li>
+</ul>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/" rel="tag"># 计算机网络</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2020/08/15/Data4/" rel="prev" title="数据结构总结（四）：图">
+      <i class="fa fa-chevron-left"></i> 数据结构总结（四）：图
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2020/08/17/Data5/" rel="next" title="数据结构总结（五）：查找">
+      数据结构总结（五）：查找 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    <div class="comments" id="valine-comments"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#1-网络层的功能"><span class="nav-text">1 网络层的功能</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-1-异构网络互联"><span class="nav-text">1.1 异构网络互联</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#1-2-路由与转发"><span class="nav-text">1.2 路由与转发</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#1-3-拥塞控制"><span class="nav-text">1.3 拥塞控制</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#2-路由算法"><span class="nav-text">2 路由算法</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#2-1-静态路由与动态路由"><span class="nav-text">2.1 静态路由与动态路由</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-2-距离-向量路由算法"><span class="nav-text">2.2 距离-向量路由算法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-3-链路状态路由算法"><span class="nav-text">2.3 链路状态路由算法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-4-层次路由"><span class="nav-text">2.4 层次路由</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#3-IPv4"><span class="nav-text">3 IPv4</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#3-1-IPv4分组"><span class="nav-text">3.1 IPv4分组</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-2-IPv4地址与NAT"><span class="nav-text">3.2 IPv4地址与NAT</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-3-子网划分、路由聚集、子网掩码、CIDR"><span class="nav-text">3.3 子网划分、路由聚集、子网掩码、CIDR</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-4-无分类编址CIDR（构造超网）"><span class="nav-text">3.4 无分类编址CIDR（构造超网）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-5-ARP协议、DHCP协议与ICMP协议"><span class="nav-text">3.5 ARP协议、DHCP协议与ICMP协议</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#3-5-1-地址解析协议ARP"><span class="nav-text">3.5.1 地址解析协议ARP</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-5-2-网络控制报文协议ICMP"><span class="nav-text">3.5.2 网络控制报文协议ICMP</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-5-3-动态主机设置协议DHCP"><span class="nav-text">3.5.3 动态主机设置协议DHCP</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#4-IPv6"><span class="nav-text">4 IPv6</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#4-1-IPv6的主要特点"><span class="nav-text">4.1 IPv6的主要特点</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-2-IPv6的地址"><span class="nav-text">4.2 IPv6的地址</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#5-路由协议"><span class="nav-text">5 路由协议</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#5-1-自治系统"><span class="nav-text">5.1 自治系统</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#5-2-域内路由与域间路由"><span class="nav-text">5.2 域内路由与域间路由</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#5-3-RIP路由协议"><span class="nav-text">5.3 RIP路由协议</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#5-4-OSPF路由协议"><span class="nav-text">5.4 OSPF路由协议</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#5-5-BGP路由协议"><span class="nav-text">5.5 BGP路由协议</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#6-IP组播"><span class="nav-text">6 IP组播</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#6-1-组播的概念"><span class="nav-text">6.1 组播的概念</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#7-移动IP"><span class="nav-text">7 移动IP</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#7-1-移动IP的概念"><span class="nav-text">7.1 移动IP的概念</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#8-网络层设备"><span class="nav-text">8 网络层设备</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="LiAnG"
+      src="/images/timg.jpg">
+  <p class="site-author-name" itemprop="name">LiAnG</p>
+  <div class="site-description" itemprop="description">Stay hungry, stay foolish</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">25</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">7</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">7</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/LiAnGGGGGG" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;LiAnGGGGGG" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:1318457129@qq.com" title="E-Mail → mailto:1318457129@qq.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="/atom.xml" title="rss → &#x2F;atom.xml"><i class="fa fa-rss fa-fw"></i>rss</a>
+      </span>
+  </div>
+  <div class="cc-license motion-element" itemprop="license">
+    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" class="cc-opacity" rel="noopener" target="_blank"><img src="/images/cc-by-nc-sa.svg" alt="Creative Commons"></a>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        <script
+  async
+  src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"
+></script>
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">LiAnG</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-area"></i>
+    </span>
+      <span class="post-meta-item-text">站点总字数：</span>
+    <span title="站点总字数">178k</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+      <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
+    <span title="站点阅读时长">2:42</span>
+</div>
+<!-- 网站运行时间的设置 -->
+<span id="timeDate">载入天数...</span>
+<span id="times">载入时分秒...</span>
+<script>
+    var now = new Date();
+    function createtime() {
+        var grt= new Date("05/30/2020 13:14:21");//此处修改你的建站时间或者网站上线时间
+        now.setTime(now.getTime()+250);
+        days = (now - grt ) / 1000 / 60 / 60 / 24; dnum = Math.floor(days);
+        hours = (now - grt ) / 1000 / 60 / 60 - (24 * dnum); hnum = Math.floor(hours);
+        if(String(hnum).length ==1 ){hnum = "0" + hnum;} minutes = (now - grt ) / 1000 /60 - (24 * 60 * dnum) - (60 * hnum);
+        mnum = Math.floor(minutes); if(String(mnum).length ==1 ){mnum = "0" + mnum;}
+        seconds = (now - grt ) / 1000 - (24 * 60 * 60 * dnum) - (60 * 60 * hnum) - (60 * mnum);
+        snum = Math.round(seconds); if(String(snum).length ==1 ){snum = "0" + snum;}
+        document.getElementById("timeDate").innerHTML = "本站已安全运行 "+dnum+" 天 ";
+        document.getElementById("times").innerHTML = hnum + " 小时 " + mnum + " 分 " + snum + " 秒";
+    }
+setInterval("createtime()",250);
+</script>
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+      
+
+<script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      loader: {
+        source: {
+          '[tex]/amsCd': '[tex]/amscd',
+          '[tex]/AMScd': '[tex]/amscd'
+        }
+      },
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              let target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    (function () {
+      var script = document.createElement('script');
+      script.src = '//cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';
+      script.defer = true;
+      document.head.appendChild(script);
+    })();
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
+
+  
+
+  
+  <script src="/js/src/wobblewindow.js"></script>
+  <script>
+    //只在桌面版网页启用特效
+    if (window.innerWidth > 768) {
+      $(document).ready(function () {
+        
+        // 根据类名获取，而不是id
+        $('.header').wobbleWindow({
+          radius: 50,
+          movementTop: false,
+          movementLeft: false,
+          movementRight: false,
+          debug: false,
+        });
+        
+
+        
+         // 根据类名获取，而不是id
+        $('.sidebar').wobbleWindow({
+          radius: 50,
+          movementLeft: false,
+          movementTop: false,
+          movementBottom: false,
+          position: 'fixed',
+          debug: false,
+        });
+        
+
+        
+         // 根据类名获取，而不是id
+        $('.footer').wobbleWindow({
+          radius: 50,
+          movementBottom: false,
+          movementLeft: false,
+          movementRight: false,
+          
+          position: 'absolute',
+          debug: false,
+        });
+        
+      });
+    }
+  </script>
+
+
+ 
+<script>
+  var OriginTitile = document.title;
+  var titleTime;
+  document.addEventListener("visibilitychange", function() {
+    if (document.hidden) {
+      document.title = "(つェ⊂)我藏好了哦~" + OriginTitile;
+      clearTimeout(titleTime);
+    } else {
+      document.title = "(*´∇｀*) 被你发现啦~" + OriginTitile;
+      titleTime = setTimeout(function() {
+        document.title = OriginTitile;
+      }, 2000);
+    }
+  });
+</script>
+
+
+
+
+
+
+  <script async src="/js/cursor/fireworks.js"></script>
+
+
+
+<script>
+NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
+  NexT.utils.getScript('//unpkg.com/valine/dist/Valine.min.js', () => {
+    var GUEST = ['nick', 'mail', 'link'];
+    var guest = 'nick,mail,link';
+    guest = guest.split(',').filter(item => {
+      return GUEST.includes(item);
+    });
+    new Valine({
+      el         : '#valine-comments',
+      verify     : false,
+      notify     : false,
+      appId      : 'rueYojQYHpaShC9b3zwCTcgt-gzGzoHsz',
+      appKey     : 'SuFkJxmzL9eehU2FBrkopQlJ',
+      placeholder: "Just go go",
+      avatar     : 'mm',
+      meta       : guest,
+      pageSize   : '10' || 10,
+      visitor    : false,
+      lang       : '' || 'zh-cn',
+      path       : location.pathname,
+      recordIP   : false,
+      serverURLs : ''
+    });
+  }, window.Valine);
+});
+</script>
+
+
+</body>
+</html>

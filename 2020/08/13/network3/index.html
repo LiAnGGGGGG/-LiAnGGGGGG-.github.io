@@ -20,20 +20,20 @@
     var CONFIG = {"hostname":"liangggggg.github.io","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
   </script>
 
-  <meta name="description" content="1 资料分析一、速算技巧（1）截位直除 截位，看下一位，四舍五入  一步除法，建议只截分母($\frac{36225}{81245}$) 多步除法，截分子，分母（$\frac{1421}{8041}*\frac{1521}{9023}$）">
+  <meta name="description" content="1 数据链路层的功能链路层主要包括链路管理、帧同步、流量控制、差错控制、数据和控制信息分开、透明传输和寻址">
 <meta property="og:type" content="article">
-<meta property="og:title" content="行测笔记（三）：资料分析与数量关系">
-<meta property="og:url" content="https://liangggggg.github.io/2020/07/23/xingce3/index.html">
+<meta property="og:title" content="计算机网络总结（三）：数据链路层">
+<meta property="og:url" content="https://liangggggg.github.io/2020/08/13/network3/index.html">
 <meta property="og:site_name" content="LiAnG&#39;s Blog">
-<meta property="og:description" content="1 资料分析一、速算技巧（1）截位直除 截位，看下一位，四舍五入  一步除法，建议只截分母($\frac{36225}{81245}$) 多步除法，截分子，分母（$\frac{1421}{8041}*\frac{1521}{9023}$）">
+<meta property="og:description" content="1 数据链路层的功能链路层主要包括链路管理、帧同步、流量控制、差错控制、数据和控制信息分开、透明传输和寻址">
 <meta property="og:locale" content="zh_CN">
-<meta property="article:published_time" content="2020-07-23T07:57:25.000Z">
-<meta property="article:modified_time" content="2020-08-25T12:54:06.592Z">
+<meta property="article:published_time" content="2020-08-13T01:47:42.000Z">
+<meta property="article:modified_time" content="2020-08-27T05:38:45.533Z">
 <meta property="article:author" content="LiAnG">
-<meta property="article:tag" content="行测笔试">
+<meta property="article:tag" content="计算机网络">
 <meta name="twitter:card" content="summary">
 
-<link rel="canonical" href="https://liangggggg.github.io/2020/07/23/xingce3/">
+<link rel="canonical" href="https://liangggggg.github.io/2020/08/13/network3/">
 
 
 <script id="page-configurations">
@@ -46,7 +46,7 @@
   };
 </script>
 
-  <title>行测笔记（三）：资料分析与数量关系 | LiAnG's Blog</title>
+  <title>计算机网络总结（三）：数据链路层 | LiAnG's Blog</title>
   
 
 
@@ -196,7 +196,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://liangggggg.github.io/2020/07/23/xingce3/">
+    <link itemprop="mainEntityOfPage" href="https://liangggggg.github.io/2020/08/13/network3/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/timg.jpg">
@@ -209,7 +209,7 @@
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
-          行测笔记（三）：资料分析与数量关系
+          计算机网络总结（三）：数据链路层
         </h1>
 
         <div class="post-meta">
@@ -219,14 +219,14 @@
               </span>
               <span class="post-meta-item-text">发表于</span>
 
-              <time title="创建时间：2020-07-23 15:57:25" itemprop="dateCreated datePublished" datetime="2020-07-23T15:57:25+08:00">2020-07-23</time>
+              <time title="创建时间：2020-08-13 09:47:42" itemprop="dateCreated datePublished" datetime="2020-08-13T09:47:42+08:00">2020-08-13</time>
             </span>
               <span class="post-meta-item">
                 <span class="post-meta-item-icon">
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-08-25 20:54:06" itemprop="dateModified" datetime="2020-08-25T20:54:06+08:00">2020-08-25</time>
+                <time title="修改时间：2020-08-27 13:38:45" itemprop="dateModified" datetime="2020-08-27T13:38:45+08:00">2020-08-27</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -234,7 +234,7 @@
               </span>
               <span class="post-meta-item-text">分类于</span>
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E8%A1%8C%E6%B5%8B%E7%AC%94%E8%AF%95/" itemprop="url" rel="index"><span itemprop="name">行测笔试</span></a>
+                  <a href="/categories/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/" itemprop="url" rel="index"><span itemprop="name">计算机网络</span></a>
                 </span>
             </span>
 
@@ -254,8 +254,8 @@
       </span>
       <span class="post-meta-item-text">Valine：</span>
     
-    <a title="valine" href="/2020/07/23/xingce3/#valine-comments" itemprop="discussionUrl">
-      <span class="post-comments-count valine-comment-count" data-xid="/2020/07/23/xingce3/" itemprop="commentCount"></span>
+    <a title="valine" href="/2020/08/13/network3/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2020/08/13/network3/" itemprop="commentCount"></span>
     </a>
   </span>
   
@@ -284,172 +284,57 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <h1 id="1-资料分析"><a href="#1-资料分析" class="headerlink" title="1 资料分析"></a>1 资料分析</h1><h2 id="一、速算技巧"><a href="#一、速算技巧" class="headerlink" title="一、速算技巧"></a>一、速算技巧</h2><p>（1）截位直除</p>
-<p>截位，看下一位，四舍五入</p>
-<ul>
-<li>一步除法，建议只截分母($\frac{36225}{81245}$)</li>
-<li>多步除法，截分子，分母（$\frac{1421}{8041}*\frac{1521}{9023}$）<a id="more"></a>
+        <h1 id="1-数据链路层的功能"><a href="#1-数据链路层的功能" class="headerlink" title="1 数据链路层的功能"></a>1 数据链路层的功能</h1><p>链路层主要包括链路管理、帧同步、流量控制、差错控制、数据和控制信息分开、透明传输和寻址</p>
+<a id="more"></a>
 
-</li>
-</ul>
-<p>一般情况下，截两位计算快，截三位计算准</p>
-<p>看最接近选项差距</p>
-<p>差距大，截两位</p>
+<h1 id="2-组帧"><a href="#2-组帧" class="headerlink" title="2 组帧"></a>2 组帧</h1><p>封装成帧就是在一段数据的前后分别添加首部和尾部。</p>
+<p>控制字符SOH放在帧的最前面，表示帧的首部开始，EOT表示帧的结束</p>
+<p>为解决透明传输问题，发送端在数据链路层在数据中出现控制字符SOH或EOT的前面插入一个转义字符ESC</p>
+<p>（1）面向比特的方法</p>
+<p>PPP协议采用零比特填充方法来实现透明传输（只要发现5个连续1，则立即填入一个0）</p>
+<p>（2）面向字符的异步传输</p>
+<p>把转义字符定义为0x7D（011111101）</p>
 <ol>
-<li>首位都不同</li>
-<li>首位有相同，第二位差值&gt;首位</li>
+<li>把信息字段中出现的每一个0x7E转变为2字节序列（0x7D,0x5E）</li>
+<li>若信息字段中出现一个0x7D字节，把0x7D转换为2字节序列(0x7D,0x5D)</li>
+<li>若出现ASCII码控制字符，在该字符前面加入0x7D字节，同时将该字符的编码加以改变</li>
 </ol>
-<p>差距小，截三位</p>
-<ol>
-<li>首位有相同，第二位差值=首位</li>
-<li>首位有相同，第二位差值&lt;首位</li>
-</ol>
-<p>若选项之间存在约10、100倍的关系时</p>
-<ol>
-<li>截两位</li>
-<li>保留量级</li>
-</ol>
-<p>（2）分数比较</p>
-<p>一大一小（$\frac{25}{8}$,$\frac{36}{5}$）分子大，分数大</p>
-<p>同达同小（\frac{27}{8}，$\frac{9}{4}$）</p>
-<p>纵向用直除，横向看倍数（谁大谁留下，小的看成1）</p>
-<p>直除看首位</p>
-<h2 id="二、阅读材料"><a href="#二、阅读材料" class="headerlink" title="二、阅读材料"></a>二、阅读材料</h2><p>（1）纯文字材料</p>
-<p>特点：数据多，相近词多</p>
-<p>方法：结构阅读</p>
-<ol>
-<li>总分结构</li>
-<li>10秒内每段画出1-2个与众不同的关键词</li>
-</ol>
-<p>（2）图表材料</p>
-<p>特点：类型多，有陷阱</p>
-<p>方法：</p>
-<ol>
-<li>看表头三要素（时间、主体、单位）</li>
-<li>有注释一定要看注释</li>
-</ol>
-<p>（3）综合材料</p>
-<p>方法：</p>
-<ol>
-<li>个看个的</li>
-<li>找文字与图表之间的区别</li>
-</ol>
-<h2 id="三、基期与现期"><a href="#三、基期与现期" class="headerlink" title="三、基期与现期"></a>三、基期与现期</h2><p>时间靠前的为基期，时间靠后的为现期</p>
-<p>（1）$基期=现期-增长量$</p>
-<p>精确加减计算，用尾数法，末一位相同，看末两位</p>
-<p>（2）$基期=\frac{基期}{1+r}$</p>
-<p>（3）同比与环比</p>
-<p>同比看头，环比看尾</p>
-<p>2020年（头）5月（尾），同比与2019年5月相比，环比2020年4月相比</p>
-<p>（4）化除为乘</p>
-<p>应用环境：求基期，差距小$|r|&lt;=5%$</p>
-<p>$$\frac{A}{1+r}\approx A*(1-r)$$</p>
-<p>$$\frac{A}{1-r}\approx A*(1+r)$$</p>
-<p>操作：变号-去百分号-估算乘法</p>
-<p>（5）基期差值</p>
-<p>$$\frac{A}{1+a}-\frac{B}{1+b}分母同号，考计算或分析$$</p>
-<p>$$\frac{A}{1+a}-\frac{B}{1-b}分母异号，考分析$$</p>
-<ol>
-<li>先计算现期坑，排除</li>
-<li>再看大小关系，选择</li>
-</ol>
-<h2 id="四、一般增长率"><a href="#四、一般增长率" class="headerlink" title="四、一般增长率"></a>四、一般增长率</h2><p>（1）基本术语</p>
-<ul>
-<li>增长率与倍数</li>
-</ul>
-<p>倍数：指两数的直接比值</p>
-<p>增长率：比基数多出的比率</p>
-<p>两者联系：$是几倍=增长率+1$</p>
-<ul>
-<li>番数</li>
-</ul>
-<p>于番数，化倍数，翻$N$番，变为原来的$2^N$倍</p>
-<p>（2）计算</p>
-<ol>
-<li>给百分点型，高减低加</li>
-<li>给具体量型，套公式</li>
-</ol>
-<p>已知：现期、基期</p>
-<ol>
-<li>增长率：$r=\frac{增长量}{基期}$</li>
-<li>多个年份增长率$&gt;10%$：$现期&gt;1.1基期$</li>
-</ol>
-<p>（3）增长率的比较</p>
-<ol>
-<li>按照公式</li>
-<li>看现期和基期倍数关系是否明显</li>
-</ol>
-<p>当现期与基期的比值小于2，则用公式</p>
-<p>如果现期与基期的比值大于2，则直接比现期与基期</p>
-<h2 id="五、增长量"><a href="#五、增长量" class="headerlink" title="五、增长量"></a>五、增长量</h2><p>识别：增长+单位（绝对量）</p>
-<p>（1）增长量的计算</p>
-<ol>
-<li>已知：现期、基期</li>
-<li>年均增长量</li>
-<li>已知：现期、增长率</li>
-</ol>
-<p>公式：$增长量=\frac{现期}{1+r}*r$</p>
-<p>第一步：$|r|=1/N$</p>
-<p>第二步：$增长量=现期/（N+1）$，$减少量=现期/（N-1）$</p>
-<p>百分数转换常用分数：</p>
-<ol>
-<li>常用分数”1-5“</li>
-<li>记住“7-12“，加和（整数部分+分母=20）</li>
-<li>记住（16，6）和（14，7）互换的两对</li>
-<li>（17，18，19）记住5.963</li>
-<li>记住6.7%=$\frac{1}{15}$</li>
-</ol>
-<p>（2）增长量的比较</p>
-<p>大大则大，一大一小白分化</p>
-<h2 id="六、比重"><a href="#六、比重" class="headerlink" title="六、比重"></a>六、比重</h2><p>关键字：占</p>
-<p>（1）现期比重</p>
-<p>识别：现在+占</p>
-<p>公式：</p>
-<ol>
-<li>比重=部分/总体</li>
-<li>部分=总体*比重</li>
-<li>总体=部分/比重</li>
-</ol>
-<p>特殊表示：</p>
-<ol>
-<li>利润率=利润/收入</li>
-<li>增长贡献率=部分增长量/总体增长量</li>
-</ol>
-<p>饼状图：</p>
-<ol>
-<li>有总体：看比例</li>
-<li>无总体：先看大小，再看比例</li>
-</ol>
-<p>（2）基期</p>
-<p>识别：过去+占</p>
-<p>公式：</p>
-<p>基期比重=A/B * (1+b)/(1+a)</p>
-<p>速算：截位值除A/B</p>
-<p>根据后面分式与1的关系，结合选项判断</p>
-<p>（3）两期</p>
-<ul>
-<li>比较，观察分子分母的增长率</li>
-<li>计算，算判断升降再计算</li>
-</ul>
-<h2 id="七、平均数"><a href="#七、平均数" class="headerlink" title="七、平均数"></a>七、平均数</h2><p>（1）现期：</p>
-<p>识别：现在+均/每/单位</p>
-<p>（2）基期</p>
-<p>识别：过去+均/每/单位</p>
-<p>公式：</p>
-<p>基期平均数=A/B * (1+b)/(1+a)</p>
-<p>速算：截位值除A/B</p>
-<p>根据后面分式与1的关系，结合选项判断</p>
-<p>（3）两期</p>
-<ul>
-<li>比较，观察分子分母的增长率</li>
-<li>计算，算判断升降再计算</li>
-</ul>
-<h2 id="八、倍数"><a href="#八、倍数" class="headerlink" title="八、倍数"></a>八、倍数</h2><p>（1）现期</p>
-<p>（2）基期</p>
-<h2 id="九、间隔增长率"><a href="#九、间隔增长率" class="headerlink" title="九、间隔增长率"></a>九、间隔增长率</h2><p>公式：和+积</p>
-<p>速算：</p>
-<p>第一步，先算加和（分析选项是否是唯一值）</p>
-<p>第二步，再算乘积，若$r_1,r_2$均小于10%时，则乘积可以忽略</p>
+<h1 id="3-差错控制"><a href="#3-差错控制" class="headerlink" title="3 差错控制"></a>3 差错控制</h1><p>循环冗余校验CRC技术</p>
+<p>在数据M的后面添加提供差错检测用的n位冗余码，然后构成一个帧发送出去，一共发送(k+n)位</p>
+<p>在接收端把每一个帧都除以相同的除数p，检查得到的余数R</p>
+<p>如果传输过程中无差错，那么经过CRC校验后得出的余数R为0</p>
+<h1 id="4-流量控制与可靠传输机制"><a href="#4-流量控制与可靠传输机制" class="headerlink" title="4 流量控制与可靠传输机制"></a>4 流量控制与可靠传输机制</h1><p>流量控制的目的是控制双方发送的速率，可靠传输保证不丢帧</p>
+<h2 id="4-1-停止-等待协议"><a href="#4-1-停止-等待协议" class="headerlink" title="4.1 停止-等待协议"></a>4.1 停止-等待协议</h2><p>每发送完一个分组就停止发送，等待对方的确认，收到确认后再发送下一个分组</p>
+<p>具有确认和重传机制的可靠传输协议称为自动重传请求ARQ，为提高传输效率，采用连续ARQ协议，发送方每收到一个确认，就把发送串口向前滑动一个分组的位置</p>
+<p>接收方采用累积确认的方式</p>
+<h2 id="4-2-退后N帧协议（GBN）"><a href="#4-2-退后N帧协议（GBN）" class="headerlink" title="4.2 退后N帧协议（GBN）"></a>4.2 退后N帧协议（GBN）</h2><p>若发现N帧的前一个帧在计时器超时后仍未返回其确认信息，则该帧判为出错或丢失，此时发送方就不得不重新发送出错帧及其后的N帧</p>
+<h2 id="4-3-选择重传协议（SR）"><a href="#4-3-选择重传协议（SR）" class="headerlink" title="4.3 选择重传协议（SR）"></a>4.3 选择重传协议（SR）</h2><p>当接收方发现某镇出错后，某后继续送来的正确的帧虽然不能立即递交给接受方的高层，但接受方仍可收下来，存放在一个缓冲区中，同时要求发送方重新传送出错的那一帧</p>
+<h1 id="5-介质访问控制"><a href="#5-介质访问控制" class="headerlink" title="5 介质访问控制"></a>5 介质访问控制</h1><h2 id="5-1-信道划分介质访问控制"><a href="#5-1-信道划分介质访问控制" class="headerlink" title="5.1 信道划分介质访问控制"></a>5.1 信道划分介质访问控制</h2><p>1、频分复用FDM、时分复用TDM和统计时分复用</p>
+<p>2、波分复用WDM</p>
+<p>3、码分复用CDM</p>
+<p>更常用的名词是码分多址CDMA，每一个用户可以在同样的时间使用同样的频带进行通信。由于各用户使用经过特殊挑选的不同码型，因此各用户之间不会造成干扰。</p>
+<h2 id="5-2-随机访问介质控制访问"><a href="#5-2-随机访问介质控制访问" class="headerlink" title="5.2 随机访问介质控制访问"></a>5.2 随机访问介质控制访问</h2><p>1、ALOHA协议</p>
+<p>用户有帧即发送，采用冲突监听与随机重发机制。两帧冲突或重叠则会被破坏，因此效率不高</p>
+<p>2、载波监听多路访问CSMA</p>
+<p>当一个站点要发送数据前，监听总线，如果总线空闲则发送数据</p>
+<p>3、载波监听多路访问/冲突检测 CSMA/CD</p>
+<p>载波监听就是用电子技术检测总线上有没有其他计算机也在发送，碰撞检测也就是边发送边监听，判断自己在发送数据时其他站点是否也在发送数据</p>
+<p>4、CSMA/CA</p>
+<p>CSMA/CD协议已经成功地应用于有线连接的局域网，但无线局域网要使用CSMA/CA</p>
+<h1 id="6-局域网"><a href="#6-局域网" class="headerlink" title="6 局域网"></a>6 局域网</h1><p>（1）具有广播功能，从一个站点可很方便地访问全网</p>
+<p>（2）各设备的位置可灵活调整和改变，提高了系统的可靠性、可用性和生存性</p>
+<p>为了使数据链路层更好地适应多种局域网标准，将IEEE 802委员会把局域网的数据链路层拆成两个子层，即逻辑链路控制LLC和媒体接入控制MAC</p>
+<p>与接入到传输谋体有关的内容放在MAC子层，而LLC子层则与传输媒体无关，不管采用何种传输媒体和MAC子层的局域网对LLC子层来说都是透明的</p>
+<p>MAC层的硬件地址</p>
+<p>在局域网中，硬件地址又称为物理地址或MAC地址</p>
+<h1 id="7-广域网"><a href="#7-广域网" class="headerlink" title="7 广域网"></a>7 广域网</h1><h2 id="7-1-PPP协议"><a href="#7-1-PPP协议" class="headerlink" title="7.1 PPP协议"></a>7.1 PPP协议</h2><p>当PPP使用异步传输时，把转义字符定义为0x7D，并用字节填充</p>
+<p>用SONET/SDH链路时，使用同步传输，采用零比特填充方法来实现透明传输</p>
+<h2 id="7-2-HDLC协议"><a href="#7-2-HDLC协议" class="headerlink" title="7.2 HDLC协议"></a>7.2 HDLC协议</h2><p>通用的数据链路控制协议，在开始建立数据链路时，允许选用特定的操作方式</p>
+<p>所谓操作方式，通俗来将就是某站点是以主站点方式操作还是从站点方式操作，或者二者兼备。</p>
+<h1 id="8-数据链路设备"><a href="#8-数据链路设备" class="headerlink" title="8 数据链路设备"></a>8 数据链路设备</h1><p>1、网桥</p>
+<p>在数据链路层扩展局域网是使用网桥。根据MAC帧的目的地址对收到的帧进行转发</p>
+<p>2、交换机</p>
+<p>以太网交换机实质上就是一个多接口的网桥</p>
 
     </div>
 
@@ -459,7 +344,7 @@
 
       <footer class="post-footer">
           <div class="post-tags">
-              <a href="/tags/%E8%A1%8C%E6%B5%8B%E7%AC%94%E8%AF%95/" rel="tag"># 行测笔试</a>
+              <a href="/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/" rel="tag"># 计算机网络</a>
           </div>
 
         
@@ -468,12 +353,12 @@
         
     <div class="post-nav">
       <div class="post-nav-item">
-    <a href="/2020/07/22/xingce2/" rel="prev" title="行测笔记（二）：言语理解与表达">
-      <i class="fa fa-chevron-left"></i> 行测笔记（二）：言语理解与表达
+    <a href="/2020/08/13/Data2/" rel="prev" title="数据结构总结（二）：栈、队列和数组">
+      <i class="fa fa-chevron-left"></i> 数据结构总结（二）：栈、队列和数组
     </a></div>
       <div class="post-nav-item">
-    <a href="/2020/07/24/LogisticRegression/" rel="next" title="机器学习笔记（四）逻辑回归">
-      机器学习笔记（四）逻辑回归 <i class="fa fa-chevron-right"></i>
+    <a href="/2020/08/14/Data3/" rel="next" title="数据结构总结（三）：树与二叉树">
+      数据结构总结（三）：树与二叉树 <i class="fa fa-chevron-right"></i>
     </a></div>
     </div>
       </footer>
@@ -534,7 +419,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#1-资料分析"><span class="nav-text">1 资料分析</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#一、速算技巧"><span class="nav-text">一、速算技巧</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#二、阅读材料"><span class="nav-text">二、阅读材料</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#三、基期与现期"><span class="nav-text">三、基期与现期</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#四、一般增长率"><span class="nav-text">四、一般增长率</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#五、增长量"><span class="nav-text">五、增长量</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#六、比重"><span class="nav-text">六、比重</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#七、平均数"><span class="nav-text">七、平均数</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#八、倍数"><span class="nav-text">八、倍数</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#九、间隔增长率"><span class="nav-text">九、间隔增长率</span></a></li></ol></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#1-数据链路层的功能"><span class="nav-text">1 数据链路层的功能</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#2-组帧"><span class="nav-text">2 组帧</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#3-差错控制"><span class="nav-text">3 差错控制</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#4-流量控制与可靠传输机制"><span class="nav-text">4 流量控制与可靠传输机制</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#4-1-停止-等待协议"><span class="nav-text">4.1 停止-等待协议</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-2-退后N帧协议（GBN）"><span class="nav-text">4.2 退后N帧协议（GBN）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-3-选择重传协议（SR）"><span class="nav-text">4.3 选择重传协议（SR）</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#5-介质访问控制"><span class="nav-text">5 介质访问控制</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#5-1-信道划分介质访问控制"><span class="nav-text">5.1 信道划分介质访问控制</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#5-2-随机访问介质控制访问"><span class="nav-text">5.2 随机访问介质控制访问</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#6-局域网"><span class="nav-text">6 局域网</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#7-广域网"><span class="nav-text">7 广域网</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#7-1-PPP协议"><span class="nav-text">7.1 PPP协议</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#7-2-HDLC协议"><span class="nav-text">7.2 HDLC协议</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#8-数据链路设备"><span class="nav-text">8 数据链路设备</span></a></li></ol></div>
       </div>
       <!--/noindex-->
 
