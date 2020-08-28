@@ -1,0 +1,855 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/L.jpg">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/L.jpg">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"liangggggg.github.io","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="1 内存管理基础1.1 内存管理的概念内存管理是操作系统设计中最重要和做复杂的内容之一，内存管理的功能有：  内存空间的分配与回收，包括分配与共享 地址转换，把逻辑地址转换成相应的物理地址 内存空间的扩充，利用虚拟技术或自动覆盖技术，从逻辑上扩充内存 内存保护，保证各道作业在各自存储空间内运行，互不干扰">
+<meta property="og:type" content="article">
+<meta property="og:title" content="操作系统总结（三）：内存管理">
+<meta property="og:url" content="https://liangggggg.github.io/2020/08/28/os3/index.html">
+<meta property="og:site_name" content="LiAnG&#39;s Blog">
+<meta property="og:description" content="1 内存管理基础1.1 内存管理的概念内存管理是操作系统设计中最重要和做复杂的内容之一，内存管理的功能有：  内存空间的分配与回收，包括分配与共享 地址转换，把逻辑地址转换成相应的物理地址 内存空间的扩充，利用虚拟技术或自动覆盖技术，从逻辑上扩充内存 内存保护，保证各道作业在各自存储空间内运行，互不干扰">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2020-08-28T12:12:59.000Z">
+<meta property="article:modified_time" content="2020-08-28T11:25:18.364Z">
+<meta property="article:author" content="LiAnG">
+<meta property="article:tag" content="操作系统">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://liangggggg.github.io/2020/08/28/os3/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>操作系统总结（三）：内存管理 | LiAnG's Blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/atom.xml" title="LiAnG's Blog" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">LiAnG's Blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">Stay hungry, stay foolish</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://liangggggg.github.io/2020/08/28/os3/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/timg.jpg">
+      <meta itemprop="name" content="LiAnG">
+      <meta itemprop="description" content="Stay hungry, stay foolish">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="LiAnG's Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          操作系统总结（三）：内存管理
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2020-08-28 20:12:59 / 修改时间：19:25:18" itemprop="dateCreated datePublished" datetime="2020-08-28T20:12:59+08:00">2020-08-28</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/" itemprop="url" rel="index"><span itemprop="name">操作系统</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2020/08/28/os3/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2020/08/28/os3/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>4.8k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>4 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="1-内存管理基础"><a href="#1-内存管理基础" class="headerlink" title="1 内存管理基础"></a>1 内存管理基础</h1><h2 id="1-1-内存管理的概念"><a href="#1-1-内存管理的概念" class="headerlink" title="1.1 内存管理的概念"></a>1.1 内存管理的概念</h2><p>内存管理是操作系统设计中最重要和做复杂的内容之一，内存管理的功能有：</p>
+<ol>
+<li>内存空间的分配与回收，包括分配与共享</li>
+<li>地址转换，把逻辑地址转换成相应的物理地址</li>
+<li>内存空间的扩充，利用虚拟技术或自动覆盖技术，从逻辑上扩充内存</li>
+<li>内存保护，保证各道作业在各自存储空间内运行，互不干扰</li>
+</ol>
+<a id="more"></a>
+
+<p>创建进程首先要将程序和数据装入内存，将用户原程序编程可在内存中执行的程序，通常需要以下几个步骤</p>
+<ol>
+<li>编译，由编译程序将用户源代码编译成若干个目标模块</li>
+<li>链接，由链接程序将编译后形成一组目标模块</li>
+<li>装入，由装入程序将装入模块装入内存</li>
+</ol>
+<p>程序的连接有以下三种方式</p>
+<ol>
+<li>静态链接：在程序运行之前，先将各目标模块及它们所需的库函数链接成一个完成的可执行程序，以后不再拆开</li>
+<li>装入时动态链接：将用户源程序编译后所得到的一组目标模块，再装入内存时，采用边装入边链接方式</li>
+<li>运行时动态链接：对某些目标模块的连接，是在程序执行中需要该目标模块时，才进行链接，其优点是便于修改和更新</li>
+</ol>
+<p>装入内存时，同样有以下三种方式：</p>
+<ol>
+<li>绝对装入：在编译时，产生绝对地址的目标代码</li>
+<li>可重定位装入：在多道程序环境下，多个目标目标的起始地址通常都是从0开始，程序中的其他地址都是相对于起始地址的</li>
+<li>动态运行时装入：程序在内存中发生移动，需要采用动态装入方式</li>
+</ol>
+<h2 id="1-2-覆盖与交换"><a href="#1-2-覆盖与交换" class="headerlink" title="1.2 覆盖与交换"></a>1.2 覆盖与交换</h2><p>覆盖与交换技术是在多道程序环境下用来扩充内存的两种方法</p>
+<p>覆盖的基本思想：</p>
+<p>由于程序运行时并非任何时候都要访问程序和数据的各个部分，因此可以把用户控件分成一个固定区和若干个覆盖区，将经常活跃的部分放在固定区，其余部分按照调用关系分段</p>
+<p>交换的基本思想：</p>
+<p>把处于等待状态（或在CPU调度原则下被剥夺运行权利）的进程从内存移到辅存，把内存空间腾出来，把准备好竞争CPU运行的进程从辅存移到内存</p>
+<p>有关交换需要注意以下问题：</p>
+<ul>
+<li>交换需要备份存储</li>
+<li>为了有效使用CPU，需要每个进程的执行时间比交换时间长</li>
+<li>如果换出进程，必须确保该进程是完全处于空闲状态</li>
+<li>交换空间通常作为磁盘的一整块，且独立于文件系统</li>
+<li>交换通常有许多进程运行且内存空间吃紧的时候开始启动</li>
+<li>普通的交换使用不多，但交换策略的某些变种在许多系统中仍发挥作用</li>
+</ul>
+<h2 id="1-3-连续分配管理方式"><a href="#1-3-连续分配管理方式" class="headerlink" title="1.3 连续分配管理方式"></a>1.3 连续分配管理方式</h2><p>连续分配，是指为一个用户程序分配一个连续的内存空间，主要包括单一连续分配、固定分区分配和动态分区分配</p>
+<p>内存在此方式下分为系统区和用户区</p>
+<p>固定分区分配是最简单的一种多道程序储存管理方式，将内存划分为若干个固定大小的区域，每个分区只装入一道作业</p>
+<p>固定分区分配在划分分区时，有两种不同的方法</p>
+<ol>
+<li>分区大小相等</li>
+<li>分区大小不等</li>
+</ol>
+<p>固定分区不能实现多进程共享一个主存区，空间利用率低</p>
+<p>动态分区分配又称为可变分区分配，是一种动态划分内存的分区方法。在进程装入内存时，根据进程的大小动态的建立分区，并使分区的大小正好合适进程的需要，但是随着时间的推移，内存中会产生越来越多的碎片</p>
+<p>动态分区的分配策略，可以考虑以下几种算法：</p>
+<ol>
+<li>首次适应算法：空闲分区以地址递增的次序链接，分配内存时顺序查找，找到大小能满足要求的第一个空闲分区</li>
+<li>最佳适应算法：空闲分区按容量递增形成分区连，找到第一个能满足要求的空闲分区</li>
+<li>最坏适应算法：空闲分区以容量递减次序链接，找到第一个能满足要求的空闲分区</li>
+<li>临近适应算法：由首次适应算法演变而成，不同之处是分配内存时从查找结束的位置开始继续查找</li>
+</ol>
+<h2 id="1-4-非连续分配管理方式"><a href="#1-4-非连续分配管理方式" class="headerlink" title="1.4 非连续分配管理方式"></a>1.4 非连续分配管理方式</h2><p>非连续分配允许一个程序分散的装入不相邻的内存分区中，根据分区的大小是否固定为分页存储管理方式和分段存储管理方式</p>
+<p>分页存储管理方式中，又根据运行作业时是否要把作业的所有页面都装入内存才能运行分为基本页存储管理和请求页存储管理方式</p>
+<p>1、分页存储的几个基本概念</p>
+<ul>
+<li>页面和页面大小：进程中的块称为页，内存中的块称为页框。外存也以同样单位划分，直接称为块。进程在执行时需要申请主存空间，就是要为每个页面分配主存中的可用页框，这就产生了页和页框的一一对应。</li>
+<li>地质结构：分页存储管理的地质结构包含两部分：前一部分为页号，后一部分为页内偏移量</li>
+<li>页表：为了便于在内存中找到进程的每个页面所对应的物理块，系统为每个进程建立一张页表，记录页面在内存中对应的物理块号，页表一般存放在内存中。</li>
+</ul>
+<p>2、基本地质变换机构</p>
+<p>将逻辑地址中的页号，转换为内存中物理块号，地址变换是借助于页表实现的</p>
+<p>逻辑地址到物理地址的变换过程如下：</p>
+<ol>
+<li>地址变换机构自动将有效地址分为页号和页内偏移量两部分，再用页号去检索页表，在执行检索之前，现将页号与页表长度比较，如果页号大于或等于页表长度，则表示地址越界并中断</li>
+<li>若未越界，则将页表始址和页表项长度的乘积相加，便得到该表项在页表中的位置，于是可从中得到该页的物理块号</li>
+<li>与此同时，将有效地址中的页内偏移量送入物理地址寄存器的块内地址字段中</li>
+</ol>
+<p>3、具有块表的地址变换机构</p>
+<ol>
+<li>CPU给出有效地址后，由硬件进行地址转换，并将页号送入高速缓存寄存器，并将此页号与快表的所有页号同时进行比较</li>
+<li>如果有找到匹配的页号，说明要访问的页表项在快表中，则可以直接从中读出该页对应的页框号，送到物理地址寄存器</li>
+<li>如果没有找到，则需要访问主存中的页表，在读出页表项后，同时将其存入快表中，以供后面可能的再次访问</li>
+</ol>
+<p>4、两级页表</p>
+<p>由于引入了分页管理，进程在执行时不需要将所有页调入内存框中，而只要将保存有映射关系的页表调入内存即可</p>
+<h1 id="2-虚拟内存"><a href="#2-虚拟内存" class="headerlink" title="2 虚拟内存"></a>2 虚拟内存</h1><h2 id="2-1-虚拟内存的基本概念"><a href="#2-1-虚拟内存的基本概念" class="headerlink" title="2.1 虚拟内存的基本概念"></a>2.1 虚拟内存的基本概念</h2><p>内存管理策略有两个共同特质：</p>
+<ol>
+<li>一次性：作业必须一次全部装入内存后，方可运行</li>
+<li>驻留性：作业被装入内存后，就一直驻留在内存中</li>
+</ol>
+<p>局部性原理表现在以下两个方面：</p>
+<ol>
+<li><p>时间局部性。如果程序中的某条指令一旦执行，则不久以后该指令可能再次执行；如果某数据被访问过，则不久以后该数据可能再次被访问。产生时间局部性的典型原因，是由于在程序中存在着大量的循环操作。</p>
+</li>
+<li><p>空间局部性。一旦程序访问量某个存储单元，在不久之后，其附近的存储单元也将被访问，即程序在一段时间内所访问的地址，可能集中在一定的范围之内，其典型情况便是程序的顺序执行。</p>
+</li>
+</ol>
+<p>时间局部性是通过将进来使用的指令和数据保存到高速缓存存储器中，并使用高速缓存的层次结构实现。空间局部性通常是使用较大的高速缓存，并将预取机制集成到高速缓存控制逻辑中实现。虚拟内存技术实际上就是建立了“内存-外存”的两级存储器的结构，利用局部性原理实现高速缓存。</p>
+<p>基于局部性原理，在程序装入时，可以将程序的一部分装入内存，而将其余部分留在外存，就可以启动程序执行，这样，计算机好像为用户提供了一个比实际内存大得多的储存器，称为虚拟储存器，主要有以下三个主要特征：</p>
+<ol>
+<li>多次性：无需在作业运行时一次性地全部装入内存，而是允许被分成多次调入内存运行</li>
+<li>对换性：无需作业运行时一直常驻内存，而是允许在作业的运行过程中，进行换进和换出</li>
+<li>虚拟性：逻辑上扩充内存的容量</li>
+</ol>
+<p>虚拟内存建立在离散分配的内存管理方式的基础上，有以下三种方式</p>
+<ol>
+<li>请求分页存储管理</li>
+<li>请求分段存储管理</li>
+<li>请求段页式存储管理</li>
+</ol>
+<p>不管哪种方式，都需要有一定的硬件支持</p>
+<ol>
+<li>一定的内存和外存</li>
+<li>页表机制或段表机制</li>
+<li>中断机构</li>
+<li>地址变换机构</li>
+</ol>
+<h2 id="2-2-请求分页管理方式"><a href="#2-2-请求分页管理方式" class="headerlink" title="2.2 请求分页管理方式"></a>2.2 请求分页管理方式</h2><p>请求分页系统建立在基本分页系统基础上，为了支持寻你存储器功能而增肌阿勒请求分页功能和页面置换功能</p>
+<h2 id="2-3-页面置换算法"><a href="#2-3-页面置换算法" class="headerlink" title="2.3 页面置换算法"></a>2.3 页面置换算法</h2><p>进程运行时，若访问的页面不在内存，需要将其调入，但内存已无空闲空间时，就需要从内存中调出一页程序或数据，送入磁盘兑换区，常见的置换算法有以下四种：</p>
+<ol>
+<li>最佳置换算法</li>
+<li>先进先出页面置换算法</li>
+<li>最近最久未使用置换算法</li>
+<li>最少使用置换算法</li>
+</ol>
+<h2 id="2-4-页面分配策略"><a href="#2-4-页面分配策略" class="headerlink" title="2.4 页面分配策略"></a>2.4 页面分配策略</h2><p>给特定的进程分配多大的主存空间，需要考虑以下几点：</p>
+<ol>
+<li>分配给一个进程的存储量越小，在任何时候驻留在主存的进程数越多，可以提高处理器的时间利用率</li>
+<li>如果一个进程在主存中的页数过少，尽管有局部性原理，页错误率仍然会相对较高</li>
+<li>如果页数过多，由于局部性原理，给特定的进程分配更多的主存空间对该进程的错误率没有明显的影响</li>
+</ol>
+<p>基于这些因素，现代操作系统通常采用三种策略：</p>
+<ol>
+<li>固定分配局部置换：它为每个进程分配一定数量的物理块，在整个运行期间都不改变。若进程在运行中发现缺页，则只能从该进程在内存的页面中选出一个换出，然后再调入需要的页面。</li>
+<li>可变分配全局置换：这是最易于实现的物理块分配和置换策略，为系统中的每个进程分配一定数量的物理块，操作系统自身也保持一个空闲物理块队列。当某进程发现缺页时，系统从空闲物理块队列中取出物理块分配给该进程，并将于调入的页装入其中。</li>
+<li>可变分配局部置换：它为每个进程分配一定数目的物理块，当某进程发现缺页时，只允许从该进程在内存的页面中选出一页换出，这样就不会影响其他进程的运行。如果进程在运行中频繁的换页，系统需再为该进程分配若干附加物理块，直至该进程缺页率趋于适当程度为止；反之，若一个进程在运行过程中缺页率特别低，则此时可适当减少该进程的物理块。</li>
+</ol>
+<p>为确定系统将进程运行时所缺的页面调入内存的时机，可采取预调页策略或请求调页策略：</p>
+<ol>
+<li>预调页策略：根据局部性原理，一次调入若干个相邻的页可能比一次调入一页更高效。但如果调入的一批页面中大厦多数都未被访问，则又是低效的。所以就需要采用以预测为基础的预调页策略，将预计在不久之后便会被访问的页面预先调入内存。但目前预调页的成功率仅约50%。股这种策略主要用于进程的首次调入时，有程序员指出应该先调入哪些页。</li>
+<li>请求调页策略：进程在运行中需要访问的页面不在内存而提出的请求，由系统将所需页面调入内存。这种策略调入的页一定会被访问，且这种策略比较易于实现，故在目前的虚拟存储器中大多采用此策略。它的缺点在于每次调入一页，会花费过多的IO开销。</li>
+<li>从何处调入页面。请求分页系统中的外存分为两部分：用于存放文件的文件区和用于存放对换页面的对换区。对换区通常是采用连续分配方式，而文件区采用离散分配方式，故对换区的磁盘IO速度比文件区高。这里从何处调入页面有三种情况</li>
+</ol>
+<h2 id="2-5-抖动和工作集"><a href="#2-5-抖动和工作集" class="headerlink" title="2.5 抖动和工作集"></a>2.5 抖动和工作集</h2><p>在进程的页面置换过程中，频繁的页面调度行为成为抖动，或颠簸。如果一个进程在换页上用的时间多于执行时间，那么这个进程就在颠簸。</p>
+<p>使用虚拟内存技术，操作系统中进程通常只有一部分块位于主存中，从而可以在内存中保留更多的进程以提高系统效率。此外，由于未用到的块不需要换入换出内存，因为节省了时间。但是系统必须很“聪明”地管理页面分配方案。在稳定状态，几乎主存的所有空间都被禁成块占据，处理器和操作系统可以直接访问到尽可能多的进程。但如果管理不当，系统发生抖动现象，处理器的大部分时间都将用于交换快，及请求调入页面的操作，而不是执行进程的指令，这就会大大降低系统效率。前面讲解的页面置换算法就是是讨论这里的分配方案，尽量避免抖动现象。</p>
+<p>另外，为了防止出现抖动现象，需要选择合适的驻留集大小。驻留集（或工作集）是指在某段时间间隔内，进程要访问的页面集合。经常被使用的页面需要在驻留集中，而长期不被使用的页面要从驻留集中被丢弃。驻留集模型使用较为简单：操作系统跟踪每个进程的驻留集，并为进程分配大于驻留集的的空间。如果还有空闲，那么可启动另一个进程。如果所有驻留集之和增加一直超过了可用物理块啊的总数，那么系统会怎听一个进程，将其页面调出并且将其物理块分配给其他进程。</p>
+<p>正确选择驻留集的大小，对存储器的有效利用和系统吞吐量的提高，都将产生重要的影响。</p>
+<h2 id="2-6-请求分段管理方式"><a href="#2-6-请求分段管理方式" class="headerlink" title="2.6 请求分段管理方式"></a>2.6 请求分段管理方式</h2><p>请求分段存储管理系统已基本短时存储管理为基础，为用户提供一个比主存容量更大的虚拟存储器。作业的若干分段别放入内存，就可以开始作业运行，作业的其他部分被放在外存中，等到需要的时候才被调入内存。</p>
+<h2 id="2-7-请求段页式管理方式"><a href="#2-7-请求段页式管理方式" class="headerlink" title="2.7 请求段页式管理方式"></a>2.7 请求段页式管理方式</h2><p>请求段页式管理方式只要求将作业若干页或段装入内存就可以开始运行作业，作业的其他部分别放在外存中，等待运行需要的时候才被调入内存，</p>
+<p>请求段页式管理方式要求相对程序按逻辑意义分段后再分页，所以相对于请求页式管理方式能够方便用户使用，便于共享、保护和动态链接。进程在启动的时候采取与装入模式，则可以根据段的意义装入某些进程运行开始阶段所需要的段。</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/" rel="tag"># 操作系统</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2020/08/28/os2/" rel="prev" title="操作系统总结（二）：进程管理">
+      <i class="fa fa-chevron-left"></i> 操作系统总结（二）：进程管理
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2020/08/28/os4/" rel="next" title="操作系统总结（四）：文件系统">
+      操作系统总结（四）：文件系统 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    <div class="comments" id="valine-comments"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#1-内存管理基础"><span class="nav-text">1 内存管理基础</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-1-内存管理的概念"><span class="nav-text">1.1 内存管理的概念</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#1-2-覆盖与交换"><span class="nav-text">1.2 覆盖与交换</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#1-3-连续分配管理方式"><span class="nav-text">1.3 连续分配管理方式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#1-4-非连续分配管理方式"><span class="nav-text">1.4 非连续分配管理方式</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#2-虚拟内存"><span class="nav-text">2 虚拟内存</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#2-1-虚拟内存的基本概念"><span class="nav-text">2.1 虚拟内存的基本概念</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-2-请求分页管理方式"><span class="nav-text">2.2 请求分页管理方式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-3-页面置换算法"><span class="nav-text">2.3 页面置换算法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-4-页面分配策略"><span class="nav-text">2.4 页面分配策略</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-5-抖动和工作集"><span class="nav-text">2.5 抖动和工作集</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-6-请求分段管理方式"><span class="nav-text">2.6 请求分段管理方式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-7-请求段页式管理方式"><span class="nav-text">2.7 请求段页式管理方式</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="LiAnG"
+      src="/images/timg.jpg">
+  <p class="site-author-name" itemprop="name">LiAnG</p>
+  <div class="site-description" itemprop="description">Stay hungry, stay foolish</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">31</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">7</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">7</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/LiAnGGGGGG" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;LiAnGGGGGG" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:1318457129@qq.com" title="E-Mail → mailto:1318457129@qq.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="/atom.xml" title="rss → &#x2F;atom.xml"><i class="fa fa-rss fa-fw"></i>rss</a>
+      </span>
+  </div>
+  <div class="cc-license motion-element" itemprop="license">
+    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" class="cc-opacity" rel="noopener" target="_blank"><img src="/images/cc-by-nc-sa.svg" alt="Creative Commons"></a>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        <script
+  async
+  src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"
+></script>
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">LiAnG</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-area"></i>
+    </span>
+      <span class="post-meta-item-text">站点总字数：</span>
+    <span title="站点总字数">194k</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+      <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
+    <span title="站点阅读时长">2:56</span>
+</div>
+<!-- 网站运行时间的设置 -->
+<span id="timeDate">载入天数...</span>
+<span id="times">载入时分秒...</span>
+<script>
+    var now = new Date();
+    function createtime() {
+        var grt= new Date("05/30/2020 13:14:21");//此处修改你的建站时间或者网站上线时间
+        now.setTime(now.getTime()+250);
+        days = (now - grt ) / 1000 / 60 / 60 / 24; dnum = Math.floor(days);
+        hours = (now - grt ) / 1000 / 60 / 60 - (24 * dnum); hnum = Math.floor(hours);
+        if(String(hnum).length ==1 ){hnum = "0" + hnum;} minutes = (now - grt ) / 1000 /60 - (24 * 60 * dnum) - (60 * hnum);
+        mnum = Math.floor(minutes); if(String(mnum).length ==1 ){mnum = "0" + mnum;}
+        seconds = (now - grt ) / 1000 - (24 * 60 * 60 * dnum) - (60 * 60 * hnum) - (60 * mnum);
+        snum = Math.round(seconds); if(String(snum).length ==1 ){snum = "0" + snum;}
+        document.getElementById("timeDate").innerHTML = "本站已安全运行 "+dnum+" 天 ";
+        document.getElementById("times").innerHTML = hnum + " 小时 " + mnum + " 分 " + snum + " 秒";
+    }
+setInterval("createtime()",250);
+</script>
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+      
+
+<script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      loader: {
+        source: {
+          '[tex]/amsCd': '[tex]/amscd',
+          '[tex]/AMScd': '[tex]/amscd'
+        }
+      },
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              let target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    (function () {
+      var script = document.createElement('script');
+      script.src = '//cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';
+      script.defer = true;
+      document.head.appendChild(script);
+    })();
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
+
+  
+
+  
+  <script src="/js/src/wobblewindow.js"></script>
+  <script>
+    //只在桌面版网页启用特效
+    if (window.innerWidth > 768) {
+      $(document).ready(function () {
+        
+        // 根据类名获取，而不是id
+        $('.header').wobbleWindow({
+          radius: 50,
+          movementTop: false,
+          movementLeft: false,
+          movementRight: false,
+          debug: false,
+        });
+        
+
+        
+         // 根据类名获取，而不是id
+        $('.sidebar').wobbleWindow({
+          radius: 50,
+          movementLeft: false,
+          movementTop: false,
+          movementBottom: false,
+          position: 'fixed',
+          debug: false,
+        });
+        
+
+        
+         // 根据类名获取，而不是id
+        $('.footer').wobbleWindow({
+          radius: 50,
+          movementBottom: false,
+          movementLeft: false,
+          movementRight: false,
+          
+          position: 'absolute',
+          debug: false,
+        });
+        
+      });
+    }
+  </script>
+
+
+ 
+<script>
+  var OriginTitile = document.title;
+  var titleTime;
+  document.addEventListener("visibilitychange", function() {
+    if (document.hidden) {
+      document.title = "(つェ⊂)我藏好了哦~" + OriginTitile;
+      clearTimeout(titleTime);
+    } else {
+      document.title = "(*´∇｀*) 被你发现啦~" + OriginTitile;
+      titleTime = setTimeout(function() {
+        document.title = OriginTitile;
+      }, 2000);
+    }
+  });
+</script>
+
+
+
+
+
+
+  <script async src="/js/cursor/fireworks.js"></script>
+
+
+
+<script>
+NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
+  NexT.utils.getScript('//unpkg.com/valine/dist/Valine.min.js', () => {
+    var GUEST = ['nick', 'mail', 'link'];
+    var guest = 'nick,mail,link';
+    guest = guest.split(',').filter(item => {
+      return GUEST.includes(item);
+    });
+    new Valine({
+      el         : '#valine-comments',
+      verify     : false,
+      notify     : false,
+      appId      : 'rueYojQYHpaShC9b3zwCTcgt-gzGzoHsz',
+      appKey     : 'SuFkJxmzL9eehU2FBrkopQlJ',
+      placeholder: "Just go go",
+      avatar     : 'mm',
+      meta       : guest,
+      pageSize   : '10' || 10,
+      visitor    : false,
+      lang       : '' || 'zh-cn',
+      path       : location.pathname,
+      recordIP   : false,
+      serverURLs : ''
+    });
+  }, window.Valine);
+});
+</script>
+
+
+</body>
+</html>

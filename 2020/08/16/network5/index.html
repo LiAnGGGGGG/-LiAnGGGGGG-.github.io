@@ -1,0 +1,858 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/L.jpg">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/L.jpg">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"liangggggg.github.io","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="1 传输层提供的服务1.1 传输层的功能 传输层的目标是向应用层应用程序进程之间的通信，提供有效、可靠、保证质量的服务 传输层在网络分层结构中起着承上启下的作用，通过执行传输层协议，屏蔽通信子网在技术、设计上的差异和服务质量的不足，想高层提供一个标准的完善的通信服务 从通信和信息处理的角度看，应用层是面向信息处理的，而传输层是为应用层提供通信服务的 对收到的报文进行差错校验 面向连接的TCP和无连">
+<meta property="og:type" content="article">
+<meta property="og:title" content="计算机网络总结（五）：传输层">
+<meta property="og:url" content="https://liangggggg.github.io/2020/08/16/network5/index.html">
+<meta property="og:site_name" content="LiAnG&#39;s Blog">
+<meta property="og:description" content="1 传输层提供的服务1.1 传输层的功能 传输层的目标是向应用层应用程序进程之间的通信，提供有效、可靠、保证质量的服务 传输层在网络分层结构中起着承上启下的作用，通过执行传输层协议，屏蔽通信子网在技术、设计上的差异和服务质量的不足，想高层提供一个标准的完善的通信服务 从通信和信息处理的角度看，应用层是面向信息处理的，而传输层是为应用层提供通信服务的 对收到的报文进行差错校验 面向连接的TCP和无连">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://note.youdao.com/yws/api/personal/file/3CCDFBC7B5024E868952FBEC3B448C20?method=download&shareKey=4bfc577c3122e1322f3393d6719657e4">
+<meta property="og:image" content="https://note.youdao.com/yws/api/personal/file/5CEAF751EA4C4C7C9704310F6F7FCBA0?method=download&shareKey=ad2bd6d9c823843d2879523899a3111a">
+<meta property="og:image" content="https://note.youdao.com/yws/api/personal/file/1F81C26CCC94472593D302BE252F06E1?method=download&shareKey=90481f9f275da417bc784de3e700f2b1">
+<meta property="og:image" content="http://note.youdao.com/noteshare?id=82b0ebf222a392a52865e1c74a15e32f&sub=9845A0F352624ADC8CBD58346DC17652">
+<meta property="og:image" content="https://note.youdao.com/yws/api/personal/file/E4D159D17BC24A0BBAC287D02DFFE98B?method=download&shareKey=a7eaab7740e883c4240ec1404c584dd8">
+<meta property="article:published_time" content="2020-08-16T01:47:42.000Z">
+<meta property="article:modified_time" content="2020-08-28T05:50:38.666Z">
+<meta property="article:author" content="LiAnG">
+<meta property="article:tag" content="计算机网络">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://note.youdao.com/yws/api/personal/file/3CCDFBC7B5024E868952FBEC3B448C20?method=download&shareKey=4bfc577c3122e1322f3393d6719657e4">
+
+<link rel="canonical" href="https://liangggggg.github.io/2020/08/16/network5/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>计算机网络总结（五）：传输层 | LiAnG's Blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/atom.xml" title="LiAnG's Blog" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">LiAnG's Blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">Stay hungry, stay foolish</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://liangggggg.github.io/2020/08/16/network5/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/timg.jpg">
+      <meta itemprop="name" content="LiAnG">
+      <meta itemprop="description" content="Stay hungry, stay foolish">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="LiAnG's Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          计算机网络总结（五）：传输层
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2020-08-16 09:47:42" itemprop="dateCreated datePublished" datetime="2020-08-16T09:47:42+08:00">2020-08-16</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-08-28 13:50:38" itemprop="dateModified" datetime="2020-08-28T13:50:38+08:00">2020-08-28</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/" itemprop="url" rel="index"><span itemprop="name">计算机网络</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2020/08/16/network5/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2020/08/16/network5/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>2.4k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>2 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="1-传输层提供的服务"><a href="#1-传输层提供的服务" class="headerlink" title="1 传输层提供的服务"></a>1 传输层提供的服务</h1><h2 id="1-1-传输层的功能"><a href="#1-1-传输层的功能" class="headerlink" title="1.1 传输层的功能"></a>1.1 传输层的功能</h2><ul>
+<li>传输层的目标是向应用层应用程序进程之间的通信，提供有效、可靠、保证质量的服务</li>
+<li>传输层在网络分层结构中起着承上启下的作用，通过执行传输层协议，屏蔽通信子网在技术、设计上的差异和服务质量的不足，想高层提供一个标准的完善的通信服务</li>
+<li>从通信和信息处理的角度看，应用层是面向信息处理的，而传输层是为应用层提供通信服务的</li>
+<li>对收到的报文进行差错校验</li>
+<li>面向连接的TCP和无连接的UDP</li>
+</ul>
+<a id="more"></a>
+
+<h2 id="1-2-传输层寻址与端口"><a href="#1-2-传输层寻址与端口" class="headerlink" title="1.2 传输层寻址与端口"></a>1.2 传输层寻址与端口</h2><p>TCP/IP传输层端口</p>
+<ul>
+<li>用16位端口</li>
+<li>只具有本地含义</li>
+<li>不同计算机的相同端口号没有联系</li>
+</ul>
+<p>两个计算机中的进程要相互通信，不仅要知道对方的IP地址，还要知道对方的端口号</p>
+<p>两大类端口</p>
+<p>（1）服务器</p>
+<ul>
+<li>熟知端口，一般0-1023</li>
+<li>登记端口号，一般为1024-49151</li>
+</ul>
+<p>（2）客户端</p>
+<ul>
+<li>短暂端口号，留给客户进程使用，一般为49152-65535</li>
+<li>端口为动态的</li>
+</ul>
+<h1 id="2-UDP协议"><a href="#2-UDP协议" class="headerlink" title="2 UDP协议"></a>2 UDP协议</h1><p>（1）UPD无连接的</p>
+<p>（2）使用尽最大努力交付，不保证可靠交付</p>
+<p>（3）UPD是面向报文的</p>
+<p>（4）UPD没有拥塞控制，网络出现的拥塞不会使源主机的发送速率降低</p>
+<p>（5）UPD支持一对一、一对多、多对一和多对多的交互通信</p>
+<p>（6）UPD的首部开销小，只有8个字节，比TCP的20字节小</p>
+<h2 id="2-1-UDP首部格式"><a href="#2-1-UDP首部格式" class="headerlink" title="2.1 UDP首部格式"></a>2.1 UDP首部格式</h2><p>用户数据报UDP有两个字段：数据字段和首部字段。首部字段只有8字节，由四个字段组成，每个字段长度都是两个字节</p>
+<p>（1）源端口</p>
+<p>（2）目的端口</p>
+<p>（3）长度UPD用户数据报的长度</p>
+<p>（4）检验和检测UDP用户数据报在传输中是否有错</p>
+<p>UDP校验是伪首部和尾部一起校验</p>
+<h1 id="3-TCP协议"><a href="#3-TCP协议" class="headerlink" title="3 TCP协议"></a>3 TCP协议</h1><h2 id="3-1-TCP段"><a href="#3-1-TCP段" class="headerlink" title="3.1 TCP段"></a>3.1 TCP段</h2><ul>
+<li>面向连接</li>
+<li>只能有两个端点，只能是点对点</li>
+<li>可靠交付</li>
+<li>提供全双工</li>
+<li>面向字节流</li>
+<li>TCP连接是一条虚连接</li>
+<li>根据对方给出的窗口值和当前网络拥塞程度来决定一个报文段应包含多少个字节</li>
+<li>TCP可把太长的数据块划分短一些再传送</li>
+</ul>
+<p><img src="https://note.youdao.com/yws/api/personal/file/3CCDFBC7B5024E868952FBEC3B448C20?method=download&shareKey=4bfc577c3122e1322f3393d6719657e4" alt></p>
+<h2 id="3-2-TCP的连接管理"><a href="#3-2-TCP的连接管理" class="headerlink" title="3.2 TCP的连接管理"></a>3.2 TCP的连接管理</h2><ul>
+<li>TCP把连接作为最基本的抽象</li>
+<li>每一条TCP连接有两个端点</li>
+<li>TCP连接的端点不是主机，不是主机的IP地址，不是应用进程，也不是传输层的协议端口，TCP连接的端点叫做套接字或插口</li>
+<li>端口号拼接到IP地址即构成了套接字</li>
+<li>传输连接有三个阶段，即：建立连接，数据传送和连接释放</li>
+<li>建立连接过程要解决一下三个问题<ul>
+<li>要使每一方能够确知对方的存在</li>
+<li>要允许双方协商一些参数</li>
+<li>能够传输实体资源</li>
+</ul>
+</li>
+</ul>
+<p>（1）建立连接（三次握手）</p>
+<p>TCP建立连接的过程叫做握手，握手需要在客户和服务器之间交换三个TCP报文段，称为三报文握手，主要是为了防止已失效的连接请求报文突然又传送到了，因而产生错误</p>
+<p><img src="https://note.youdao.com/yws/api/personal/file/5CEAF751EA4C4C7C9704310F6F7FCBA0?method=download&shareKey=ad2bd6d9c823843d2879523899a3111a" alt></p>
+<p>一开始TCP服务器创建传输控制块，准备接受客户进程的连接请求，然后服务器进程处理LISTEN收听状态，等待客户的连接请求，如有即作出响应</p>
+<ol>
+<li><p>TCP客户也创建传输控制模块，在打算建立TCP连接时，向服务端发出连接请求报文，TCP客户端进程进入SYN-SENT同步已发送状态</p>
+</li>
+<li><p>服务端到请求报文后，如同意建立连接，则发送确认，进入同步收到状态</p>
+</li>
+<li><p>TCP客户进程收到服务端的确认后，再给服务端给出确认，这时TCP连接已经建立，客户端进入已建立连接状态</p>
+</li>
+</ol>
+<p>当服务端收到客户端的确认后，也进入已建立连接状态</p>
+<p>（2）连接释放（四次握手）</p>
+<p><img src="https://note.youdao.com/yws/api/personal/file/1F81C26CCC94472593D302BE252F06E1?method=download&shareKey=90481f9f275da417bc784de3e700f2b1" alt></p>
+<ol>
+<li>客户端先想服务端发出连接释放报文，并停止再发送数据，主动关闭TCP连接，等待服务端的确认</li>
+<li>服务端收到连接释放报文后即发出确认，这时TCP连接处于半关闭状态，即服务端到客户端连接并未关闭</li>
+<li>客户端收到服务端的确认后，等待服务端发送的连接释放报文，若服务端也没有要发送的数据，则发出连接释放报文，等待客户端的确认</li>
+<li>客户端收到服务端的连接释放报文后，对此发出确认，经过时间等待计时器设置的时间后，进入关闭状态</li>
+</ol>
+<h2 id="3-3-TCP可靠传输"><a href="#3-3-TCP可靠传输" class="headerlink" title="3.3 TCP可靠传输"></a>3.3 TCP可靠传输</h2><ul>
+<li>TCP连接的每一端都必须设有两个窗口，一个发送窗口和一个接受窗口</li>
+<li>TCP的可靠传输机制用字节的序号进行控制，所有的确认都是基于序号而不是基于报文段</li>
+<li>TCP两端的四个窗口处于动态变化之中</li>
+<li>TCP连接的往返时间RTT也不是固定不变的，需要使用特点的算法估算较为合理的重传时间</li>
+</ul>
+<p>（1）TCP的滑动窗口</p>
+<p>发送窗口的范围与接收方给发送方设置的“窗口”值有关，也与发送方已发送但未被确认的TCP报文段的数量有关，每当接收方正确收到一个TCP报文段并交给上层，便发回相应的确认报文，发送方收到相应的确认，便将对应已发并确认的发送缓冲释放，发送窗口同时向前滑动</p>
+<h2 id="3-4-TCP流量控制与拥塞控制"><a href="#3-4-TCP流量控制与拥塞控制" class="headerlink" title="3.4 TCP流量控制与拥塞控制"></a>3.4 TCP流量控制与拥塞控制</h2><p>（1）流量控制</p>
+<p>流量控制就是让发送方的发送速率不要太快，要让接收方来得及接受</p>
+<p>（2）拥塞控制</p>
+<p>TCP基于窗口进行拥塞控制，属于闭环控制方法</p>
+<p>TCP发送方维持一个拥塞窗口CWND</p>
+<ul>
+<li>大小取决于网络的拥塞程度，并且动态地在变化</li>
+<li>发送端利用拥塞窗口根据网络的拥塞情况调整发送的数据量</li>
+<li>发送窗口大小不仅取决于接收方公告的接受窗口，还取决于网络的拥塞情况，所以真正的发送窗口值为：</li>
+</ul>
+<p>真正的发送窗口值=MIN（公告接受窗口值，拥塞窗口值）</p>
+<p>只要网络没有出现拥塞，拥塞窗口可以大一些，只要出现拥塞，就必须把拥塞窗口减小一点</p>
+<p>拥塞的判断</p>
+<ul>
+<li>重传定时器超时</li>
+<li>收到三个相同重复的ACK，预示可能会出现拥塞</li>
+</ul>
+<p>TCP拥塞控制算法</p>
+<p>（1）慢开始</p>
+<p>由小到大逐渐增大拥塞窗口数值</p>
+<p>初始拥塞窗口cwnd设置：</p>
+<ul>
+<li>旧的规定：设置为1-2个发送方的最大报文段SMSS的数值</li>
+<li>新的固定：设置2-4个SMSS</li>
+</ul>
+<p>没有特殊说明就是1个SMSS</p>
+<p>慢开始门限：防止拥塞窗口增长过大</p>
+<p>每收到一个新的报文段确认，可以把拥塞窗口增加多一个</p>
+<p>每经过一个传输轮次，拥塞窗口加倍。窗口按指数增加</p>
+<p><img src="http://note.youdao.com/noteshare?id=82b0ebf222a392a52865e1c74a15e32f&sub=9845A0F352624ADC8CBD58346DC17652" alt></p>
+<p>（2）拥塞避免算法</p>
+<p>没经过一个往返时间RTT就把拥塞窗口加1，使拥塞窗口按线性规律缓慢增大</p>
+<p>当网络出现拥塞时</p>
+<p>门限阈值设为窗口/2</p>
+<p>窗口设置为1</p>
+<p>执行慢开始算法</p>
+<p><img src="https://note.youdao.com/yws/api/personal/file/E4D159D17BC24A0BBAC287D02DFFE98B?method=download&shareKey=a7eaab7740e883c4240ec1404c584dd8" alt></p>
+<p>（3）快重传算法</p>
+<p>只要收到三个重复确认，立即进行重传</p>
+<p>（4）快恢复</p>
+<p>当连续收到三个重复确认</p>
+<ol>
+<li>慢开始门限=当前拥塞窗口/2</li>
+<li>新拥塞窗口=慢开始门限</li>
+<li>执行拥塞避免算法</li>
+</ol>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/" rel="tag"># 计算机网络</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2020/08/15/network4/" rel="prev" title="计算机网络总结（四）：网络层">
+      <i class="fa fa-chevron-left"></i> 计算机网络总结（四）：网络层
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2020/08/17/Data5/" rel="next" title="数据结构总结（五）：查找">
+      数据结构总结（五）：查找 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    <div class="comments" id="valine-comments"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#1-传输层提供的服务"><span class="nav-text">1 传输层提供的服务</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-1-传输层的功能"><span class="nav-text">1.1 传输层的功能</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#1-2-传输层寻址与端口"><span class="nav-text">1.2 传输层寻址与端口</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#2-UDP协议"><span class="nav-text">2 UDP协议</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#2-1-UDP首部格式"><span class="nav-text">2.1 UDP首部格式</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#3-TCP协议"><span class="nav-text">3 TCP协议</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#3-1-TCP段"><span class="nav-text">3.1 TCP段</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-2-TCP的连接管理"><span class="nav-text">3.2 TCP的连接管理</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-3-TCP可靠传输"><span class="nav-text">3.3 TCP可靠传输</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-4-TCP流量控制与拥塞控制"><span class="nav-text">3.4 TCP流量控制与拥塞控制</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="LiAnG"
+      src="/images/timg.jpg">
+  <p class="site-author-name" itemprop="name">LiAnG</p>
+  <div class="site-description" itemprop="description">Stay hungry, stay foolish</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">31</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">7</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">7</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/LiAnGGGGGG" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;LiAnGGGGGG" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:1318457129@qq.com" title="E-Mail → mailto:1318457129@qq.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="/atom.xml" title="rss → &#x2F;atom.xml"><i class="fa fa-rss fa-fw"></i>rss</a>
+      </span>
+  </div>
+  <div class="cc-license motion-element" itemprop="license">
+    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" class="cc-opacity" rel="noopener" target="_blank"><img src="/images/cc-by-nc-sa.svg" alt="Creative Commons"></a>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        <script
+  async
+  src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"
+></script>
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">LiAnG</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-area"></i>
+    </span>
+      <span class="post-meta-item-text">站点总字数：</span>
+    <span title="站点总字数">194k</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+      <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
+    <span title="站点阅读时长">2:56</span>
+</div>
+<!-- 网站运行时间的设置 -->
+<span id="timeDate">载入天数...</span>
+<span id="times">载入时分秒...</span>
+<script>
+    var now = new Date();
+    function createtime() {
+        var grt= new Date("05/30/2020 13:14:21");//此处修改你的建站时间或者网站上线时间
+        now.setTime(now.getTime()+250);
+        days = (now - grt ) / 1000 / 60 / 60 / 24; dnum = Math.floor(days);
+        hours = (now - grt ) / 1000 / 60 / 60 - (24 * dnum); hnum = Math.floor(hours);
+        if(String(hnum).length ==1 ){hnum = "0" + hnum;} minutes = (now - grt ) / 1000 /60 - (24 * 60 * dnum) - (60 * hnum);
+        mnum = Math.floor(minutes); if(String(mnum).length ==1 ){mnum = "0" + mnum;}
+        seconds = (now - grt ) / 1000 - (24 * 60 * 60 * dnum) - (60 * 60 * hnum) - (60 * mnum);
+        snum = Math.round(seconds); if(String(snum).length ==1 ){snum = "0" + snum;}
+        document.getElementById("timeDate").innerHTML = "本站已安全运行 "+dnum+" 天 ";
+        document.getElementById("times").innerHTML = hnum + " 小时 " + mnum + " 分 " + snum + " 秒";
+    }
+setInterval("createtime()",250);
+</script>
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+      
+
+<script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      loader: {
+        source: {
+          '[tex]/amsCd': '[tex]/amscd',
+          '[tex]/AMScd': '[tex]/amscd'
+        }
+      },
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              let target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    (function () {
+      var script = document.createElement('script');
+      script.src = '//cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';
+      script.defer = true;
+      document.head.appendChild(script);
+    })();
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
+
+  
+
+  
+  <script src="/js/src/wobblewindow.js"></script>
+  <script>
+    //只在桌面版网页启用特效
+    if (window.innerWidth > 768) {
+      $(document).ready(function () {
+        
+        // 根据类名获取，而不是id
+        $('.header').wobbleWindow({
+          radius: 50,
+          movementTop: false,
+          movementLeft: false,
+          movementRight: false,
+          debug: false,
+        });
+        
+
+        
+         // 根据类名获取，而不是id
+        $('.sidebar').wobbleWindow({
+          radius: 50,
+          movementLeft: false,
+          movementTop: false,
+          movementBottom: false,
+          position: 'fixed',
+          debug: false,
+        });
+        
+
+        
+         // 根据类名获取，而不是id
+        $('.footer').wobbleWindow({
+          radius: 50,
+          movementBottom: false,
+          movementLeft: false,
+          movementRight: false,
+          
+          position: 'absolute',
+          debug: false,
+        });
+        
+      });
+    }
+  </script>
+
+
+ 
+<script>
+  var OriginTitile = document.title;
+  var titleTime;
+  document.addEventListener("visibilitychange", function() {
+    if (document.hidden) {
+      document.title = "(つェ⊂)我藏好了哦~" + OriginTitile;
+      clearTimeout(titleTime);
+    } else {
+      document.title = "(*´∇｀*) 被你发现啦~" + OriginTitile;
+      titleTime = setTimeout(function() {
+        document.title = OriginTitile;
+      }, 2000);
+    }
+  });
+</script>
+
+
+
+
+
+
+  <script async src="/js/cursor/fireworks.js"></script>
+
+
+
+<script>
+NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
+  NexT.utils.getScript('//unpkg.com/valine/dist/Valine.min.js', () => {
+    var GUEST = ['nick', 'mail', 'link'];
+    var guest = 'nick,mail,link';
+    guest = guest.split(',').filter(item => {
+      return GUEST.includes(item);
+    });
+    new Valine({
+      el         : '#valine-comments',
+      verify     : false,
+      notify     : false,
+      appId      : 'rueYojQYHpaShC9b3zwCTcgt-gzGzoHsz',
+      appKey     : 'SuFkJxmzL9eehU2FBrkopQlJ',
+      placeholder: "Just go go",
+      avatar     : 'mm',
+      meta       : guest,
+      pageSize   : '10' || 10,
+      visitor    : false,
+      lang       : '' || 'zh-cn',
+      path       : location.pathname,
+      recordIP   : false,
+      serverURLs : ''
+    });
+  }, window.Valine);
+});
+</script>
+
+
+</body>
+</html>
