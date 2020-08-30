@@ -28,8 +28,11 @@
 <meta property="og:description" content="1 网络应用模型1.1 客户&#x2F;服务器模型分为客户和服务器 1.2 P2P模型两台主机通信不区分哪一个是服务请求那有个是服务器提供方，进行平等，对等连接通信">
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://note.youdao.com/yws/api/personal/file/A52B3CB112F24C5E9369903B8FEB75A7?method=download&shareKey=811633ce773f37161ee8950040f2b30c">
+<meta property="og:image" content="https://note.youdao.com/yws/api/personal/file/73A4BC32978B40C59BA640BB36EC3F56?method=download&shareKey=f38ebfffcb05bc48176deed0c0ed2c7a">
+<meta property="og:image" content="https://note.youdao.com/yws/api/personal/file/3BEA8247A061405F821B87E697558037?method=download&shareKey=8281ad343ddc80a635d32d1eff1f3216">
+<meta property="og:image" content="https://note.youdao.com/yws/api/personal/file/DC3E01C9A25B4DCE99F6018F5A51636F?method=download&shareKey=5017d608dee88ba4252fd3c868f7d7c2">
 <meta property="article:published_time" content="2020-08-17T01:47:42.000Z">
-<meta property="article:modified_time" content="2020-08-28T06:23:00.263Z">
+<meta property="article:modified_time" content="2020-08-30T03:26:59.054Z">
 <meta property="article:author" content="LiAnG">
 <meta property="article:tag" content="计算机网络">
 <meta name="twitter:card" content="summary">
@@ -228,7 +231,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-08-28 14:23:00" itemprop="dateModified" datetime="2020-08-28T14:23:00+08:00">2020-08-28</time>
+                <time title="修改时间：2020-08-30 11:26:59" itemprop="dateModified" datetime="2020-08-30T11:26:59+08:00">2020-08-30</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -267,14 +270,14 @@
                 <i class="far fa-file-word"></i>
               </span>
                 <span class="post-meta-item-text">本文字数：</span>
-              <span>839</span>
+              <span>1.8k</span>
             </span>
             <span class="post-meta-item" title="阅读时长">
               <span class="post-meta-item-icon">
                 <i class="far fa-clock"></i>
               </span>
                 <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>1 分钟</span>
+              <span>2 分钟</span>
             </span>
 
         </div>
@@ -334,6 +337,46 @@
 <p>HTTP两类报文：</p>
 <p>（1）请求报文————从客户想服务器发送请求报文</p>
 <p>（2）响应报文————从服务器到客户的回答</p>
+<hr>
+<h1 id="7-常见面试问题总结"><a href="#7-常见面试问题总结" class="headerlink" title="7 常见面试问题总结"></a>7 常见面试问题总结</h1><h2 id="7-1-在浏览器输入url地址，显示主页的过程"><a href="#7-1-在浏览器输入url地址，显示主页的过程" class="headerlink" title="7.1 在浏览器输入url地址，显示主页的过程"></a>7.1 在浏览器输入url地址，显示主页的过程</h2><p>总体来说分为以下几个过程</p>
+<ol>
+<li>DNS解析</li>
+<li>TCP连接</li>
+<li>发送HTTP请求</li>
+<li>服务器处理并换回HTTP报文</li>
+<li>浏览器解析渲染页面</li>
+<li>连接结束</li>
+</ol>
+<p><img src="https://note.youdao.com/yws/api/personal/file/73A4BC32978B40C59BA640BB36EC3F56?method=download&shareKey=f38ebfffcb05bc48176deed0c0ed2c7a" alt></p>
+<h2 id="7-2-状态码"><a href="#7-2-状态码" class="headerlink" title="7.2 状态码"></a>7.2 状态码</h2><p><img src="https://note.youdao.com/yws/api/personal/file/3BEA8247A061405F821B87E697558037?method=download&shareKey=8281ad343ddc80a635d32d1eff1f3216" alt></p>
+<h2 id="7-3-各种协议与HTTP协议之间的关系"><a href="#7-3-各种协议与HTTP协议之间的关系" class="headerlink" title="7.3 各种协议与HTTP协议之间的关系"></a>7.3 各种协议与HTTP协议之间的关系</h2><p><img src="https://note.youdao.com/yws/api/personal/file/DC3E01C9A25B4DCE99F6018F5A51636F?method=download&shareKey=5017d608dee88ba4252fd3c868f7d7c2" alt></p>
+<h2 id="7-4-HTTP长连接，短连接"><a href="#7-4-HTTP长连接，短连接" class="headerlink" title="7.4 HTTP长连接，短连接"></a>7.4 HTTP长连接，短连接</h2><p>在HTTP/1.0中默认使用短连接，也就是说，客户端和服务端每进行一次HTTP操作，就建立一次连接，任务结束就中断连接。</p>
+<p>从HTTP/1.1起，默认使用长连接，用以保持连接特性，在当一个网页打开完成后，客户端和服务器之间用于传输HTTP的TCP连接不会关闭，客户端再次访问这个服务器时，会继续使用一条已经建立的连接</p>
+<h2 id="7-5-HTTP是不保存状态的协议，如何保存用户状态"><a href="#7-5-HTTP是不保存状态的协议，如何保存用户状态" class="headerlink" title="7.5 HTTP是不保存状态的协议，如何保存用户状态"></a>7.5 HTTP是不保存状态的协议，如何保存用户状态</h2><p>HTTP协议自身不对请求和相应之间的通信状态进行保存，Session机制的存在可以通过服务端记录用户的状态</p>
+<p>在服务端保存Session的方法，最常用的就是内存和数据库，通过Cookie中附加一个Session ID来跟踪</p>
+<p>Cookie被禁用怎么办？</p>
+<p>最常用的就是利用URL重写把Session ID直接附加在URL路径的后面</p>
+<h2 id="7-6-Cookie的作用是什么？和Session有什么区别？"><a href="#7-6-Cookie的作用是什么？和Session有什么区别？" class="headerlink" title="7.6 Cookie的作用是什么？和Session有什么区别？"></a>7.6 Cookie的作用是什么？和Session有什么区别？</h2><p>Cookie和Session都是用来跟踪浏览器用户身份的会话方式，但是两者的应用场景不太一样</p>
+<p>Cookie一般用来保存用户信息</p>
+<p>Session主要作用就是通过服务端记录用户的状态</p>
+<h2 id="7-7-HTTP-1-0-和-HTTP-1-1的主要区别是什么？"><a href="#7-7-HTTP-1-0-和-HTTP-1-1的主要区别是什么？" class="headerlink" title="7.7 HTTP 1.0 和 HTTP 1.1的主要区别是什么？"></a>7.7 HTTP 1.0 和 HTTP 1.1的主要区别是什么？</h2><ol>
+<li>长连接</li>
+<li>错误状态响应码</li>
+<li>缓存处理</li>
+<li>带宽优化及网络连接的使用</li>
+</ol>
+<h2 id="7-8-URI和URL的区别是什么？"><a href="#7-8-URI和URL的区别是什么？" class="headerlink" title="7.8 URI和URL的区别是什么？"></a>7.8 URI和URL的区别是什么？</h2><ul>
+<li>URI是统一资源标志符，可以唯一标志一个资源</li>
+<li>URL是统一资源定位符，可以提供该资源的路径</li>
+</ul>
+<h2 id="7-9-HTTP和HTTPS的区别"><a href="#7-9-HTTP和HTTPS的区别" class="headerlink" title="7.9 HTTP和HTTPS的区别"></a>7.9 HTTP和HTTPS的区别</h2><ol>
+<li>端口：HTTP默认端口为80，而HTTPS默认端口443</li>
+<li>安全性和资源消耗：HTTP协议运行在TCP纸上。所有传输的内容都是明文，客户端和服务器都无法验证对方的身份，HTTPS运行在SSL/TLS纸上的HTTP协议，所有传输内容都经过加密，加密采用对称加密，但密钥用服务器的证书使用非对称加密<ul>
+<li>对称加密：密钥只有一个，加密解密为同一密码，典型的对称加密算法有：DES、AES等</li>
+<li>非对称加密：密钥成对出现，加密解密使用不同密钥</li>
+</ul>
+</li>
+</ol>
 
     </div>
 
@@ -418,7 +461,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#1-网络应用模型"><span class="nav-text">1 网络应用模型</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-1-客户-服务器模型"><span class="nav-text">1.1 客户&#x2F;服务器模型</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#1-2-P2P模型"><span class="nav-text">1.2 P2P模型</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#2-DNS系统"><span class="nav-text">2 DNS系统</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#3-FTP"><span class="nav-text">3 FTP</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#4-电子邮件"><span class="nav-text">4 电子邮件</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#5-WWW"><span class="nav-text">5 WWW</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#6-HTTP协议"><span class="nav-text">6 HTTP协议</span></a></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#1-网络应用模型"><span class="nav-text">1 网络应用模型</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-1-客户-服务器模型"><span class="nav-text">1.1 客户&#x2F;服务器模型</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#1-2-P2P模型"><span class="nav-text">1.2 P2P模型</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#2-DNS系统"><span class="nav-text">2 DNS系统</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#3-FTP"><span class="nav-text">3 FTP</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#4-电子邮件"><span class="nav-text">4 电子邮件</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#5-WWW"><span class="nav-text">5 WWW</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#6-HTTP协议"><span class="nav-text">6 HTTP协议</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#7-常见面试问题总结"><span class="nav-text">7 常见面试问题总结</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#7-1-在浏览器输入url地址，显示主页的过程"><span class="nav-text">7.1 在浏览器输入url地址，显示主页的过程</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#7-2-状态码"><span class="nav-text">7.2 状态码</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#7-3-各种协议与HTTP协议之间的关系"><span class="nav-text">7.3 各种协议与HTTP协议之间的关系</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#7-4-HTTP长连接，短连接"><span class="nav-text">7.4 HTTP长连接，短连接</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#7-5-HTTP是不保存状态的协议，如何保存用户状态"><span class="nav-text">7.5 HTTP是不保存状态的协议，如何保存用户状态</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#7-6-Cookie的作用是什么？和Session有什么区别？"><span class="nav-text">7.6 Cookie的作用是什么？和Session有什么区别？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#7-7-HTTP-1-0-和-HTTP-1-1的主要区别是什么？"><span class="nav-text">7.7 HTTP 1.0 和 HTTP 1.1的主要区别是什么？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#7-8-URI和URL的区别是什么？"><span class="nav-text">7.8 URI和URL的区别是什么？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#7-9-HTTP和HTTPS的区别"><span class="nav-text">7.9 HTTP和HTTPS的区别</span></a></li></ol></li></ol></div>
       </div>
       <!--/noindex-->
 
@@ -501,13 +544,13 @@
       <i class="fa fa-chart-area"></i>
     </span>
       <span class="post-meta-item-text">站点总字数：</span>
-    <span title="站点总字数">221k</span>
+    <span title="站点总字数">228k</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
       <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
-    <span title="站点阅读时长">3:21</span>
+    <span title="站点阅读时长">3:28</span>
 </div>
 <!-- 网站运行时间的设置 -->
 <span id="timeDate">载入天数...</span>
