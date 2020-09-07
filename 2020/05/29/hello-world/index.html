@@ -30,8 +30,14 @@
 <meta property="og:image" content="https://note.youdao.com/yws/api/personal/file/3DDC4958791846399E78159CE41D9B88?method=download&shareKey=5f64e5f51a764a54adc51abe88526fb7">
 <meta property="og:image" content="https://note.youdao.com/yws/api/personal/file/830EA0D9A5A744ACA6E5C939C18354AC?method=download&shareKey=1651238ae54291e492f2e568d8e3e179">
 <meta property="og:image" content="https://note.youdao.com/yws/api/personal/file/D10C2F58138443F9A336388638489DBE?method=download&shareKey=6b7bda804562a28ea5b906df4f9fa092">
+<meta property="og:image" content="https://note.youdao.com/yws/api/personal/file/1F5CB17CF6024551BAEF6D4BD73DE404?method=download&shareKey=ada58271b57ca2b80bac07dfede3e802">
+<meta property="og:image" content="https://note.youdao.com/yws/api/personal/file/28811EBBBDA649E9AE1F5A712A796562?method=download&shareKey=51ab9957e66511c906ff7af5004741b1">
+<meta property="og:image" content="https://note.youdao.com/yws/api/personal/file/591747FC59894138A83564F49A42E00B?method=download&shareKey=02a0611440e3dda1173593d6b4d2555d">
+<meta property="og:image" content="https://note.youdao.com/yws/api/personal/file/D9F9186886AA4AB8B6618781CC0FFCA9?method=download&shareKey=49944bed7c941df3d39fee4f87559f31">
+<meta property="og:image" content="https://note.youdao.com/yws/api/personal/file/F3FCBDC616484567949A66A8D9B47607?method=download&shareKey=5c4dd2aa9bd122dd15f7d1296271a643">
+<meta property="og:image" content="https://note.youdao.com/yws/api/personal/file/28B51A09D071468B87563D5A0FF973CC?method=download&shareKey=1acd579e1d01fbbe1babb2cf788c9b6a">
 <meta property="article:published_time" content="2020-05-29T13:15:34.000Z">
-<meta property="article:modified_time" content="2020-07-15T06:40:41.491Z">
+<meta property="article:modified_time" content="2020-09-03T03:54:34.433Z">
 <meta property="article:author" content="LiAnG">
 <meta property="article:tag" content="算法竞赛">
 <meta name="twitter:card" content="summary">
@@ -230,7 +236,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-07-15 14:40:41" itemprop="dateModified" datetime="2020-07-15T14:40:41+08:00">2020-07-15</time>
+                <time title="修改时间：2020-09-03 11:54:34" itemprop="dateModified" datetime="2020-09-03T11:54:34+08:00">2020-09-03</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -269,14 +275,14 @@
                 <i class="far fa-file-word"></i>
               </span>
                 <span class="post-meta-item-text">本文字数：</span>
-              <span>26k</span>
+              <span>29k</span>
             </span>
             <span class="post-meta-item" title="阅读时长">
               <span class="post-meta-item-icon">
                 <i class="far fa-clock"></i>
               </span>
                 <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>24 分钟</span>
+              <span>26 分钟</span>
             </span>
 
         </div>
@@ -576,8 +582,10 @@
 <td align="right">当前表创建时间，格式为：yyyy/MM/dd HH:mm:ss（dd与HH之间为两个空格），如2020/05/05 16:33:17</td>
 </tr>
 </tbody></table>
-<p><strong>数据说明：</strong><br>（1） 前7列基于测试数据，ETA列为预测时间</p>
+<p><strong>数据说明：</strong></p>
+<p>（1） 前7列基于测试数据，ETA列为预测时间</p>
 <p>（2） creatDate为文件生成时间，判分不关注。</p>
+<hr>
 <h2 id="2020-6-2-baseline分析"><a href="#2020-6-2-baseline分析" class="headerlink" title="2020.6.2 baseline分析"></a>2020.6.2 baseline分析</h2><p>分析正式赛提供的baseline </p>
 <p><strong>MSE : 176495.2554</strong></p>
 <h3 id="1-导入所需要的包"><a href="#1-导入所需要的包" class="headerlink" title="1. 导入所需要的包"></a>1. 导入所需要的包</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">import pandas as pd</span><br><span class="line"># from tqdm import tqdm</span><br><span class="line">import numpy as np</span><br><span class="line"></span><br><span class="line">from sklearn.metrics import mean_squared_error,explained_variance_score</span><br><span class="line">from sklearn.model_selection import KFold</span><br><span class="line">import lightgbm as lgb</span><br><span class="line"></span><br><span class="line">import warnings</span><br><span class="line">warnings.filterwarnings(&#39;ignore&#39;)</span><br></pre></td></tr></table></figure>
@@ -595,8 +603,7 @@
 
 <h3 id="4-使用十折交叉验证构造模型"><a href="#4-使用十折交叉验证构造模型" class="headerlink" title="4. 使用十折交叉验证构造模型"></a>4. 使用十折交叉验证构造模型</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br></pre></td><td class="code"><pre><span class="line">def mse_score_eval(preds, valid):</span><br><span class="line">    labels &#x3D; valid.get_label()</span><br><span class="line">    scores &#x3D; mean_squared_error(y_true&#x3D;labels, y_pred&#x3D;preds)</span><br><span class="line">    return &#39;mse_score&#39;, scores, True</span><br><span class="line"></span><br><span class="line">def build_model(train, test, pred, label, seed&#x3D;1080, is_shuffle&#x3D;True):</span><br><span class="line">    train_pred &#x3D; np.zeros((train.shape[0], ))</span><br><span class="line">    test_pred &#x3D; np.zeros((test.shape[0], ))</span><br><span class="line">    n_splits &#x3D; 10</span><br><span class="line">    # Kfold</span><br><span class="line">    fold &#x3D; KFold(n_splits&#x3D;n_splits, shuffle&#x3D;is_shuffle, random_state&#x3D;seed)</span><br><span class="line">    kf_way &#x3D; fold.split(train[pred])</span><br><span class="line">    # params</span><br><span class="line">    params &#x3D; &#123;</span><br><span class="line">        &#39;learning_rate&#39;: 0.01,</span><br><span class="line">        &#39;boosting_type&#39;: &#39;gbdt&#39;,</span><br><span class="line">        &#39;objective&#39;: &#39;regression&#39;,</span><br><span class="line">        &#39;num_leaves&#39;: 36,</span><br><span class="line">        &#39;feature_fraction&#39;: 0.6,</span><br><span class="line">        &#39;bagging_fraction&#39;: 0.7,</span><br><span class="line">        &#39;bagging_freq&#39;: 6,</span><br><span class="line">        &#39;seed&#39;: 8,</span><br><span class="line">        &#39;bagging_seed&#39;: 1,</span><br><span class="line">        &#39;feature_fraction_seed&#39;: 7,</span><br><span class="line">        &#39;min_data_in_leaf&#39;: 20,</span><br><span class="line">        &#39;nthread&#39;: 8,</span><br><span class="line">        &#39;verbose&#39;: 1,</span><br><span class="line">    &#125;</span><br><span class="line">    # train</span><br><span class="line">    for n_fold, (train_idx, valid_idx) in enumerate(kf_way, start&#x3D;1):</span><br><span class="line">        train_x, train_y &#x3D; train[pred].iloc[train_idx], train[label].iloc[train_idx]</span><br><span class="line">        valid_x, valid_y &#x3D; train[pred].iloc[valid_idx], train[label].iloc[valid_idx]</span><br><span class="line">        # 数据加载</span><br><span class="line">        n_train &#x3D; lgb.Dataset(train_x, label&#x3D;train_y)</span><br><span class="line">        n_valid &#x3D; lgb.Dataset(valid_x, label&#x3D;valid_y)</span><br><span class="line"></span><br><span class="line">        clf &#x3D; lgb.train(</span><br><span class="line">            params&#x3D;params,</span><br><span class="line">            train_set&#x3D;n_train,</span><br><span class="line">            num_boost_round&#x3D;3000,</span><br><span class="line">            valid_sets&#x3D;[n_valid],</span><br><span class="line">            early_stopping_rounds&#x3D;100,</span><br><span class="line">            verbose_eval&#x3D;100,</span><br><span class="line">            feval&#x3D;mse_score_eval</span><br><span class="line">        )</span><br><span class="line">        train_pred[valid_idx] &#x3D; clf.predict(valid_x, num_iteration&#x3D;clf.best_iteration)</span><br><span class="line">        test_pred +&#x3D; clf.predict(test[pred], num_iteration&#x3D;clf.best_iteration)&#x2F;fold.n_splits</span><br><span class="line">    </span><br><span class="line">    test[&#39;label&#39;] &#x3D; test_pred</span><br><span class="line">    </span><br><span class="line">    return test[[&#39;loadingOrder&#39;, &#39;label&#39;]]</span><br><span class="line"></span><br><span class="line">result &#x3D; build_model(train, test, features, &#39;label&#39;, is_shuffle&#x3D;True)</span><br></pre></td></tr></table></figure>
 <h3 id="5-生成最终的测试文件"><a href="#5-生成最终的测试文件" class="headerlink" title="5. 生成最终的测试文件"></a>5. 生成最终的测试文件</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">test_data &#x3D; test_data.merge(result, on&#x3D;&#39;loadingOrder&#39;, how&#x3D;&#39;left&#39;)</span><br><span class="line">test_data[&#39;ETA&#39;] &#x3D; (test_data[&#39;onboardDate&#39;] + test_data[&#39;label&#39;].apply(lambda x:pd.Timedelta(seconds&#x3D;x))).apply(lambda x:x.strftime(&#39;%Y&#x2F;%m&#x2F;%d  %H:%M:%S&#39;))</span><br><span class="line">test_data.drop([&#39;direction&#39;,&#39;TRANSPORT_TRACE&#39;],axis&#x3D;1,inplace&#x3D;True)</span><br><span class="line">test_data[&#39;onboardDate&#39;] &#x3D; test_data[&#39;onboardDate&#39;].apply(lambda x:x.strftime(&#39;%Y&#x2F;%m&#x2F;%d  %H:%M:%S&#39;))</span><br><span class="line">test_data[&#39;creatDate&#39;] &#x3D; pd.datetime.now().strftime(&#39;%Y&#x2F;%m&#x2F;%d  %H:%M:%S&#39;)</span><br><span class="line">test_data[&#39;timestamp&#39;] &#x3D; test_data[&#39;temp_timestamp&#39;]</span><br><span class="line"># 整理columns顺序</span><br><span class="line">result &#x3D; test_data[[&#39;loadingOrder&#39;, &#39;timestamp&#39;, &#39;longitude&#39;, &#39;latitude&#39;, &#39;carrierName&#39;, &#39;vesselMMSI&#39;, &#39;onboardDate&#39;, &#39;ETA&#39;, &#39;creatDate&#39;]]</span><br><span class="line"></span><br><span class="line">result.to_csv(&#39;result.csv&#39;, index&#x3D;False)</span><br></pre></td></tr></table></figure>
-
-
+<hr>
 <h2 id="2020-6-4-构建自己的方案"><a href="#2020-6-4-构建自己的方案" class="headerlink" title="2020.6.4 构建自己的方案"></a>2020.6.4 构建自己的方案</h2><h3 id="1-首先对测试数据进行分析，观察测试数据海域"><a href="#1-首先对测试数据进行分析，观察测试数据海域" class="headerlink" title="1 首先对测试数据进行分析，观察测试数据海域"></a>1 首先对测试数据进行分析，观察测试数据海域</h3><p>观察测试数据的经纬度坐标</p>
 <p><img src="https://note.youdao.com/yws/api/personal/file/3DDC4958791846399E78159CE41D9B88?method=download&shareKey=5f64e5f51a764a54adc51abe88526fb7" alt></p>
 <p>可以看出测试航线的行驶方向几乎覆盖了全球，也可以看到有少量的GPS数据发生了漂移</p>
@@ -692,6 +699,45 @@
 <p>想要进一步较大的提升精度，有以下优化改进</p>
 <h3 id="1-进一步观察数据集，清洗出对测试集拟合效果更好的训练数据"><a href="#1-进一步观察数据集，清洗出对测试集拟合效果更好的训练数据" class="headerlink" title="1. 进一步观察数据集，清洗出对测试集拟合效果更好的训练数据"></a>1. 进一步观察数据集，清洗出对测试集拟合效果更好的训练数据</h3><p>根据之前删除任意字段存在空值的数据，并筛选出对应航线后，只剩下718个不同航次的训练数据，这显然有点太少了，因此需要将筛选数据条件放宽限一点</p>
 <h3 id="2-优化训练集标签Label值的计算方式"><a href="#2-优化训练集标签Label值的计算方式" class="headerlink" title="2. 优化训练集标签Label值的计算方式"></a>2. 优化训练集标签Label值的计算方式</h3><p>baseline在标定label时，直接使用的是船舶AIS信息中时间戳的最大值-最小值，这种计算方式可能不太合理，有可能船舶缺失到港数据，又或者船舶到港时间停留太久，都会造成label的不准确，因此我们需要进一步优化计算label的方法</p>
+<hr>
+<h1 id="2020-9-03-top3方案学习"><a href="#2020-9-03-top3方案学习" class="headerlink" title="2020.9.03 top3方案学习"></a>2020.9.03 top3方案学习</h1><p><strong>正式赛题——船运到达时间预测：</strong></p>
+<p>在企业全球化业务体系中，海运物流作为其最重要的一项支撑。其中，船运公司会和数据供应公司进行合作，对运输用的船通过GPS进行定位以监控船的位置；在运输管理的过程中，货物到达目的港的时间是非常重要的一项数据，那么需要通过船运的历史数据构建模型，对目的港到达时间进行预测，预测时间简称为ETA（estimated time of arrival），目的港到达时间预测为ARRIVAL_ETA。</p>
+<p><strong>团队名称：mythTeam</strong></p>
+<p><strong>团队方案：</strong></p>
+<p>首先给出我们的方案概述，主要为数据预处理和模型构建，数据预处理包括数据清洗和训练集标注，基于清洗完的数据，我们从三种不同的角度进行建模，最后对模型进行融合。</p>
+<p><img src="https://note.youdao.com/yws/api/personal/file/1F5CB17CF6024551BAEF6D4BD73DE404?method=download&shareKey=ada58271b57ca2b80bac07dfede3e802" alt></p>
+<p>本次赛题是一个典型的时序预测回归问题，核心问题是如何基于历史订单的GPS数据（event表完全不可用，可谓是用心送订单，用脚录数据）来预测订单到达目的港口的时间。经过分析，我们发现训练集数据中存在多种异常。</p>
+<p>问题1: 如何对这些异常数据进行处理？</p>
+<p>我们将异常主要分为以下四种：分别为订单重复、路由缺失、经纬度异常、速度航向异常。</p>
+<p>对于订单重复，我们的解决方案是首先根据订单的时间戳和订单号进行去重，再根据订单首尾记录的信息进行去重，并保留记录数量最多的订单，确保订单的完整性。我们发现重复订单多达1万余条。</p>
+<p>接着，我们对路由缺失的订单提出了路由匹配算法，即以订单的最后一条记录为中心，方圆300km内搜寻最近的港口作为该订单的目的港口；对于出发港口，我们以订单第一条记录同样进行搜索，最终成功匹配的订单数量达4900条，同时我们还利用路由匹配算法对给定路由的订单进行校验，确保订单路由准确。</p>
+<p>我们通过计算相邻记录的距离差和速度来筛选经纬度异常的数据，从而去除漂移GPS记录和严重漂移的订单。</p>
+<p>在数据分析中我们发现船只的速度、航向有缺失的情况，我们根据经纬度对速度、航向字段进行了重构，不仅解决了数据缺失的问题，也提高了这些字段的精度。我们将订单从22000多个清洗至11000多个。</p>
+<p>本次赛题需要我们根据业务逻辑对训练集进行标注，即确定船只到港的时间，标注结果的准确性将直接影响我们模型预测的结果好坏，</p>
+<p>问题2: 如何给训练集订单精准标注？</p>
+<p>我们首先对官方给出的到港定义进行了优化，官方给出的到港定义为：与目的港口经纬度差的绝对值均在0.25内时，即可认定到港，但我们通过实际尝试，发现这个定义并不准确，因此我们用球面距离作为判断指标，当与目的港口距离小于50km且距离不再递减时，我们认定该船只到港。</p>
+<p>但在我们分析数据的过程中，我们发现部分船只会出现到港后又离港、或在目的港口塞港等情况，可能会导致有多个满足上述条件的到港时刻。因此，我们对到港情况进行以下分类，若订单属于正常到港，则我们将第一次到港时刻作为标签；若订单没有一条记录满足到港定义时，即订单在临近港口时GPS数据缺失，我们将最后一条记录时间作为标签；</p>
+<p>若订单拥有多个到港时刻，且第一次到港与第二次到港的时间差超过7天，则该订单可能出现了在目的港口严重塞港或到港后又离港等异常，我们使用第一次到港时刻作为标签。若时间差小于7天，我们认为塞港时长符合正常业务情况，我们将第二次到港时刻作为标签。而这种标注方式比仅用第一次到港时刻作为标签在线上有着显著的提升。然后，我们将每个订单的GPS数据根据标签进行截断，最终清洗后的GPS数据量为6千万条。</p>
+<p><img src="https://note.youdao.com/yws/api/personal/file/28811EBBBDA649E9AE1F5A712A796562?method=download&shareKey=51ab9957e66511c906ff7af5004741b1" alt></p>
+<p>模型构建：</p>
+<p>模型1: 基于轨迹相似度的建模方式</p>
+<p><img src="https://note.youdao.com/yws/api/personal/file/591747FC59894138A83564F49A42E00B?method=download&shareKey=02a0611440e3dda1173593d6b4d2555d" alt></p>
+<p>引入geohash地理编码，它能够将连续的经纬度编码成离散的字符串，表中给出了不同编码长度的精度差异。</p>
+<p>基于地理编码，我们提出了我们自己的相似轨迹匹配算法，当训练集订单和测试集订单具有相同目的港口时，我们会将这两个订单的GPS记录序列进行三位编码并计算相似度，相似度定义如上所示，即两个订单编码交集的元素数量除以测试集编码集合的元素数量。</p>
+<p>这种匹配方式的优点在于速度快，两个序列不需要等长，匹配效果较准确。</p>
+<p><img src="https://note.youdao.com/yws/api/personal/file/D9F9186886AA4AB8B6618781CC0FFCA9?method=download&shareKey=49944bed7c941df3d39fee4f87559f31" alt></p>
+<p>我们将这个方法作为我们的baseline。但这种建模方式对于没有相似轨迹的订单无法预测，也没有考虑时间等外部因素对航行时长的影响。</p>
+<p>模型2: 基于离散位置特征的建模方式</p>
+<p>为了解决上述问题，我们提出了基于离散位置特征的建模方式，以GPS记录为主体构建特征，使用lightgbm算法进行预测。由于每个订单的GPS记录稠密程度不同，我们对订单按照特定时间间隔进行采样，采样示例如图所示，黄色点为训练集订单的GPS记录、红色点为我们的采样点。</p>
+<p>特征工程如下:</p>
+<p><img src="https://note.youdao.com/yws/api/personal/file/F3FCBDC616484567949A66A8D9B47607?method=download&shareKey=5c4dd2aa9bd122dd15f7d1296271a643" alt></p>
+<p>根据我们的分析，这种建模方式的优点在于模型稳健，预测准确性高，泛化性好，适用于各种路线的订单预测。但是这种建模方式无法对历史轨迹信息进行有效提取，且依赖的采样数据量大。因此，我们思考是否能够对历史轨迹构造特征，且用更少的采样数据量达到相同或更高的预测精度。</p>
+<p>模型3: 基于连续轨迹特征的建模方式</p>
+<p>基于上述思考，我们提出了基于连续轨迹特征的建模方式，以订单为主体构建特征。在这种建模方式下，我们的采样方式也有所不同。考虑到实际业务中可能也存在部分片段缺失的情况，我们并不是都从出发港口就开始采样，采样示例如图所示：</p>
+<p><img src="https://note.youdao.com/yws/api/personal/file/28B51A09D071468B87563D5A0FF973CC?method=download&shareKey=1acd579e1d01fbbe1babb2cf788c9b6a" alt></p>
+<p>经过实验发现当使用5位地理编码时，效果最佳。在序列模型的选取方面，我们通过实验发现Doc2vec的效果较Word2vec和TFIDF好，因此我们最终选择Doc2vec来构建序列特征，同样通过实验，序列特征维度选择30维。</p>
+<p>除序列特征之外，类似于上一种建模方式，我们也构建了相似的基础特征和组合特征。最后使用LightGBM五折交叉验证进行预测。</p>
+<p>这种建模方式的优点在于所依赖的训练数据为万级、训练速度快、对于有相似轨迹的订单效果比前两种模型好。但对部分走迂回或未知路线的订单预测偏差稍大。</p>
 
     </div>
 
@@ -773,7 +819,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#2020-5-29-正式赛题解读"><span class="nav-text">2020.5.29 正式赛题解读</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#赛题背景：船运到达时间预测"><span class="nav-text">赛题背景：船运到达时间预测</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#比赛数据"><span class="nav-text">比赛数据</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2020-6-2-baseline分析"><span class="nav-text">2020.6.2 baseline分析</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-导入所需要的包"><span class="nav-text">1. 导入所需要的包</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-加载数据"><span class="nav-text">2. 加载数据</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-获取特征，目前baseline的特征只选择经纬度、速度-方向。我们需要进一步可视化数据集，构造更加合理的特征。"><span class="nav-text">3. 获取特征，目前baseline的特征只选择经纬度、速度\方向。我们需要进一步可视化数据集，构造更加合理的特征。</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-使用十折交叉验证构造模型"><span class="nav-text">4. 使用十折交叉验证构造模型</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-生成最终的测试文件"><span class="nav-text">5. 生成最终的测试文件</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2020-6-4-构建自己的方案"><span class="nav-text">2020.6.4 构建自己的方案</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-首先对测试数据进行分析，观察测试数据海域"><span class="nav-text">1 首先对测试数据进行分析，观察测试数据海域</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-特征工程"><span class="nav-text">2. 特征工程</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-1-baseline里所使用的特征"><span class="nav-text">2.1 baseline里所使用的特征</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-2-合理构建新特征"><span class="nav-text">2.2 合理构建新特征</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-基于轨迹序列和相对位置的符合向量编码"><span class="nav-text">1. 基于轨迹序列和相对位置的符合向量编码</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-Turning状态特征"><span class="nav-text">2. Turning状态特征</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-速度的分位数特征"><span class="nav-text">3. 速度的分位数特征</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-3-特征筛选"><span class="nav-text">2.3 特征筛选</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-基于学习模型的特征排序（Model-base-ranking）"><span class="nav-text">1 基于学习模型的特征排序（Model base ranking）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-进一步观察数据集，清洗出对测试集拟合效果更好的训练数据"><span class="nav-text">1. 进一步观察数据集，清洗出对测试集拟合效果更好的训练数据</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-优化训练集标签Label值的计算方式"><span class="nav-text">2. 优化训练集标签Label值的计算方式</span></a></li></ol></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#2020-5-29-正式赛题解读"><span class="nav-text">2020.5.29 正式赛题解读</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#赛题背景：船运到达时间预测"><span class="nav-text">赛题背景：船运到达时间预测</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#比赛数据"><span class="nav-text">比赛数据</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2020-6-2-baseline分析"><span class="nav-text">2020.6.2 baseline分析</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-导入所需要的包"><span class="nav-text">1. 导入所需要的包</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-加载数据"><span class="nav-text">2. 加载数据</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-获取特征，目前baseline的特征只选择经纬度、速度-方向。我们需要进一步可视化数据集，构造更加合理的特征。"><span class="nav-text">3. 获取特征，目前baseline的特征只选择经纬度、速度\方向。我们需要进一步可视化数据集，构造更加合理的特征。</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-使用十折交叉验证构造模型"><span class="nav-text">4. 使用十折交叉验证构造模型</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-生成最终的测试文件"><span class="nav-text">5. 生成最终的测试文件</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2020-6-4-构建自己的方案"><span class="nav-text">2020.6.4 构建自己的方案</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-首先对测试数据进行分析，观察测试数据海域"><span class="nav-text">1 首先对测试数据进行分析，观察测试数据海域</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-特征工程"><span class="nav-text">2. 特征工程</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-1-baseline里所使用的特征"><span class="nav-text">2.1 baseline里所使用的特征</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-2-合理构建新特征"><span class="nav-text">2.2 合理构建新特征</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-基于轨迹序列和相对位置的符合向量编码"><span class="nav-text">1. 基于轨迹序列和相对位置的符合向量编码</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-Turning状态特征"><span class="nav-text">2. Turning状态特征</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-速度的分位数特征"><span class="nav-text">3. 速度的分位数特征</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-3-特征筛选"><span class="nav-text">2.3 特征筛选</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-基于学习模型的特征排序（Model-base-ranking）"><span class="nav-text">1 基于学习模型的特征排序（Model base ranking）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-进一步观察数据集，清洗出对测试集拟合效果更好的训练数据"><span class="nav-text">1. 进一步观察数据集，清洗出对测试集拟合效果更好的训练数据</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-优化训练集标签Label值的计算方式"><span class="nav-text">2. 优化训练集标签Label值的计算方式</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#2020-9-03-top3方案学习"><span class="nav-text">2020.9.03 top3方案学习</span></a></div>
       </div>
       <!--/noindex-->
 
@@ -789,20 +835,20 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">33</span>
+          <span class="site-state-item-count">34</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
           
-        <span class="site-state-item-count">9</span>
+        <span class="site-state-item-count">10</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">9</span>
+        <span class="site-state-item-count">10</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -856,13 +902,13 @@
       <i class="fa fa-chart-area"></i>
     </span>
       <span class="post-meta-item-text">站点总字数：</span>
-    <span title="站点总字数">232k</span>
+    <span title="站点总字数">239k</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
       <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
-    <span title="站点阅读时长">3:31</span>
+    <span title="站点阅读时长">3:37</span>
 </div>
 <!-- 网站运行时间的设置 -->
 <span id="timeDate">载入天数...</span>
