@@ -1,0 +1,816 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/L.jpg">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/L.jpg">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"liangggggg.github.io","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="一、非十进制数转换为十进制数（一）方法 每位上的数码乘以基的位次方，然后求和">
+<meta property="og:type" content="article">
+<meta property="og:title" content="计算机组成原理笔记（二）：数据的表示与运算">
+<meta property="og:url" content="https://liangggggg.github.io/2020/09/09/CO2/index.html">
+<meta property="og:site_name" content="LiAnG&#39;s Blog">
+<meta property="og:description" content="一、非十进制数转换为十进制数（一）方法 每位上的数码乘以基的位次方，然后求和">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2020-09-09T01:47:42.000Z">
+<meta property="article:modified_time" content="2020-09-09T08:37:18.434Z">
+<meta property="article:author" content="LiAnG">
+<meta property="article:tag" content="计算机组成原理">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://liangggggg.github.io/2020/09/09/CO2/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>计算机组成原理笔记（二）：数据的表示与运算 | LiAnG's Blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<link rel="alternate" href="/atom.xml" title="LiAnG's Blog" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">LiAnG's Blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+      <p class="site-subtitle" itemprop="description">Stay hungry, stay foolish</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://liangggggg.github.io/2020/09/09/CO2/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/timg.jpg">
+      <meta itemprop="name" content="LiAnG">
+      <meta itemprop="description" content="Stay hungry, stay foolish">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="LiAnG's Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          计算机组成原理笔记（二）：数据的表示与运算
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2020-09-09 09:47:42 / 修改时间：16:37:18" itemprop="dateCreated datePublished" datetime="2020-09-09T09:47:42+08:00">2020-09-09</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BB%84%E6%88%90%E5%8E%9F%E7%90%86/" itemprop="url" rel="index"><span itemprop="name">计算机组成原理</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2020/09/09/CO2/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2020/09/09/CO2/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>1.8k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>2 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="一、非十进制数转换为十进制数"><a href="#一、非十进制数转换为十进制数" class="headerlink" title="一、非十进制数转换为十进制数"></a>一、非十进制数转换为十进制数</h1><p>（一）方法</p>
+<p>每位上的数码乘以基的位次方，然后求和</p>
+<a id="more"></a>
+
+<h1 id="二、十进制转换成非十进制数"><a href="#二、十进制转换成非十进制数" class="headerlink" title="二、十进制转换成非十进制数"></a>二、十进制转换成非十进制数</h1><p>（一）方法</p>
+<p>整数部分：除N取余数，直至商为0，余数倒数输出</p>
+<p>小数部分：乘N取整数，直至积为0（或满足精度），整数正输出</p>
+<h1 id="三、二-八-十六进制相互转换"><a href="#三、二-八-十六进制相互转换" class="headerlink" title="三、二/八/十六进制相互转换"></a>三、二/八/十六进制相互转换</h1><p>对应位数相互转换</p>
+<p>一个八进制对应3个二进制</p>
+<p>一个十六进制对应4个二进制</p>
+<h1 id="四、机器数"><a href="#四、机器数" class="headerlink" title="四、机器数"></a>四、机器数</h1><p>对于数的符号机器是无法识别的，需要把符号数码化，约定二进制的最高位为符号位</p>
+<p>“0”表示正号，“1”表示负号</p>
+<p>（一）原码</p>
+<p>机器数最简单的表示方式，其符号位用0表示正号，1表示负号</p>
+<p>（二）反码</p>
+<p>机器数的反码由原码得到，如果是正数则与原码一样</p>
+<p>如果是负数，则符号位不变，其余取反</p>
+<p>（三）补码</p>
+<p>如果是正数，则机器数的补码与原码一致</p>
+<p>如果是负数，则是反码末尾加一</p>
+<p>（四）补码的加减运算</p>
+<p>1.补码加法</p>
+<p>两个补码表示的数相加，符号位参与运算，且两位数和的补码等于两数补码之和：</p>
+<p>$$[X+Y]补=[X]补+[Y]补$$</p>
+<p>$$[Y补]补=[Y]原$$</p>
+<p>已知[Y]补求[-Y]补的方法是：将[Y]<br>补连通符号位一起求反，末尾加一</p>
+<p>2.符号扩展</p>
+<p>原有符号位，保持不变，若<br>为正数所有附加位用0进行填充；若为负数则所有附加位用负数填充</p>
+<p>3.补码溢出的产生</p>
+<p>发生这种错误的原因在于两数相加之和的数值已超过了机器允许的表示范围</p>
+<ul>
+<li>若两数异号则不会溢出</li>
+</ul>
+<p>4.补码溢出的检测</p>
+<p>（1）采用符号位检测</p>
+<p>（2）采用进位位</p>
+<p>（3）采用变形补码（双符号位补码）</p>
+<h1 id="五、定点数和浮点数表示"><a href="#五、定点数和浮点数表示" class="headerlink" title="五、定点数和浮点数表示"></a>五、定点数和浮点数表示</h1><ul>
+<li><p>定点数：小数点固定不变</p>
+</li>
+<li><p>浮点数：小数点可以浮动</p>
+</li>
+</ul>
+<p>微型机多使用定点数</p>
+<p>计算机中的浮点表示包括两个部分：一部分是阶码（表示指数，记作E）；另一部分是尾数（表示有效数字，记作M）</p>
+<p>设任意一个数N可以表示为：</p>
+<p>$$N*2^E$$</p>
+<p>其中，2位基数；E为阶码；M为尾数，浮点数在机器中的表示方法如下：</p>
+<table>
+<thead>
+<tr>
+<th align="center">阶符</th>
+<th align="center">阶码（E）</th>
+<th align="center">数符</th>
+<th align="center">尾数（M）</th>
+</tr>
+</thead>
+</table>
+<p>当一个数的阶码大于机器所能表示的最大阶码，产生上溢，上溢时机器一般不再继续运算而转入</p>
+<p>当一个阶码小于机器所能表示的最小阶码，发生下溢，机器按0来处理</p>
+<p>（一）IEEE754标准</p>
+<p>S：1位，E：8位，M：23位</p>
+<table>
+<thead>
+<tr>
+<th align="center">符号位（S）</th>
+<th align="center">阶码（E）</th>
+<th align="center">尾数（M）</th>
+</tr>
+</thead>
+</table>
+<p>其对应的真值是：</p>
+<p>$$x=(-1)^S * (1.M)* 2^e, e = (E)_{10}-127$$</p>
+<h1 id="六、浮点加减法运算"><a href="#六、浮点加减法运算" class="headerlink" title="六、浮点加减法运算"></a>六、浮点加减法运算</h1><p>（一）对阶</p>
+<p>对阶的目的是使两操作数的小数点位置对齐。</p>
+<p>（二）尾数求和</p>
+<p>将对阶后的两个尾数，按定点加（减）运算规则进行运算</p>
+<p>（三）规格化</p>
+<p>为增加有效数字的位数，提高运算精度，必须将求和（差）后的尾数规格化</p>
+<p>当尾数用二进制表示时，尾数M的规格化形式为</p>
+<p>$$1/2&lt;=|M|&lt;1$$</p>
+<p>（四）舍入</p>
+<ol>
+<li>0舍1入法：在尾数右移时，被移去的最高数值为0，则舍去；反之则在尾数的末位加1</li>
+<li>恒置1法：尾数右移，尾数丢失，都在尾数末位恒置1</li>
+</ol>
+<p>（五）溢出判断</p>
+<p>浮点数的溢出是以其阶码溢出表现出来的</p>
+<h1 id="七、逻辑运算和位移操作"><a href="#七、逻辑运算和位移操作" class="headerlink" title="七、逻辑运算和位移操作"></a>七、逻辑运算和位移操作</h1><p>计算机中的逻辑运算包括与、或、非、异或等运算</p>
+<p>移位运算为移位操作，对计算机来说有很大的实用价值，如当某计算机没有乘除法运算线路时，可以采用移位和加法相结合以实现乘除运算</p>
+<p>算术移位的规则（有符号数）：</p>
+<p>首先，不论是正数还是负数，移位后其符号位均不变</p>
+<p>对于正数，移位后出现的空位均填0</p>
+<p>对于负数，其空位的添补规则不同：</p>
+<ol>
+<li>原码，其空位均添0</li>
+<li>反码，其空位均添1</li>
+<li>补码，左移空位添0，右移其空位添1</li>
+</ol>
+<p>逻辑移位的规则是（无符号数）：</p>
+<p>逻辑左移，高位丢失，低位添0</p>
+<p>逻辑右移，低位丢失，高位添0</p>
+<h1 id="八、非数值数据的表示"><a href="#八、非数值数据的表示" class="headerlink" title="八、非数值数据的表示"></a>八、非数值数据的表示</h1><p>ASCII码，美国信息交换标准代码，是计算机中使用最广泛的字符编码，已经作为国际通用的信息交换标准代码</p>
+<p>汉子的编码：GB2312-80，简称国标码</p>
+<h1 id="九、数据校验码"><a href="#九、数据校验码" class="headerlink" title="九、数据校验码"></a>九、数据校验码</h1><p>奇偶校验码，在被传送的n位有效信息代码上增加一位校验位，并使其配置后n+1位代码中1的个数为奇数，则称其为奇校验，如果是偶数则称为偶校验</p>
+<p>循环冗余校验码（CRC），基于摸2运算建立的校验码，将待编码的有效信息左移若干位，用另一个约定的多项式去除，所产生的余数就是校验位。有效信息和校验位相拼接就构成了CRC</p>
+<p>接受到的数据除以校验位，如果有余数发生错误，如果除尽了就代表是正确的</p>
+<p>海明校验码是目前广泛采用的一种有效的校验码。在有效信息中加入几个校验位形成海明码，当某一位出现错误后，就会引起有关的几个校验位的值发生变化，因此海明码不但可以发现错误，还能指出错误的位置，为自动纠错提供位置</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BB%84%E6%88%90%E5%8E%9F%E7%90%86/" rel="tag"># 计算机组成原理</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2020/09/08/CO1/" rel="prev" title="计算机组成原理笔记（一）：计算机系统概述">
+      <i class="fa fa-chevron-left"></i> 计算机组成原理笔记（一）：计算机系统概述
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2020/09/10/CO3/" rel="next" title="计算机组成原理笔记（三）：指令和总线">
+      计算机组成原理笔记（三）：指令和总线 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    <div class="comments" id="valine-comments"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#一、非十进制数转换为十进制数"><span class="nav-text">一、非十进制数转换为十进制数</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#二、十进制转换成非十进制数"><span class="nav-text">二、十进制转换成非十进制数</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#三、二-八-十六进制相互转换"><span class="nav-text">三、二&#x2F;八&#x2F;十六进制相互转换</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#四、机器数"><span class="nav-text">四、机器数</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#五、定点数和浮点数表示"><span class="nav-text">五、定点数和浮点数表示</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#六、浮点加减法运算"><span class="nav-text">六、浮点加减法运算</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#七、逻辑运算和位移操作"><span class="nav-text">七、逻辑运算和位移操作</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#八、非数值数据的表示"><span class="nav-text">八、非数值数据的表示</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#九、数据校验码"><span class="nav-text">九、数据校验码</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="LiAnG"
+      src="/images/timg.jpg">
+  <p class="site-author-name" itemprop="name">LiAnG</p>
+  <div class="site-description" itemprop="description">Stay hungry, stay foolish</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">40</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">11</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">11</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/LiAnGGGGGG" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;LiAnGGGGGG" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:1318457129@qq.com" title="E-Mail → mailto:1318457129@qq.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="/atom.xml" title="rss → &#x2F;atom.xml"><i class="fa fa-rss fa-fw"></i>rss</a>
+      </span>
+  </div>
+  <div class="cc-license motion-element" itemprop="license">
+    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" class="cc-opacity" rel="noopener" target="_blank"><img src="/images/cc-by-nc-sa.svg" alt="Creative Commons"></a>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        <script
+  async
+  src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"
+></script>
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">LiAnG</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-area"></i>
+    </span>
+      <span class="post-meta-item-text">站点总字数：</span>
+    <span title="站点总字数">245k</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+      <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
+    <span title="站点阅读时长">3:43</span>
+</div>
+<!-- 网站运行时间的设置 -->
+<span id="timeDate">载入天数...</span>
+<span id="times">载入时分秒...</span>
+<script>
+    var now = new Date();
+    function createtime() {
+        var grt= new Date("05/30/2020 13:14:21");//此处修改你的建站时间或者网站上线时间
+        now.setTime(now.getTime()+250);
+        days = (now - grt ) / 1000 / 60 / 60 / 24; dnum = Math.floor(days);
+        hours = (now - grt ) / 1000 / 60 / 60 - (24 * dnum); hnum = Math.floor(hours);
+        if(String(hnum).length ==1 ){hnum = "0" + hnum;} minutes = (now - grt ) / 1000 /60 - (24 * 60 * dnum) - (60 * hnum);
+        mnum = Math.floor(minutes); if(String(mnum).length ==1 ){mnum = "0" + mnum;}
+        seconds = (now - grt ) / 1000 - (24 * 60 * 60 * dnum) - (60 * 60 * hnum) - (60 * mnum);
+        snum = Math.round(seconds); if(String(snum).length ==1 ){snum = "0" + snum;}
+        document.getElementById("timeDate").innerHTML = "本站已安全运行 "+dnum+" 天 ";
+        document.getElementById("times").innerHTML = hnum + " 小时 " + mnum + " 分 " + snum + " 秒";
+    }
+setInterval("createtime()",250);
+</script>
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+      
+
+<script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      loader: {
+        source: {
+          '[tex]/amsCd': '[tex]/amscd',
+          '[tex]/AMScd': '[tex]/amscd'
+        }
+      },
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              let target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    (function () {
+      var script = document.createElement('script');
+      script.src = '//cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';
+      script.defer = true;
+      document.head.appendChild(script);
+    })();
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
+
+  
+
+  
+  <script src="/js/src/wobblewindow.js"></script>
+  <script>
+    //只在桌面版网页启用特效
+    if (window.innerWidth > 768) {
+      $(document).ready(function () {
+        
+        // 根据类名获取，而不是id
+        $('.header').wobbleWindow({
+          radius: 50,
+          movementTop: false,
+          movementLeft: false,
+          movementRight: false,
+          debug: false,
+        });
+        
+
+        
+         // 根据类名获取，而不是id
+        $('.sidebar').wobbleWindow({
+          radius: 50,
+          movementLeft: false,
+          movementTop: false,
+          movementBottom: false,
+          position: 'fixed',
+          debug: false,
+        });
+        
+
+        
+         // 根据类名获取，而不是id
+        $('.footer').wobbleWindow({
+          radius: 50,
+          movementBottom: false,
+          movementLeft: false,
+          movementRight: false,
+          
+          position: 'absolute',
+          debug: false,
+        });
+        
+      });
+    }
+  </script>
+
+
+ 
+<script>
+  var OriginTitile = document.title;
+  var titleTime;
+  document.addEventListener("visibilitychange", function() {
+    if (document.hidden) {
+      document.title = "(つェ⊂)我藏好了哦~" + OriginTitile;
+      clearTimeout(titleTime);
+    } else {
+      document.title = "(*´∇｀*) 被你发现啦~" + OriginTitile;
+      titleTime = setTimeout(function() {
+        document.title = OriginTitile;
+      }, 2000);
+    }
+  });
+</script>
+
+
+
+
+
+
+  <script async src="/js/cursor/fireworks.js"></script>
+
+
+
+<script>
+NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
+  NexT.utils.getScript('//unpkg.com/valine/dist/Valine.min.js', () => {
+    var GUEST = ['nick', 'mail', 'link'];
+    var guest = 'nick,mail,link';
+    guest = guest.split(',').filter(item => {
+      return GUEST.includes(item);
+    });
+    new Valine({
+      el         : '#valine-comments',
+      verify     : false,
+      notify     : false,
+      appId      : 'rueYojQYHpaShC9b3zwCTcgt-gzGzoHsz',
+      appKey     : 'SuFkJxmzL9eehU2FBrkopQlJ',
+      placeholder: "Just go go",
+      avatar     : 'mm',
+      meta       : guest,
+      pageSize   : '10' || 10,
+      visitor    : false,
+      lang       : '' || 'zh-cn',
+      path       : location.pathname,
+      recordIP   : false,
+      serverURLs : ''
+    });
+  }, window.Valine);
+});
+</script>
+
+
+</body>
+</html>
