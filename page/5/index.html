@@ -20,33 +20,30 @@
     var CONFIG = {"hostname":"liangggggg.github.io","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
   </script>
 
-  <meta name="description" content="1 文件系统基础1.1 文件的概念文件是操作系统中一个重要的概念。在系统运行时，计算机以进程为基本单位进行资源的调度和分配；而在用户进行的输入、输出中，则以文件为基本单位。大多数应用程序的输入都是通过文件来实现的，其输出也都保存在文件中，以便信息的长期存储及将来的访问。当用户将文件用于应用程序的输入、输出时，还希望可以访问文件、修改文件和保存文件等，实现对文件的维护管理，这就需要系统提供一个文件管">
-<meta property="og:type" content="article">
-<meta property="og:title" content="操作系统总结（四）：文件系统">
-<meta property="og:url" content="https://liangggggg.github.io/2020/08/28/os4/index.html">
+  <meta name="description" content="Stay hungry, stay foolish">
+<meta property="og:type" content="website">
+<meta property="og:title" content="LiAnG&#39;s Blog">
+<meta property="og:url" content="https://liangggggg.github.io/page/5/index.html">
 <meta property="og:site_name" content="LiAnG&#39;s Blog">
-<meta property="og:description" content="1 文件系统基础1.1 文件的概念文件是操作系统中一个重要的概念。在系统运行时，计算机以进程为基本单位进行资源的调度和分配；而在用户进行的输入、输出中，则以文件为基本单位。大多数应用程序的输入都是通过文件来实现的，其输出也都保存在文件中，以便信息的长期存储及将来的访问。当用户将文件用于应用程序的输入、输出时，还希望可以访问文件、修改文件和保存文件等，实现对文件的维护管理，这就需要系统提供一个文件管">
+<meta property="og:description" content="Stay hungry, stay foolish">
 <meta property="og:locale" content="zh_CN">
-<meta property="article:published_time" content="2020-08-28T14:12:59.000Z">
-<meta property="article:modified_time" content="2020-08-28T12:10:16.116Z">
 <meta property="article:author" content="LiAnG">
-<meta property="article:tag" content="操作系统">
 <meta name="twitter:card" content="summary">
 
-<link rel="canonical" href="https://liangggggg.github.io/2020/08/28/os4/">
+<link rel="canonical" href="https://liangggggg.github.io/page/5/">
 
 
 <script id="page-configurations">
   // https://hexo.io/docs/variables.html
   CONFIG.page = {
     sidebar: "",
-    isHome : false,
-    isPost : true,
+    isHome : true,
+    isPost : false,
     lang   : 'zh-CN'
   };
 </script>
 
-  <title>操作系统总结（四）：文件系统 | LiAnG's Blog</title>
+  <title>LiAnG's Blog</title>
   
 
 
@@ -189,14 +186,13 @@
         <div class="content-wrap">
           
 
-          <div class="content post posts-expand">
+          <div class="content index posts-expand">
             
-
-    
+      
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://liangggggg.github.io/2020/08/28/os4/">
+    <link itemprop="mainEntityOfPage" href="https://liangggggg.github.io/2020/05/29/hello-world/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/timg.jpg">
@@ -208,9 +204,10 @@
       <meta itemprop="name" content="LiAnG's Blog">
     </span>
       <header class="post-header">
-        <h1 class="post-title" itemprop="name headline">
-          操作系统总结（四）：文件系统
-        </h1>
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2020/05/29/hello-world/" class="post-title-link" itemprop="url">学习日志：2020华为云大数据挑战赛（正式赛）</a>
+        </h2>
 
         <div class="post-meta">
             <span class="post-meta-item">
@@ -218,28 +215,27 @@
                 <i class="far fa-calendar"></i>
               </span>
               <span class="post-meta-item-text">发表于</span>
-              
 
-              <time title="创建时间：2020-08-28 22:12:59 / 修改时间：20:10:16" itemprop="dateCreated datePublished" datetime="2020-08-28T22:12:59+08:00">2020-08-28</time>
+              <time title="创建时间：2020-05-29 21:15:34" itemprop="dateCreated datePublished" datetime="2020-05-29T21:15:34+08:00">2020-05-29</time>
             </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-09-03 11:54:34" itemprop="dateModified" datetime="2020-09-03T11:54:34+08:00">2020-09-03</time>
+              </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
                 <i class="far fa-folder"></i>
               </span>
               <span class="post-meta-item-text">分类于</span>
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/" itemprop="url" rel="index"><span itemprop="name">操作系统</span></a>
+                  <a href="/categories/%E7%AB%9E%E8%B5%9B/" itemprop="url" rel="index"><span itemprop="name">竞赛</span></a>
                 </span>
             </span>
 
           
-            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
-              <span class="post-meta-item-icon">
-                <i class="fa fa-eye"></i>
-              </span>
-              <span class="post-meta-item-text">阅读次数：</span>
-              <span id="busuanzi_value_page_pv"></span>
-            </span>
   
   <span class="post-meta-item">
     
@@ -248,8 +244,8 @@
       </span>
       <span class="post-meta-item-text">Valine：</span>
     
-    <a title="valine" href="/2020/08/28/os4/#valine-comments" itemprop="discussionUrl">
-      <span class="post-comments-count valine-comment-count" data-xid="/2020/08/28/os4/" itemprop="commentCount"></span>
+    <a title="valine" href="/2020/05/29/hello-world/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2020/05/29/hello-world/" itemprop="commentCount"></span>
     </a>
   </span>
   
@@ -259,14 +255,14 @@
                 <i class="far fa-file-word"></i>
               </span>
                 <span class="post-meta-item-text">本文字数：</span>
-              <span>2.4k</span>
+              <span>29k</span>
             </span>
             <span class="post-meta-item" title="阅读时长">
               <span class="post-meta-item-icon">
                 <i class="far fa-clock"></i>
               </span>
                 <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>2 分钟</span>
+              <span>26 分钟</span>
             </span>
 
         </div>
@@ -278,111 +274,39 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <h1 id="1-文件系统基础"><a href="#1-文件系统基础" class="headerlink" title="1 文件系统基础"></a>1 文件系统基础</h1><h2 id="1-1-文件的概念"><a href="#1-1-文件的概念" class="headerlink" title="1.1 文件的概念"></a>1.1 文件的概念</h2><p>文件是操作系统中一个重要的概念。在系统运行时，计算机以进程为基本单位进行资源的调度和分配；而在用户进行的输入、输出中，则以文件为基本单位。大多数应用程序的输入都是通过文件来实现的，其输出也都保存在文件中，以便信息的长期存储及将来的访问。当用户将文件用于应用程序的输入、输出时，还希望可以访问文件、修改文件和保存文件等，实现对文件的维护管理，这就需要系统提供一个文件管理系统，操作系统的问价那系统就是实现用户的这些管理要求。</p>
-<a id="more"></a>
-<p>用户通过文件系统建立文件，提供应用程序的输入输出，对资源进行管理。首先了解文件的结构，我们通过自底向上的方式来定义。</p>
-<ol>
-<li>数据项：数据项是文件系统中最低级的数据组织形式，可分为以下两种类型：基本数据项和组合数据项</li>
-<li>记录：记录是一组相关的数据项集合，用于描述一个对象在某方面的属性</li>
-<li>文件：文件是指由穿件这所定义的一组相关信息的集合，可分为有结构文件和无结构文件两种。</li>
-</ol>
-<p>文件有一定的属性，这根据系统的不同而有所不同，但是通常都包括如下属性：</p>
-<ul>
-<li>名称</li>
-<li>标识符</li>
-<li>类型</li>
-<li>位置</li>
-<li>大小</li>
-<li>保护</li>
-<li>时间、日期和用户标识</li>
-</ul>
-<p>文件属于抽象数据类型。为了恰当的定义文件，就需要考虑有关文件的操作。操作系统提供系统调用，他对文件进行创建、写、读、定位和截断。</p>
-<p>每个打开文件都有如下关联信息：</p>
-<ul>
-<li>文件指针</li>
-<li>文件打开计数</li>
-<li>文件磁盘位置</li>
-<li>访问权限</li>
-</ul>
-<h2 id="1-2-文件的逻辑结构"><a href="#1-2-文件的逻辑结构" class="headerlink" title="1.2 文件的逻辑结构"></a>1.2 文件的逻辑结构</h2><p>按逻辑结构，文件有无结构文件和有结构文件两种类型：</p>
-<ol>
-<li>顺序文件</li>
-<li>索引文件</li>
-<li>索引顺序表</li>
-<li>直接文件或散列文件</li>
-</ol>
-<h1 id="1-3-目录结构"><a href="#1-3-目录结构" class="headerlink" title="1.3 目录结构"></a>1.3 目录结构</h1><p>与文件管理系统和文件集合相关联的是文件目录，它包含有文件的信息，包括属性、位置和所有权等，这些信息都由操作系统进行管理。首先我们来看目录管理的基本要求 ：从用户的角度看，目录在用户所需要的文件名和文件之间提供一种映射，所以目录管理要实现“按名存取”；目录存取的效率直接影响到系统的性能，所以要提高对目录的检索速度；在共享系统中，目录还需要提供用于控制访问文件的信息。此外，文件允许重名也是用户的合理和必然要求，目录管理通过树形结构来解决和实现。</p>
-<h1 id="1-4-文件共享"><a href="#1-4-文件共享" class="headerlink" title="1.4 文件共享"></a>1.4 文件共享</h1><p>文件共享十多个用户进程共享同一份文件，系统中只需保留该文件的一份副本。如果系统不能提供共享功能，那么每个需要该文件的用户都要有各自的副本，会造成对存储空间的极大浪费。</p>
-<p>随着计算机技术的发展，文件共享的范围已由单机系统发展到多机系统，进而通过网络扩展到全球。这些文件的分享是通过分布式文件系统、远程文件系统、分布式信息系统实现的。这些系统允许多个客户通过c/s模型共享网络中的服务器文件。</p>
-<h1 id="1-5-文件保护"><a href="#1-5-文件保护" class="headerlink" title="1.5 文件保护"></a>1.5 文件保护</h1><p>为了防止文件共享可能会导致文件被破坏或未经核准的用户修改文件，文件系统必须控制用户对文件的存取，即解决对文件的读、写、执行的许可问题。为此，必须在文件系统中建立相应的文件保护机制。</p>
-<p>文件保护通过口令保护、加密保护和访问控制等方式实现。其中，口令保护和加密保护是为了方式用户文件被他人存取或盗取，而访问控制则用于控制用户对文件的访问方式。</p>
-<p>对文件的保护可以从限制对文件的访问类型中出发。可加以控制的访问类型主要有以下几种：</p>
-<ul>
-<li><p>读：从文件中读。</p>
-</li>
-<li><p>写：向文件中写。</p>
-</li>
-<li><p>执行：将文件装入内存并执行。</p>
-</li>
-<li><p>添加：将信息添加到文件结尾部分。</p>
-</li>
-<li><p>删除：删除文件，释放空间。</p>
-</li>
-<li><p>列表清单：列出文件名和文件属性。</p>
-</li>
-</ul>
-<h1 id="2-文件系统实现"><a href="#2-文件系统实现" class="headerlink" title="2 文件系统实现"></a>2 文件系统实现</h1><h2 id="2-1-文件系统层次结构"><a href="#2-1-文件系统层次结构" class="headerlink" title="2.1 文件系统层次结构"></a>2.1 文件系统层次结构</h2><p>现代操作系统有多种文件系统类型，因此文件系统的层次结构也不尽相同。</p>
-<p>文件系统为用户提供与文件及目录有关的调用，如新建、打开、读写、关闭、删除文件，建立、删除目录等。此层由若干程序模块组成，每一模块对应一条系统调用，用户发出系统调用时，控制即转入相应的模块。</p>
-<h2 id="2-2-目录实现"><a href="#2-2-目录实现" class="headerlink" title="2.2 目录实现"></a>2.2 目录实现</h2><p>在读文件前，必须先打开文件。打开文件时，操作系统利用路径名吵到相应目录项，目录项中提供了查找文件磁盘块所需要的信息，目录实现的基本方法有线性列表和哈希表两种方法。</p>
-<h2 id="2-3-文件实现"><a href="#2-3-文件实现" class="headerlink" title="2.3 文件实现"></a>2.3 文件实现</h2><p>文件分配对应于文件的物理结构，是指如何为文件分配磁盘块。常用的磁盘空间分配方式有三种：连续分配、链接分配和索引分配。有的系统对三种方式都支持，但是更普遍的是一个系统只提供一种方法支持。</p>
-<h1 id="3-磁盘组织与管理"><a href="#3-磁盘组织与管理" class="headerlink" title="3 磁盘组织与管理"></a>3 磁盘组织与管理</h1><h2 id="3-1-磁盘的结构"><a href="#3-1-磁盘的结构" class="headerlink" title="3.1 磁盘的结构"></a>3.1 磁盘的结构</h2><p>磁盘是由表面涂有磁性物质的金属或塑料构成的圆形盘片，通过一个称谓磁头的到体系安全从磁盘中存取数据。在读写操作期间，磁头固定，磁盘在下面高速旋转。</p>
-<h2 id="3-2-磁盘调度算法"><a href="#3-2-磁盘调度算法" class="headerlink" title="3.2 磁盘调度算法"></a>3.2 磁盘调度算法</h2><p>1、先来先服务（FCFS）算法</p>
-<p>FCFS算法根据进程请求访问磁盘的先后顺序进行调度处理，这是一种最简单的调度算法。这种算法的优点是具有公平性。如果只有少量进程需要访问，且大部分请求都是访问簇聚的文件扇区，则会达到较好的性能；但如果有大量进程竞争使用磁盘，那么这种算法在性能上往往低于随即调度。所以，实际磁盘调度中考虑一些更为复杂的调度算法。</p>
-<p>2、最短寻找时间优先（SSTF）算法</p>
-<p>SSTF选择调度处理的磁道是与当前磁头所在磁道距离最近的磁道，一是每次的寻找时间最短。当然，总是选择最小寻找时间并不能保证平均寻找时间最小，但是能提供比FCFS算法更好的性能。这种算法会产生饥饿现象</p>
-<p>3、扫描（SCAN）算法</p>
-<p>SCAN算法在磁头当前移动方向上选择与当前磁头所在磁道距离最近的请求作为下一次服务的对象。由于磁头移动规律与电梯运行相似，故又称为电梯调度算法。SCAN算法对最扫描过的区域不公平，因此，他在访问局部性方面不如FCFS算法和SSTF算法好。</p>
-<p>4、循环扫描算法（C-SCAN）</p>
-<p>在扫面算法的基础上规定磁头单向移动来提供服务，回返时直接快速移动至起始端而不服务任何请求。由于SCAN算法偏向于处理那些接近最里或最外的磁道的访问请求，所以使用改进型的C-SCAN算法来避免这个问题。</p>
-<h2 id="3-3-磁盘的管理"><a href="#3-3-磁盘的管理" class="headerlink" title="3.3 磁盘的管理"></a>3.3 磁盘的管理</h2><p>了使用磁盘存储文件。操作系统还需要将自己的数据结构记录在磁盘上：第一步将磁盘分为一个或多个柱面组成分区；低而不对物理分区进行逻辑格式化，操作系统将出师的文件系统数据结构存储在磁盘上，这些数据结构包括空闲和已分配的空间以及一个初始为空的目录。</p>
-
+          <h2 id="2020-5-29-正式赛题解读"><a href="#2020-5-29-正式赛题解读" class="headerlink" title="2020.5.29 正式赛题解读"></a>2020.5.29 正式赛题解读</h2><h3 id="赛题背景：船运到达时间预测"><a href="#赛题背景：船运到达时间预测" class="headerlink" title="赛题背景：船运到达时间预测"></a>赛题背景：船运到达时间预测</h3><p>通过船运的历史数据构建模型，对目的港到达时间进行预测，预测时间简称为ETA（estimated time of arrival），目的港到达时间预测为ARRIVAL_ETA。</p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2020/05/29/hello-world/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
     </div>
 
     
     
     
-
       <footer class="post-footer">
-          <div class="post-tags">
-              <a href="/tags/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/" rel="tag"># 操作系统</a>
-          </div>
-
-        
-
-
-        
-    <div class="post-nav">
-      <div class="post-nav-item">
-    <a href="/2020/08/28/os3/" rel="prev" title="操作系统总结（三）：内存管理">
-      <i class="fa fa-chevron-left"></i> 操作系统总结（三）：内存管理
-    </a></div>
-      <div class="post-nav-item">
-    <a href="/2020/08/28/os5/" rel="next" title="操作系统总结（五）：输入输出管理">
-      操作系统总结（五）：输入输出管理 <i class="fa fa-chevron-right"></i>
-    </a></div>
-    </div>
+        <div class="post-eof"></div>
       </footer>
-    
   </article>
   
   
   
 
 
+  
+  <nav class="pagination">
+    <a class="extend prev" rel="prev" href="/page/4/"><i class="fa fa-angle-left" aria-label="上一页"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/4/">4</a><span class="page-number current">5</span>
+  </nav>
+
+
 
           </div>
           
-    <div class="comments" id="valine-comments"></div>
 
 <script>
   window.addEventListener('tabs:register', () => {
@@ -429,7 +353,6 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#1-文件系统基础"><span class="nav-text">1 文件系统基础</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-1-文件的概念"><span class="nav-text">1.1 文件的概念</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#1-2-文件的逻辑结构"><span class="nav-text">1.2 文件的逻辑结构</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#1-3-目录结构"><span class="nav-text">1.3 目录结构</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#1-4-文件共享"><span class="nav-text">1.4 文件共享</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#1-5-文件保护"><span class="nav-text">1.5 文件保护</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#2-文件系统实现"><span class="nav-text">2 文件系统实现</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#2-1-文件系统层次结构"><span class="nav-text">2.1 文件系统层次结构</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-2-目录实现"><span class="nav-text">2.2 目录实现</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-3-文件实现"><span class="nav-text">2.3 文件实现</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#3-磁盘组织与管理"><span class="nav-text">3 磁盘组织与管理</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#3-1-磁盘的结构"><span class="nav-text">3.1 磁盘的结构</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-2-磁盘调度算法"><span class="nav-text">3.2 磁盘调度算法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-3-磁盘的管理"><span class="nav-text">3.3 磁盘的管理</span></a></li></ol></li></ol></div>
       </div>
       <!--/noindex-->
 
