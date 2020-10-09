@@ -20,17 +20,20 @@
     var CONFIG = {"hostname":"liangggggg.github.io","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
   </script>
 
-  <meta name="description" content="Stay hungry, stay foolish">
-<meta property="og:type" content="website">
-<meta property="og:title" content="LiAnG&#39;s Blog">
-<meta property="og:url" content="https://liangggggg.github.io/archives/2020/08/page/3/index.html">
+  <meta name="description" content="1 数据库的安全性（一）用户识别和鉴别是系统提供最外层安全保护措施  口令：DBMS分配的字符串序列 用户的个人特征 智能卡  （二）访问控制是按用户身份及其归属定义来限制用户对某些信息项的访问  数据访问的级别和类别 任意控制：SQL对自主存取控制，通过GRANT和REVOKE来实现">
+<meta property="og:type" content="article">
+<meta property="og:title" content="数据库总结笔记（二）：关系数据库安全性与完整性">
+<meta property="og:url" content="https://liangggggg.github.io/2020/09/27/DB2/index.html">
 <meta property="og:site_name" content="LiAnG&#39;s Blog">
-<meta property="og:description" content="Stay hungry, stay foolish">
+<meta property="og:description" content="1 数据库的安全性（一）用户识别和鉴别是系统提供最外层安全保护措施  口令：DBMS分配的字符串序列 用户的个人特征 智能卡  （二）访问控制是按用户身份及其归属定义来限制用户对某些信息项的访问  数据访问的级别和类别 任意控制：SQL对自主存取控制，通过GRANT和REVOKE来实现">
 <meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2020-09-27T02:20:59.000Z">
+<meta property="article:modified_time" content="2020-09-27T02:48:52.031Z">
 <meta property="article:author" content="LiAnG">
+<meta property="article:tag" content="数据库">
 <meta name="twitter:card" content="summary">
 
-<link rel="canonical" href="https://liangggggg.github.io/archives/2020/08/page/3/">
+<link rel="canonical" href="https://liangggggg.github.io/2020/09/27/DB2/">
 
 
 <script id="page-configurations">
@@ -38,12 +41,12 @@
   CONFIG.page = {
     sidebar: "",
     isHome : false,
-    isPost : false,
+    isPost : true,
     lang   : 'zh-CN'
   };
 </script>
 
-  <title>归档 | LiAnG's Blog</title>
+  <title>数据库总结笔记（二）：关系数据库安全性与完整性 | LiAnG's Blog</title>
   
 
 
@@ -186,100 +189,219 @@
         <div class="content-wrap">
           
 
-          <div class="content archive">
+          <div class="content post posts-expand">
             
 
+    
   
   
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://liangggggg.github.io/2020/09/27/DB2/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/timg.jpg">
+      <meta itemprop="name" content="LiAnG">
+      <meta itemprop="description" content="Stay hungry, stay foolish">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="LiAnG's Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          数据库总结笔记（二）：关系数据库安全性与完整性
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2020-09-27 10:20:59 / 修改时间：10:48:52" itemprop="dateCreated datePublished" datetime="2020-09-27T10:20:59+08:00">2020-09-27</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/" itemprop="url" rel="index"><span itemprop="name">数据库</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span>
   
-  <div class="post-block">
-    <div class="posts-collapse">
-      <div class="collection-title">
-        
-        <span class="collection-header">还行! 目前共计 43 篇日志。 继续努力。</span>
-      </div>
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2020/09/27/DB2/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2020/09/27/DB2/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>1.8k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>2 分钟</span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
 
       
-    <div class="collection-year">
-      <span class="collection-header">2020</span>
+        <h1 id="1-数据库的安全性"><a href="#1-数据库的安全性" class="headerlink" title="1 数据库的安全性"></a>1 数据库的安全性</h1><p>（一）用户识别和鉴别是系统提供最外层安全保护措施</p>
+<ol>
+<li>口令：DBMS分配的字符串序列</li>
+<li>用户的个人特征</li>
+<li>智能卡</li>
+</ol>
+<p>（二）访问控制是按用户身份及其归属定义来限制用户对某些信息项的访问</p>
+<ol>
+<li>数据访问的级别和类别</li>
+<li>任意控制：SQL对自主存取控制，通过GRANT和REVOKE来实现</li>
+</ol>
+<a id="more"></a>
+
+<p>（1）授权</p>
+<p>1.语句格式</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">GRANT &lt;特权类型&gt; TO &lt;用户标志符&gt; [INDENTIFIED &lt;口令&gt;]</span><br><span class="line"></span><br><span class="line">把新用户WANG注册为RESURECE用户，口令为W02XYZ</span><br><span class="line">GRANT RESOURCE TO WANG INDENTIFIED BY W02XY3</span><br></pre></td></tr></table></figure>
+<p>（2）回收</p>
+<p>1.语句格式</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">REVOKE &lt;特权类型清单&gt; FROM &lt;用户标识符&gt;</span><br></pre></td></tr></table></figure>
+
+<p>强制控制是指系统为保证更高程度的安全性，按照TDI/TCSEC标准汇总安全策略的要求，所采取的强制存取检测手段</p>
+<ol>
+<li>仅当用户的密级大于等于数据的密级时，该用户才能读取此数据</li>
+<li>仅当用户的密级小于等于数据的密级时，该用户才能写入此数据</li>
+</ol>
+<p>（3）审计</p>
+<p>（4）加密</p>
+<ol>
+<li>库内加密：在DBMS内核层实现加密，加密过程与用户与应用透明，在物理存取之前完成</li>
+<li>库外加密：DBMS之外，在客户端实现</li>
+</ol>
+<p>数据库的加密粒度</p>
+<ol>
+<li>表加密</li>
+<li>属性加密</li>
+<li>记录加密</li>
+<li>记录元素加密</li>
+</ol>
+<h1 id="2-数据库的完整性"><a href="#2-数据库的完整性" class="headerlink" title="2 数据库的完整性"></a>2 数据库的完整性</h1><p>（一）实体完整性约束</p>
+<p>通过主码（Primary Key）的定义来实现的，该主码的每个属性不能为空值，并且不能出现与主码值完全相同的两个元组</p>
+<p>在SQL中， 实体完整性约束的定义分为两种形式。第一，列级完整性约束，主要是为单一的属性进行完整性约束；第二，表级完整性约束，主要为多个属性进行的完整性约束</p>
+<p>实体完整性检查</p>
+<ol>
+<li>检查主码值是否唯一，即有没有主码与要插入的相同</li>
+<li>检查主码的各个属性是否为空</li>
+</ol>
+<p>（二）参照完整性约束</p>
+<p>又称为引用完整性，参照的完整性要求关系中不允许引用不存在的实体。</p>
+<p>外部码的说明方式有两种：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">REFERENCES &lt;父表名&gt; (&lt;属性名&gt;)</span><br><span class="line">FOREIGN KEY (&lt;属性名&gt;) REFERENCES &lt;父表名&gt; (属性名)</span><br></pre></td></tr></table></figure>
+
+<p>参照完整性检查也是一种操作约束</p>
+<ol>
+<li>限制策略</li>
+<li>级联策略：当删除或修改父表中某元组的主码值时，字表中具有该外部码值的元组也将被删除或修改</li>
+</ol>
+<p>（三）用户定义完整性约束</p>
+<p>实体完整性和参照完整性适用于任何关系型数据库系统，主要针对关系的主关键字和外部关键字取值必须有效而做出的约束，而用户自定义完整性约束应用于环境的需要</p>
+<p>SQL主要包含列值非空（NOT NULL）、列值唯一（UNIQUE）和检测列值是否满足布尔表达式（CHECK）</p>
+<h1 id="3-触发器"><a href="#3-触发器" class="headerlink" title="3 触发器"></a>3 触发器</h1><p>（一）触发器类型</p>
+<p>1.DML触发器</p>
+<p>当数据库中的数据发生变化，如果写了对应的DML触发器，则自动执行，用于强制执行业务规则，以及扩展SQL约束</p>
+<p>2.DDL触发器</p>
+<p>主要用于审核与规范对数据库中标，触发器，视图等结构上的操作，比如修改表，修改列，新增列等</p>
+<p>3.登录触发器</p>
+<p>在登录的身份验证阶段完成之后且用户会话实际建立之前激发</p>
+<p>（二）创建触发器</p>
+<p>1.语句格式</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">CREATE TRIGGER &lt;触发器名&gt;[&#123;BEFORE|AFTER&#125;]</span><br><span class="line">		&#123;[DELETE|INSERT]UPDATE OF [列名清单]&#125;</span><br><span class="line">		ON 表明</span><br><span class="line">		[REFERENCING &lt;临时视图名&gt;]</span><br><span class="line">		[WHEN &lt;出发条件&gt;]</span><br><span class="line">&lt;触发动作&gt;</span><br><span class="line">[FOR EACH &#123;ROW|STATMENT&#125;]</span><br></pre></td></tr></table></figure>
+
+<h1 id="4-规范化理论"><a href="#4-规范化理论" class="headerlink" title="4 规范化理论"></a>4 规范化理论</h1><p>关系型数据库在涉及时应该遵守一定的规则，即遵循数据的范式理论，范式的等级越高，应满足的约束条件也越严格</p>
+<ol>
+<li>1NF的定义为：每个属性都不可再分（所有数据库的最基本要求）</li>
+<li>2NF的定义为：所有的非关键字属性都完全依赖于整个主关键字（不存在部分依赖）</li>
+<li>3NF的定义为：如果某关系模式满足第二范式，而且它的任何一个非主属性都不传递依赖于任何关键字</li>
+<li>BCNF : 消除非主属性对码的部分依赖和传递函数依赖</li>
+<li>4NF：消除非平凡且非函数依赖的多值依赖</li>
+<li>5NF：消除不为候选码所隐含的连续依赖</li>
+</ol>
+<p>（一）依赖</p>
+<p>函数依赖是属性之间的一种联系，假定给定一个属性的值，就可以唯一确定另一个属性的值</p>
+<ol>
+<li>两个属性集X,Y是1:1联系，则存在函数依赖：X←→Y</li>
+<li>两个属性集X,Y是1：M联系，则存在函数依赖：X→Y</li>
+<li>两个属性集X,Y是M:M联系，则存在函数依赖:则没有推理关系</li>
+</ol>
+
     </div>
 
-  <article itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
+    
+    
+    
 
-      <div class="post-meta">
-        <time itemprop="dateCreated"
-              datetime="2020-08-09T09:47:42+08:00"
-              content="2020-08-09">
-          08-09
-        </time>
-      </div>
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E6%95%B0%E6%8D%AE%E5%BA%93/" rel="tag"># 数据库</a>
+          </div>
 
-      <div class="post-title">
-          <a class="post-title-link" href="/2020/08/09/Feat/" itemprop="url">
-            <span itemprop="name">机器学习笔记（八）数据预处理与特征工程</span>
-          </a>
-      </div>
-
-    </header>
-  </article>
-
-  <article itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-
-      <div class="post-meta">
-        <time itemprop="dateCreated"
-              datetime="2020-08-05T09:47:42+08:00"
-              content="2020-08-05">
-          08-05
-        </time>
-      </div>
-
-      <div class="post-title">
-          <a class="post-title-link" href="/2020/08/05/Unsupervised/" itemprop="url">
-            <span itemprop="name">机器学习笔记（七）无监督学习</span>
-          </a>
-      </div>
-
-    </header>
-  </article>
-
-  <article itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-
-      <div class="post-meta">
-        <time itemprop="dateCreated"
-              datetime="2020-08-03T09:47:42+08:00"
-              content="2020-08-03">
-          08-03
-        </time>
-      </div>
-
-      <div class="post-title">
-          <a class="post-title-link" href="/2020/08/03/Bayes/" itemprop="url">
-            <span itemprop="name">机器学习笔记（六）朴素贝叶斯</span>
-          </a>
-      </div>
-
-    </header>
-  </article>
+        
 
 
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2020/09/16/DB1/" rel="prev" title="数据库总结笔记（一）：关系数据库标准语言">
+      <i class="fa fa-chevron-left"></i> 数据库总结笔记（一）：关系数据库标准语言
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2020/10/09/DB3/" rel="next" title="数据库总结笔记（三）：数据库高级应用">
+      数据库总结笔记（三）：数据库高级应用 <i class="fa fa-chevron-right"></i>
+    </a></div>
     </div>
-  </div>
+      </footer>
+    
+  </article>
   
   
   
-
-  
-  <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/archives/2020/08/page/2/"><i class="fa fa-angle-left" aria-label="上一页"></i></a><a class="page-number" href="/archives/2020/08/">1</a><a class="page-number" href="/archives/2020/08/page/2/">2</a><span class="page-number current">3</span>
-  </nav>
 
 
 
           </div>
           
+    <div class="comments" id="valine-comments"></div>
 
 <script>
   window.addEventListener('tabs:register', () => {
@@ -326,6 +448,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#1-数据库的安全性"><span class="nav-text">1 数据库的安全性</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#2-数据库的完整性"><span class="nav-text">2 数据库的完整性</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#3-触发器"><span class="nav-text">3 触发器</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#4-规范化理论"><span class="nav-text">4 规范化理论</span></a></li></ol></div>
       </div>
       <!--/noindex-->
 
@@ -510,6 +633,59 @@ setInterval("createtime()",250);
   
 
   
+      
+
+<script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      loader: {
+        source: {
+          '[tex]/amsCd': '[tex]/amscd',
+          '[tex]/AMScd': '[tex]/amscd'
+        }
+      },
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              let target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    (function () {
+      var script = document.createElement('script');
+      script.src = '//cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';
+      script.defer = true;
+      document.head.appendChild(script);
+    })();
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
 
   
 
